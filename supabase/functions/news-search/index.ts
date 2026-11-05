@@ -47,6 +47,17 @@ function dateFromUrl(u: string): string {
   } catch { /* */ }
   return "";
 }
+// ملخص لا يتجاوز 60 كلمة من نص الخبر/المنشور (فقرة الافتتاح)
+function sum60(raw: string, fallback = ""): string {
+  const clean = (s: string) => s.replace(/!\[[^\]]*\]\([^)]*\)/g, " ").replace(/\[([^\]]*)\]\([^)]*\)/g, "$1").replace(/https?:\/\/\S+/g, " ")
+    .replace(/[#*_>|`]+/g, " ").replace(/\s+/g, " ").trim();
+  let src = "";
+  if (raw) { const paras = raw.split(/\n\s*\n|\n/).map(clean).filter((x) => x.split(" ").length >= 12 && !/cookie|subscribe|اشترك|حقوق النشر|copyright/i.test(x));
+    src = paras.slice(0, 3).join(" "); }
+  if (!src) src = clean(fallback);
+  const w = src.split(" ").filter(Boolean);
+  return w.length > 60 ? w.slice(0, 60).join(" ") + "…" : w.join(" ");
+}
 const bhDay = (iso: string) => new Date(new Date(iso).getTime() + 3 * 3600e3).toISOString().slice(0, 10);
 async function socialSearch(kws: { kw: string; ctx: boolean }[], from: string, to: string) {
   const tav = Deno.env.get("TAVILY_API_KEY"), ser = Deno.env.get("SERPER_API_KEY");
@@ -58,10 +69,10 @@ async function socialSearch(kws: { kw: string; ctx: boolean }[], from: string, t
       let rows: { title: string; link: string; snippet: string; date: string }[] = [];
       if (tav) {
         const r = await fetch("https://api.tavily.com/search", { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${tav}` },
-          body: JSON.stringify({ query: b.q, search_depth: "basic", max_results: 20, include_domains: SM_DOMAINS, start_date: from, end_date: addDay(to) }) });
+          body: JSON.stringify({ query: b.q, search_depth: "basic", max_results: 20, include_domains: SM_DOMAINS, start_date: from, end_date: addDay(to), include_raw_content: true }) });
         if (!r.ok) return;
         const j = await r.json();
-        rows = (j.results || []).map((x: any) => ({ title: x.title || "", link: x.url || "", snippet: x.content || "", date: x.published_date || "" }));
+        rows = (j.results || []).map((x: any) => ({ title: x.title || "", link: x.url || "", snippet: sum60(x.raw_content || "", x.content || ""), date: x.published_date || "" }));
       } else {
         const r = await fetch("https://google.serper.dev/search", { method: "POST", headers: { "Content-Type": "application/json", "X-API-KEY": ser! },
           body: JSON.stringify({ q: `(${b.q}) (site:x.com OR site:instagram.com OR site:facebook.com)`, gl: "bh", num: 20, tbs: `cdr:1,cd_min:${gd(from)},cd_max:${gd(to)}` }) });
@@ -75,8 +86,9 @@ async function socialSearch(kws: { kw: string; ctx: boolean }[], from: string, t
         seen.add(x.link);
         let pub = dateFromUrl(x.link);
         if (!pub) { try { if (x.date) { const d = new Date(x.date); if (!isNaN(+d)) pub = d.toISOString(); } } catch { /* */ } }
-        if (pub) { const day = bhDay(pub); if (day < from || day > to) continue; }
-        items.push({ title: x.title.replace(/\s*[|·-]\s*(Instagram|Facebook|X)\s*$/i, ""), link: x.link, snippet: x.snippet.slice(0, 400), pubDate: pub, platform, kw: pick(x.title, x.snippet, b.kws) });
+        if (!pub) continue; // بدون تاريخ مؤكد لا يُعرض
+        { const day = bhDay(pub); if (day < from || day > to) continue; }
+        items.push({ title: x.title.replace(/\s*[|·-]\s*(Instagram|Facebook|X)\s*$/i, ""), link: x.link, snippet: sum60("", x.snippet), pubDate: pub, platform, kw: pick(x.title, x.snippet, b.kws) });
       }
     } catch { /* تجاهل */ }
   }));
@@ -128,6 +140,35 @@ Deno.serve(async (req) => {
       }
     } catch { /* تجاهل الاستعلام الفاشل */ }
   }));
-  items.sort((a, b) => (b.pubDate || "").localeCompare(a.pubDate || ""));
-  return json({ items, from, to });
+  // Tavily (أخبار): رابط المصدر المباشر + تاريخ النشر + نص الخبر للملخص
+  const tav = Deno.env.get("TAVILY_API_KEY");
+  if (tav) {
+    await Promise.all(queries.map(async (qq: any, qi: number) => {
+      const raw = String(qq.q || "");
+      const domains = [...raw.matchAll(/site:([\w.-]+)/g)].map((m) => m[1]);
+      const q = raw.replace(/\((?:\s*(?:OR\s+)?site:[\w.-]+\s*)+\)/g, " ").replace(/site:[\w.-]+/g, " ").replace(/\s+/g, " ").trim().slice(0, 380);
+      try {
+        const r = await fetch("https://api.tavily.com/search", { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${tav}` },
+          body: JSON.stringify({ query: q, topic: "news", search_depth: "basic", max_results: 15, include_domains: domains.length ? domains : undefined, start_date: from, end_date: addDay(to), include_raw_content: true }) });
+        if (!r.ok) return;
+        const j = await r.json();
+        for (const x of (j.results || [])) {
+          const title = String(x.title || "").replace(/\s*[|–-]\s*[^|–-]{2,40}$/, "").trim();
+          const key = title.replace(/\s+/g, " ").toLowerCase();
+          if (!title || !x.url) continue;
+          const old = items.find((i) => i.title.replace(/\s+/g, " ").toLowerCase() === key);
+          const summary = sum60(x.raw_content || "", x.content || "");
+          if (old) { if (!old.summary) old.summary = summary; continue; }
+          if (seen.has(key)) continue;
+          seen.add(key);
+          let pub = ""; try { if (x.published_date) { const d = new Date(x.published_date); if (!isNaN(+d)) pub = d.toISOString(); } } catch { /* */ }
+          items.push({ title, link: x.url, source: "", sourceUrl: x.url, pubDate: pub, q: qi, summary });
+        }
+      } catch { /* */ }
+    }));
+  }
+  // التزام صارم بالفترة: يُستبعد كل ما لا يحمل تاريخًا ضمنها (بتوقيت البحرين)
+  const inRange = items.filter((x) => x.pubDate && bhDay(x.pubDate) >= from && bhDay(x.pubDate) <= to);
+  inRange.sort((a, b) => (b.pubDate || "").localeCompare(a.pubDate || ""));
+  return json({ items: inRange, from, to });
 });
