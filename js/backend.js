@@ -252,6 +252,7 @@
     member = !error && data && data[0] ? data[0] : null;
     if (!member) { showDenied(); return; }
     const el = $("auth"); if (el) el.hidden = true;
+    window.lmraSearch = async (payload) => { const { data, error } = await sb.functions.invoke("news-search", { body: payload }); if (error) throw error; return data; };
     if (!booted) { booted = true; resolveReady(); addHeaderButtons(); }
   }
   function addHeaderButtons() {

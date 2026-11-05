@@ -371,6 +371,13 @@ table.dp-tb .no{color:#8D9091}
 .dp-sum{position:absolute;left:.62in;top:7.3in;width:6.26in;height:2.3in;overflow:hidden;font-size:13.5pt;line-height:1.7;text-align:justify}
 .dp-lk{position:absolute;right:.62in;top:9.7in;font-size:13pt;font-weight:700;color:#DE2724;text-decoration:underline}
 @media print{.dp{box-shadow:none;page-break-after:always}}
+
+.scan-go{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.scanp{padding:14px 16px;margin-top:12px;display:grid;gap:10px}
+.scan-h{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.scan-h .btn{margin-inline-start:auto}
+table.scant{min-width:720px}table.scant td{vertical-align:middle}table.scant tbody tr{cursor:default}
+.scan-t{font-weight:700;color:var(--ink);text-decoration:none;line-height:1.6}.scan-t:hover{text-decoration:underline}
+.kw label.kwn{display:inline-flex;align-items:center;gap:6px;cursor:pointer}
 </style>
 </head>
 <body>
@@ -666,6 +673,7 @@ function banner(msg,isErr){const b=$("banner");b.textContent=msg||"";b.className
 
 /* ---------- rendering ---------- */
 function render(){
+  if(S.dailyOpen)try{refreshDaily()}catch(e){}
   document.body.classList.toggle("ro",!S.canWrite);
   for(const v of ["calendar","tasks","stats","monitor"]){$("view-"+v).hidden=S.view!==v;$("tab-"+v).setAttribute("aria-selected",String(S.view===v))}
   if(S.view==="calendar")renderCalendar();else if(S.view==="stats")renderStats();else if(S.view==="monitor")renderMonitor();else renderTasks();
@@ -929,7 +937,8 @@ function renderMonitor(){
       <label class="field"><span>إلى</span><input type="date" id="mon-to" value="${M.to}"></label>
     </div>
     <div class="field"><span>محاور البحث</span><div class="chips">${MTOPICS.map(t=>`<label><input type="checkbox" data-mt="${t.k}" ${M.topics.includes(t.k)?"checked":""}>${t.n}</label>`).join("")}</div></div>
-  </div>`;
+    ${SCAN_ON()?`<div class="scan-go"><button class="btn primary" type="button" data-act="scan-run" data-v="news" ${scanState("news").loading?"disabled":""}>${scanState("news").loading?"جارٍ الرصد…":"ارصد الآن"}</button><span class="small muted">يبحث في الصحف ووكالات الأنباء المعتمدة عن المحاور المحددة خلال الفترة</span></div>`:""}
+  </div>${scanPanel("news")}`;
   // outlet cards
   const card=o=>{const st=chk.statuses[o.k]||"";const sc=CHECK_ST.find(x=>x.k===st).c;const cnt=items.filter(x=>x.outlet===o.k).length;
     return `<div class="oc" style="--sc:${sc}"><div class="top"><div><div class="nm">${esc(o.n)}${cnt?` <span class="tag num">${cnt} خبر</span>`:""}</div><div class="dm">${esc(o.d)}</div></div>
@@ -1005,7 +1014,7 @@ function monPrintHTML(){
     <footer class="rf">صور الأخبار لقطات من المصادر المذكورة لأغراض الرصد الداخلي · أُعدّ عبر منصة فريق إدارة الاتصال</footer>
   </div>`}
 function openReport(){const r=$("rpt");r.innerHTML=monPrintHTML();r.hidden=false;document.body.classList.add("rpt-open");window.scrollTo(0,0)}
-function closeReport(){const r=$("rpt");r.hidden=true;r.innerHTML="";document.body.classList.remove("rpt-open")}
+function closeReport(){S.dailyOpen=false;const r=$("rpt");r.hidden=true;r.innerHTML="";document.body.classList.remove("rpt-open")}
 
 /* ===== social media monitoring ===== */
 const SM_GROUPS=[
@@ -1067,9 +1076,15 @@ function renderSocial(){
     h+=`<div class="mon-sec"><h3>${sec.n} <span class="num muted small">(${rows.length})</span></h3></div>${tbl(rows)}`}
   if(unv.length)h+=`<div class="mon-sec"><h3>منشورات لم يتم التحقق منها</h3><span class="small muted">مستبعدة من النتائج المؤكدة</span></div>${tbl(unv)}`;
   // keywords
-  const kwRow=kw=>`<div class="kw"><span class="kwn" dir="auto">${esc(kw)}</span><span class="ql"><a href="${xLink(kw,M.from,M.to)}">إكس</a><a href="${igLink(kw)}">إنستغرام</a><a href="${igGLink(kw,M.from,M.to)}">Google</a></span></div>`;
+  S.smSel=S.smSel||new Set(SM_KW.core);
+  const kwRow=kw=>`<div class="kw"><label class="kwn" dir="auto"><input type="checkbox" data-smkw="${esc(kw)}" ${S.smSel.has(kw)?"checked":""}> ${esc(kw)}</label><span class="ql"><a href="${xLink(kw,M.from,M.to)}">إكس</a><a href="${igLink(kw)}">إنستغرام</a><a href="${igGLink(kw,M.from,M.to)}">Google</a></span></div>`;
   h+=`<div class="mon-sec"><h3>الكلمات المفتاحية</h3><span class="small muted">بحث إكس مقيّد بفترة الرصد · الكلمات الإنجليزية العامة يُضاف لها «البحرين» تلقائيًا</span></div>
-    <div class="card kwc"><div class="kwg">${SM_KW.core.map(kwRow).join("")}</div>
+    <div class="card kwc">
+    <div class="scan-go">${SCAN_ON()?`<button class="btn primary" type="button" data-act="scan-run" data-v="social" ${scanState("social").loading?"disabled":""}>${scanState("social").loading?"جارٍ الرصد…":"ارصد الآن"}</button>`:""}
+      <a class="btn" href="${xMultiLink([...S.smSel],M.from,M.to)}" data-noedit="1">فتح الكلمات المحددة في إكس</a>
+      <span class="small muted"><b class="num">${S.smSel.size}</b> كلمة محددة · <a href="#" data-act="smkw-all" data-noedit="1">تحديد الكل</a> · <a href="#" data-act="smkw-none" data-noedit="1">إلغاء التحديد</a></span></div>
+    ${scanPanel("social")}
+    <div class="kwg">${SM_KW.core.map(kwRow).join("")}</div>
     <details class="kwocc"${S.smOcc?" open":""}><summary>كلمات دورية (عند الحاجة) — تقرير الاتجار بالأشخاص والتصنيف</summary><div class="kwg">${SM_KW.occ.map(kwRow).join("")}</div></details></div>`;
   // accounts
   h+=`<div class="mon-sec"><h3>الحسابات المرصودة</h3><span class="small muted">افتح كل حساب، راجع منشورات الفترة، ثم حدّد حالة الفحص · تحديث القائمة: 27 يوليو 2026</span></div>`;
@@ -1078,6 +1093,7 @@ function renderSocial(){
       return `<div class="sa" style="--sc:${sc}"><div class="sa-t"><a href="${smProfile(a)}" class="san">${esc(a.n)}</a>${cnt?`<span class="tag num">${cnt}</span>`:""}<div class="small muted" dir="ltr">${a.pf==="x"?"X":"IG"} · @${esc(a.h)}</div></div>
         <select data-smchk="${esc(a.k)}" aria-label="حالة فحص ${esc(a.n)}" ${S.canWrite?"":"disabled"}>${SM_CHK.map(c=>`<option value="${c.k}" ${c.k===st?"selected":""}>${c.n}</option>`).join("")}</select></div>`}).join("")}</div></details>`}
   el.innerHTML=h;bindPeriod(M);
+  el.querySelectorAll("[data-smkw]").forEach(c=>c.onchange=()=>{const k=c.dataset.smkw;if(c.checked)S.smSel.add(k);else S.smSel.delete(k);render()});
   el.querySelectorAll("details.smg").forEach(d=>d.addEventListener("toggle",()=>{S.smOpen=S.smOpen||{};S.smOpen[d.dataset.g]=d.open}));
   const occ=el.querySelector("details.kwocc");if(occ)occ.addEventListener("toggle",()=>{S.smOcc=occ.open});
   el.querySelectorAll("[data-smchk]").forEach(sel=>sel.onchange=async()=>{const id=periodKey(M);const cur=(S.smChecks||[]).find(c=>c.id===id)||{statuses:{}};
@@ -1266,8 +1282,9 @@ function dailyHTML(D){
   }).join("");
   return h;
 }
+function refreshDaily(){if(!S.dailyOpen)return;const D=buildDaily();S.daily=D;const w=$("dp-wrap");if(w)w.innerHTML=dailyHTML(D);const st=$("dl-st");if(st&&!st.dataset.busy)st.textContent=D.pages.length+" صفحة · "+D.counts.news+" خبر · "+D.counts.posts+" منشور"}
 function openDaily(){
-  const D=buildDaily();S.daily=D;const r=$("rpt");
+  S.dailyOpen=true;const D=buildDaily();S.daily=D;const r=$("rpt");
   r.innerHTML=`<div class="rbar no-print"><button class="btn primary" type="button" data-act="dl-pdf">تحميل PDF</button><button class="btn" type="button" data-act="dl-pptx">تحميل PowerPoint</button><button class="btn" type="button" data-act="dl-docx">تحميل Word</button><button class="btn" type="button" data-act="rpt-close">إغلاق</button>
     <span class="small muted" id="dl-st">${D.pages.length} صفحة · ${D.counts.news} خبر · ${D.counts.posts} منشور</span></div>
     <div class="dp-wrap" id="dp-wrap">${dailyHTML(D)}</div>`;
@@ -1290,11 +1307,11 @@ async function offerFile(name,blob){
 function dlStatus(t){const e=$("dl-st");if(e)e.textContent=t}
 function dlErr(err){const c=err&&err.code;return c==="declined"?"تم إلغاء التحميل.":c==="unavailable"||c==="not_granted"?"التحميل غير متاح حاليًا.":c==="rate_limited"?"هناك نافذة تحميل مفتوحة، انتظر قليلًا.":c==="lib"||(err&&err.message==="lib")?"تعذّر تحميل أداة التصدير. تحقق من الاتصال وحاول مجددًا.":"تعذّر إنشاء الملف."}
 async function runDl(kind,btn){
-  const D=S.daily;if(!D)return;btns(true);
+  if(S.dailyOpen)refreshDaily();const D=S.daily;if(!D)return;btns(true);const stEl=$("dl-st");if(stEl)stEl.dataset.busy="1";
   try{dlStatus("جارٍ تجهيز الملف…");let blob,ext;
     if(kind==="pdf"){blob=await makePdf(D);ext="pdf"}else if(kind==="pptx"){blob=await makePptx(D);ext="pptx"}else{blob=await makeDocx(D);ext="docx"}
     dlStatus("بانتظار تأكيد التحميل…");await offerFile(dailyFileName(D.M,ext),blob);dlStatus("تم التحميل ✓")}
-  catch(err){console.error(err);dlStatus(dlErr(err))}finally{btns(false)}
+  catch(err){console.error(err);dlStatus(dlErr(err))}finally{btns(false);const s2=$("dl-st");if(s2)delete s2.dataset.busy}
   function btns(d){document.querySelectorAll('#rpt [data-act^="dl-"]').forEach(b=>b.disabled=d)}}
 
 /* ---------- PDF (rendered pages) ---------- */
@@ -1386,6 +1403,52 @@ async function makeDocx(D){
   const doc=new d.Document({creator:"إدارة الاتصال",title:"تقرير الرصد اليومي",styles:{default:{document:{run:{font:F,rightToLeft:true}}}},
     sections:[{properties:{page:{size:{width:Math.round(7.5*IN),height:Math.round(10.833*IN)},margin:{top:Math.round(1.45*IN),bottom:Math.round(0.8*IN),left:Math.round(0.6*IN),right:Math.round(0.6*IN),header:Math.round(0.4*IN),footer:Math.round(0.35*IN)}}},headers:{default:header},footers:{default:footer},children:kids}]});
   return await d.Packer.toBlob(doc)}
+
+
+/* ===== «ارصد الآن» — بحث آلي في الأخبار ===== */
+const SCAN_ON=()=>typeof window.lmraSearch==="function";
+function sitesOf(r){return "("+OUTLETS.filter(o=>o.r===r&&o.d).map(o=>"site:"+o.d).join(" OR ")+")"}
+function outletFromUrl(u){try{const h=new URL(u).hostname.replace(/^www\./,"");const o=OUTLETS.find(o=>o.d&&(h===o.d||h.endsWith("."+o.d)));return o?o.k:"other"}catch(e){return "other"}}
+function bhDateOf(iso){if(!iso)return "";const f=new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Bahrain",year:"numeric",month:"2-digit",day:"2-digit"});return f.format(new Date(iso))}
+function scanState(mode){S.scan=S.scan||{};return S.scan[mode]||(S.scan[mode]={items:null,loading:false,err:"",key:""})}
+async function runScan(mode){
+  const M=monPeriod();const st=scanState(mode);let queries=[];
+  if(mode==="news"){
+    const tps=MTOPICS.filter(t=>M.topics.includes(t.k));
+    if(!tps.length){st.err="اختر محورًا واحدًا على الأقل.";render();return}
+    for(const t of tps){queries.push({q:"("+t.ar+") "+sitesOf("bh"),lang:"ar"},{q:"("+t.q+") "+sitesOf("bh"),lang:"en"},{q:"("+t.ar+") "+sitesOf("gcc"),lang:"ar"})}
+  }else{
+    const kws=[...(S.smSel||new Set(SM_KW.core))];
+    if(!kws.length){st.err="اختر كلمة مفتاحية واحدة على الأقل.";render();return}
+    queries=kws.slice(0,30).map(kw=>({q:(/\s/.test(kw)?'"'+kw+'"':kw)+(smNeedsCtx(kw)?" Bahrain":""),lang:isArabic(kw)?"ar":"en",kw}));
+  }
+  st.loading=true;st.err="";st.key=M.from+"_"+M.to;render();
+  try{const r=await window.lmraSearch({queries:queries.map(q=>({q:q.q,lang:q.lang})),from:M.from,to:M.to});
+    st.items=(r&&r.items||[]).map(x=>Object.assign(x,{outlet:outletFromUrl(x.sourceUrl),date:bhDateOf(x.pubDate),label:mode==="news"?(MTOPICS.filter(t=>M.topics.includes(t.k))[Math.floor(x.q/3)]||{}).k:(queries[x.q]||{}).kw}));
+  }catch(e){console.error(e);st.err="تعذّر البحث الآن. حاول بعد قليل."}
+  finally{st.loading=false;render()}
+}
+function scanAdded(x){const t=String(x.title||"").trim();return S.monitor.some(m=>(m.link&&m.link===x.link)||String(m.headline||"").trim()===t)}
+function scanPanel(mode){
+  if(!SCAN_ON())return "";const st=scanState(mode);const M=monPeriod();
+  if(st.loading)return `<div class="card scanp"><div class="scan-h"><b>جارٍ الرصد…</b><span class="small muted">يبحث في الأخبار المنشورة خلال الفترة المحددة</span></div></div>`;
+  if(st.err&&!st.items)return `<div class="card scanp"><div class="err-msg">${esc(st.err)}</div></div>`;
+  if(!st.items)return "";
+  const stale=st.key!==M.from+"_"+M.to;
+  const rows=st.items.map((x,i)=>{const o=outletOf(x.outlet);const added=scanAdded(x);const lab=mode==="news"?(mtopic(x.label)||{}).n:x.label;
+    return `<tr><td class="dt">${esc(x.date?fmtShort(x.date):"—")}</td><td><div style="font-weight:700">${esc(x.source||o.n)}</div>${x.outlet!=="other"?`<span class="tag">${esc(o.n)}</span>`:""}</td>
+      <td dir="auto"><a href="${esc(x.link)}" data-noedit="1" class="scan-t">${esc(x.title)}</a>${lab?`<div class="small muted">${esc(lab)}</div>`:""}</td>
+      <td style="white-space:nowrap">${added?`<span class="tone" style="--tc:var(--ok)">مضاف</span>`:`<button class="btn small write-only" type="button" data-act="scan-add" data-v="${mode}:${i}">إضافة للرصد</button>`}</td></tr>`}).join("");
+  return `<div class="card scanp"><div class="scan-h"><b>نتائج «ارصد الآن» <span class="num muted">(${st.items.length})</span></b>
+    <span class="small muted">${stale?"⚠ النتائج لفترة سابقة — اضغط «ارصد الآن» للتحديث":"المصدر: Google News · راجع كل خبر قبل إضافته"}</span>
+    <button class="btn small" type="button" data-act="scan-clear" data-v="${mode}">إخفاء</button></div>
+    ${st.items.length?`<div class="tbl-wrap"><table class="scant"><thead><tr><th>التاريخ</th><th>المصدر</th><th>العنوان</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`:`<div class="empty-note">لا توجد نتائج لهذه الفترة والمحاور.</div>`}</div>`}
+function scanAddOpen(mode,i){const x=(scanState(mode).items||[])[i];if(!x)return;openMon(null);
+  $("m-head").value=x.title||"";$("m-link").value=x.link||"";if(x.date)$("m-date").value=x.date;
+  $("m-outlet").value=x.outlet||"other";if(mode==="news"&&mtopic(x.label))$("m-topic").value=x.label;
+  $("m-outlet").dispatchEvent(new Event("change"))}
+function xMultiLink(kws,from,to){let q="";for(const kw of kws){const t=(/\s/.test(kw)?'"'+kw+'"':kw);const n=q?q+" OR "+t:t;if(n.length>420)break;q=n}
+  return "https://x.com/search?q="+encodeURIComponent("("+q+") since:"+from+" until:"+addDays(to,1))+"&src=typed_query&f=live"}
 
 function openMon(x){
   S.editMon=x||null;const M=monPeriod();
@@ -1543,6 +1606,11 @@ document.addEventListener("click",async e=>{
     case "mon-print":openReport();break;
     case "mon-mode":S.monMode=v;render();break;
     case "daily":openDaily();break;
+    case "scan-run":runScan(v);break;
+    case "scan-clear":{const st=scanState(v);st.items=null;st.err="";render();break}
+    case "scan-add":{const [m,i]=v.split(":");scanAddOpen(m,+i);break}
+    case "smkw-all":e.preventDefault();S.smSel=new Set([...SM_KW.core,...SM_KW.occ]);render();break;
+    case "smkw-none":e.preventDefault();S.smSel=new Set();render();break;
     case "dl-pdf":runDl("pdf",a);break;
     case "dl-pptx":runDl("pptx",a);break;
     case "dl-docx":runDl("docx",a);break;
