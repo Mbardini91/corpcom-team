@@ -1,6 +1,5 @@
 // دخول سريع بالإيميل لأعضاء الفريق (بدون رمز تحقق)
 // - يتحقق أن الإيميل ضمن team_access
-// - المسؤولون (admin) يُطلب منهم رمز التحقق المعتاد
 // - يعيد token_hash يستخدمه المتصفح لإنشاء الجلسة
 // منشورة على Supabase باسم quick-login (verify_jwt = false)
 import { createClient } from "jsr:@supabase/supabase-js@2";
@@ -36,7 +35,6 @@ Deno.serve(async (req: Request) => {
   if (e1) return json({ error: "server" }, 500);
   const row = rows && rows[0];
   if (!row) return json({ error: "not_member" }, 403);
-  if (row.role === "admin") return json({ needOtp: true });
 
   await admin.auth.admin.createUser({ email, email_confirm: true }).catch(() => null);
   const { data, error } = await admin.auth.admin.generateLink({ type: "magiclink", email });
