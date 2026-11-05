@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>منصة فريق إدارة الاتصال</title>
+<link rel="preload" href="fonts/frutiger-ar-400.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="fonts/frutiger-ar-700.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
@@ -14,6 +15,9 @@
 <meta name="theme-color" content="#17325a">
 <style>
 /* Layout: navy masthead with the triangle pattern, then one working surface per tab (calendar | tasks). Brand: navy / sand / white, red only as a marker. */
+@font-face{font-family:"LMRA Frutiger";src:url("fonts/frutiger-ar-300.woff2") format("woff2");font-weight:300;font-style:normal;font-display:swap}
+@font-face{font-family:"LMRA Frutiger";src:url("fonts/frutiger-ar-400.woff2") format("woff2");font-weight:400 500;font-style:normal;font-display:swap}
+@font-face{font-family:"LMRA Frutiger";src:url("fonts/frutiger-ar-700.woff2") format("woff2");font-weight:600 900;font-style:normal;font-display:swap}
 :root{
   --navy:#17325a; --sand:#ddd6ca; --paper:#ffffff; --ink:#222222; --mute:#6f7375; --red:#de2827;
   --bg:#f4f2ee; --surface:#ffffff; --surface-2:#f8f6f2; --line:#e3ded5; --line-2:#cfc8bb;
@@ -22,8 +26,8 @@
   --t-design:#2f5d9a; --t-video:#7d5aa0; --t-photo:#2b8577; --t-news:#b7832a; --t-form:#b4466a; --t-other:#7d8184;
   --ok:#2e7d4f; --warn:#b7832a; --hold:#c0632b; --stop:#a8211f; --prog:#2f5d9a; --idle:#7d8184;
   --c1:#2f5d9a; --c2:#a8741c; --grid:#ebe7e0;
-  --font-display:"Frutiger LT Arabic","Frutiger Arabic","Frutiger LT Std","Frutiger","Tajawal","Segoe UI","Noto Sans Arabic",Tahoma,sans-serif;
-  --font-body:"Frutiger LT Arabic","Frutiger Arabic","Frutiger LT Std","Frutiger","Tajawal","Segoe UI","Noto Sans Arabic",Tahoma,sans-serif;
+  --font-display:"LMRA Frutiger","Frutiger LT Arabic","Frutiger Arabic","Frutiger LT Std","Frutiger","Tajawal","Segoe UI","Noto Sans Arabic",Tahoma,sans-serif;
+  --font-body:"LMRA Frutiger","Frutiger LT Arabic","Frutiger Arabic","Frutiger LT Std","Frutiger","Tajawal","Segoe UI","Noto Sans Arabic",Tahoma,sans-serif;
   --r:10px; color-scheme:light;
   --bg:#f6f3ee; --surface-2:#faf8f4; --line:#e6dfd3; --line-2:#d2c8b7;
   --mast-bg:linear-gradient(180deg,#efe9df 0%,#e7dfd1 100%); --mast-ink:#17325a; --mast-mute:#6b6252; --mast-eyebrow:#8a7350; --mast-line:rgba(23,50,90,.22); --mast-hover:rgba(23,50,90,.07);
