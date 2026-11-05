@@ -172,7 +172,7 @@
       <form id="auth-f1" style="display:grid;gap:10px">
         <label class="k" for="auth-in">${mode === "email" ? "أدخل إيميلك المسجّل في الفريق" : "أدخل رقم هاتفك المسجّل في الفريق"}</label>
         <input id="auth-in" ${mode === "email" ? 'type="email" autocomplete="email" placeholder="name@example.com"' : 'type="tel" autocomplete="tel" placeholder="3xxxxxxx"'} dir="ltr" required>
-        <button class="go" type="submit">إرسال رمز الدخول</button>
+        <button class="go" type="submit">${mode === "email" ? "دخول" : "إرسال رمز الدخول"}</button>
         <div id="auth-msg" class="msg"></div></form>`);
     document.querySelectorAll("#auth [data-m]").forEach(b => b.onclick = () => { mode = b.dataset.m; showStep1(); });
     $("auth-in").focus();
@@ -181,6 +181,23 @@
       target = mode === "email" ? raw.toLowerCase() : normPhone(raw);
       if (!target) return;
       btn.disabled = true; msg("جارٍ التحقق…");
+      if (mode === "email") {
+        try {
+          const r = await fetch(C.supabaseUrl + "/functions/v1/quick-login", {
+            method: "POST", headers: { "Content-Type": "application/json", apikey: C.supabaseAnonKey }, body: JSON.stringify({ email: target })
+          });
+          const j = await r.json().catch(() => ({}));
+          if (j.error === "not_member") { msg("هذا الإيميل غير مسجّل في الفريق. تواصل مع مسؤول المنصة.", true); btn.disabled = false; return; }
+          if (j.token_hash) {
+            let { error } = await sb.auth.verifyOtp({ token_hash: j.token_hash, type: "email" });
+            if (error) ({ error } = await sb.auth.verifyOtp({ token_hash: j.token_hash, type: "magiclink" }));
+            if (error) throw error;
+            msg("تم الدخول…"); return;
+          }
+          if (!j.needOtp) throw new Error(j.error || "quick_login_failed");
+          // المسؤولون: يكمل بالتحقق عبر الإيميل
+        } catch (err) { console.error(err); msg("تعذّر الدخول. حاول مجددًا.", true); btn.disabled = false; return; }
+      }
       try {
         const { data: ok, error: e1 } = await sb.rpc("can_login", { p: target });
         if (e1) throw e1;
@@ -203,7 +220,7 @@
   }
   function showStep2() {
     screen(`<form id="auth-f2" style="display:grid;gap:10px">
-        <div class="k">أرسلنا رمز دخول ${mode === "email" ? "إلى إيميلك" : "إلى الواتساب"}: <b dir="ltr">${esc(target)}</b>${mode === "email" ? "<br>اكتب الرمز هنا، أو اضغط رابط الدخول الموجود في الإيميل." : ""}</div>
+        <div class="k">${mode === "email" ? "حساب المسؤول يتطلب تحققًا إضافيًا. " : ""}أرسلنا رمز دخول ${mode === "email" ? "إلى إيميلك" : "إلى الواتساب"}: <b dir="ltr">${esc(target)}</b>${mode === "email" ? "<br>اكتب الرمز هنا، أو اضغط رابط الدخول الموجود في الإيميل." : ""}</div>
         <input id="auth-code" class="code" inputmode="numeric" autocomplete="one-time-code" maxlength="8" dir="ltr" required>
         <button class="go" type="submit">دخول</button>
         <div id="auth-msg" class="msg"></div>
