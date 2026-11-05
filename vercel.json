@@ -9,13 +9,11 @@
         { "key": "X-Frame-Options", "value": "SAMEORIGIN" }
       ]
     },
-    {
-      "source": "/(config.js|index.html|js/(.*))",
-      "headers": [{ "key": "Cache-Control", "value": "no-cache" }]
-    },
-    {
-      "source": "/(lib|rpt)/(.*)",
-      "headers": [{ "key": "Cache-Control", "value": "public, max-age=604800" }]
-    }
+    { "source": "/", "headers": [{ "key": "Cache-Control", "value": "no-cache" }] },
+    { "source": "/index.html", "headers": [{ "key": "Cache-Control", "value": "no-cache" }] },
+    { "source": "/config.js", "headers": [{ "key": "Cache-Control", "value": "no-cache" }] },
+    { "source": "/js/:path*", "headers": [{ "key": "Cache-Control", "value": "no-cache" }] },
+    { "source": "/lib/:path*", "headers": [{ "key": "Cache-Control", "value": "public, max-age=604800" }] },
+    { "source": "/rpt/:path*", "headers": [{ "key": "Cache-Control", "value": "public, max-age=604800" }] }
   ]
 }
