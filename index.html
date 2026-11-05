@@ -200,7 +200,7 @@ dialog::backdrop{background:rgba(14,24,40,.5)}
 @media (max-width:560px){.hol-add{grid-template-columns:1fr 1fr}}
 
 /* photo stats */
-.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:18px}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:18px}.kpis.k5{grid-template-columns:repeat(5,minmax(0,1fr))}@media (max-width:900px){.kpis.k5{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:860px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .kpi{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:grid;gap:2px}
 .kpi .k{font-size:13px;color:var(--mute);font-weight:500}
@@ -439,6 +439,26 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
 .qc a:hover{border-color:var(--accent);background:var(--accent-soft)}.qc a:visited{color:var(--mute)}
 .sa-t{display:flex;align-items:center;gap:6px}.sa-t .san{flex:1}
 .hl .hlk{display:none}
+
+/* home */
+.home{display:grid;gap:22px;max-width:1100px;margin:8px auto 0}
+.home-h h2{font-size:26px;font-weight:800}
+.htiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+@media (max-width:900px){.htiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.htile{appearance:none;cursor:pointer;text-align:start;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px 20px;display:grid;gap:10px;align-content:start;min-height:170px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease;color:var(--ink);font:inherit}
+.htile:hover{transform:translateY(-3px);box-shadow:0 10px 24px rgba(23,50,90,.10);border-color:var(--accent)}
+.htile:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.hic{width:52px;height:52px;border-radius:14px;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent)}
+.hic .ic{width:26px;height:26px}
+.ht{font-size:18px;font-weight:800}.hs{font-size:13px;color:var(--mute)}.hs b{color:var(--ink);font-size:15px}
+.hquote{margin:18px 0 0;position:relative;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:26px 30px 22px;text-align:center}
+.hquote .qm{position:absolute;top:-6px;inset-inline-start:22px;font-size:64px;line-height:1;color:var(--accent);opacity:.25;font-family:Georgia,serif}
+.hquote p{font-size:19px;font-weight:700;line-height:1.8;margin:0}
+.hquote cite{display:block;margin-top:8px;font-style:normal;font-size:12.5px;color:var(--mute)}
+.mctl input[type=date].unset{color:var(--mute);border-style:dashed}
+.gohint{display:inline-flex;align-items:center;gap:6px}.gohint .ic{color:var(--warn)}
+.chans .chips label{gap:7px}.chans .pfi{width:18px;height:18px}
+.btn.go:disabled{opacity:.45;cursor:not-allowed}
 </style>
 </head>
 <body>
@@ -455,9 +475,10 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
       </div>
     </div>
     <nav class="tabs" role="tablist">
+      <button class="tab" role="tab" id="tab-home" data-act="tab" data-v="home" type="button">الرئيسية</button>
       <button class="tab" role="tab" id="tab-calendar" data-act="tab" data-v="calendar" type="button">التقويم السنوي</button>
       <button class="tab" role="tab" id="tab-tasks" data-act="tab" data-v="tasks" type="button">المهام</button>
-      <button class="tab" role="tab" id="tab-stats" data-act="tab" data-v="stats" type="button">إحصائيات التصوير</button>
+      <button class="tab" role="tab" id="tab-stats" data-act="tab" data-v="stats" type="button">الإحصائيات</button>
       <button class="tab" role="tab" id="tab-monitor" data-act="tab" data-v="monitor" type="button">الرصد الإعلامي</button>
     </nav>
   </div>
@@ -466,6 +487,7 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
 <div id="rpt" hidden></div>
 <main id="main">
   <div class="banner" id="banner"></div>
+  <section id="view-home" hidden></section>
   <section id="view-calendar" hidden></section>
   <section id="view-tasks" hidden></section>
   <section id="view-stats" hidden></section>
@@ -653,7 +675,7 @@ const TODAY=iso(now.getFullYear(),now.getMonth()+1,now.getDate());
 const S={
   db:null,user:null,canWrite:false,live:false,
   tasks:[],leaves:[],holidays:[],settings:{members:FALLBACK_MEMBERS,departments:[]},
-  view:"calendar",calMode:"year",year:now.getFullYear(),month:now.getMonth()+1,
+  view:"home",calMode:"year",year:now.getFullYear(),month:now.getMonth()+1,
   f:{state:"current",type:"all",owner:"all",year:"all",q:""},
   editTask:null,editLeave:null,ready:{tasks:false,leaves:false,holidays:false,monitor:false},monitor:[],checks:[]
 };
@@ -736,8 +758,8 @@ function banner(msg,isErr){const b=$("banner");b.textContent=msg||"";b.className
 function render(){
   if(S.dailyOpen)try{refreshDaily()}catch(e){}
   document.body.classList.toggle("ro",!S.canWrite);
-  for(const v of ["calendar","tasks","stats","monitor"]){$("view-"+v).hidden=S.view!==v;$("tab-"+v).setAttribute("aria-selected",String(S.view===v))}
-  if(S.view==="calendar")renderCalendar();else if(S.view==="stats")renderStats();else if(S.view==="monitor")renderMonitor();else renderTasks();
+  for(const v of ["home","calendar","tasks","stats","monitor"]){$("view-"+v).hidden=S.view!==v;$("tab-"+v).setAttribute("aria-selected",String(S.view===v))}
+  if(S.view==="home")renderHome();else if(S.view==="calendar")renderCalendar();else if(S.view==="stats")renderStats();else if(S.view==="monitor")renderMonitor();else renderTasks();
 }
 
 function renderCalendar(){
@@ -894,53 +916,94 @@ function renderTasks(){
 }
 
 
+/* ---------- home ---------- */
+const QUOTES=["كل خبر نرصده بدقة يحمي صورة الهيئة — شكرًا لعينكم الساهرة.","العمل الجماعي يجعل المستحيل ممكنًا، وأنتم الدليل.","التفاصيل الصغيرة هي ما يصنع التواصل العظيم.",
+ "ما تنجزونه اليوم يصنع ثقة الجمهور غدًا.","الإبداع ليس صدفة، بل عادة يومية — وأنتم تمارسونها كل يوم.","فريق واحد، رسالة واحدة، أثر كبير.",
+ "خطوة صغيرة كل يوم أفضل من قفزة كبيرة مؤجلة.","الجودة ليست فعلًا، بل عادة — شكرًا لاتقانكم.","كل صورة تلتقطونها تحكي قصة الهيئة للعالم.",
+ "التواصل الجيد يبدأ بالإصغاء الجيد.","أنتم صوت الهيئة ووجهها — فخورون بكم.","النجاح مجموع جهود صغيرة تتكرر يومًا بعد يوم.",
+ "لا تقس يومك بما حصدت، بل بما زرعت.","معًا نصنع محتوى يليق بالبحرين.","الدقة والسرعة والإبداع — ثلاثية فريقنا.",
+ "كل مهمة مكتملة هي إضافة لقصة نجاحنا.","التحدي اليوم هو خبرة الغد.","ابدأ بما هو ضروري، ثم بما هو ممكن، وستجد نفسك تصنع المستحيل.",
+ "الأفكار العظيمة تولد من النقاشات الصادقة — شاركوا أفكاركم.","استراحة قصيرة تعيد الطاقة، والطاقة تصنع الإبداع."];
+function pickQuote(){let i;do{i=Math.floor(Math.random()*QUOTES.length)}while(QUOTES.length>1&&i===S.qi);S.qi=i}
+function renderHome(){
+  const el=$("view-home");const bh=bhNow();const td=bh.date;
+  const onLeave=S.leaves.filter(l=>validDate(l.from)&&l.from<=td&&(validDate(l.to)?l.to:l.from)>=td).length;
+  const open=S.tasks.filter(t=>CURRENT.has(t.status||"لم يبدأ")).length;
+  const newsToday=(S.monitor||[]).filter(x=>x.date===td).length+(S.social||[]).filter(x=>x.date===td).length;
+  const yr=String(now.getFullYear());const done=S.tasks.filter(t=>t.status==="مكتمل"&&String(t.received||"").startsWith(yr)).length;
+  if(S.qi===undefined)pickQuote();
+  const tile=(v,icon,title,sub)=>`<button class="htile" type="button" data-act="tab" data-v="${v}"><span class="hic">${ic(icon)}</span><span class="ht">${title}</span><span class="hs">${sub}</span></button>`;
+  el.innerHTML=`<div class="home">
+    <div class="home-h"><h2>أهلًا بك</h2><div class="period">${ic("cal")} ${esc(longDate(td))}</div></div>
+    <div class="htiles">
+      ${tile("calendar","cal","التقويم السنوي",`<b class="num">${onLeave}</b> في إجازة اليوم`)}
+      ${tile("tasks","list","المهام",`<b class="num">${open}</b> مهمة جارية`)}
+      ${tile("monitor","news","الرصد الإعلامي",`<b class="num">${newsToday}</b> مرصود اليوم`)}
+      ${tile("stats","chart","الإحصائيات",`<b class="num">${done}</b> مهمة مكتملة في ${yr}`)}
+    </div>
+    <blockquote class="hquote"><span class="qm">”</span><p>${esc(QUOTES[S.qi])}</p><cite>فريق إدارة الاتصال</cite></blockquote>
+  </div>`}
+
 /* ---------- photo stats ---------- */
 function daysBetween(a,b){return Math.round((toUTC(b)-toUTC(a))/864e5)}
 function renderStats(){
   const el=$("view-stats");
+  const yOf=d=>validDate(d)?d.slice(0,4):"";
+  const years=[...new Set([...S.tasks.map(t=>yOf(t.received)),...(S.monitor||[]).map(x=>yOf(x.date)),...(S.social||[]).map(x=>yOf(x.date))].filter(Boolean))].sort();
+  if(!S.sy||(S.sy!=="all"&&!years.includes(S.sy)))S.sy=years.includes(String(now.getFullYear()))?String(now.getFullYear()):(years[years.length-1]||"all");
+  const inY=d=>S.sy==="all"||String(d||"").startsWith(S.sy);
+  const sec=S.ss||"all";
+  const tasks=S.tasks.filter(t=>validDate(t.received)&&inY(t.received));
   const photos=S.tasks.filter(t=>t.type==="photo"&&validDate(t.received));
-  const years=[...new Set(photos.map(t=>t.received.slice(0,4)))].sort();
-  if(years.length&&(!S.sy||(S.sy!=="all"&&!years.includes(S.sy))))S.sy=years.includes(String(now.getFullYear()))?String(now.getFullYear()):(years[years.length-1]||"all");
-  const sel=(!S.sy||S.sy==="all")?photos:photos.filter(t=>t.received.startsWith(S.sy));
-  const n=sel.length;
-  const del=sel.filter(t=>validDate(t.delivered)&&t.delivered>=t.received);
-  const avg=del.length?del.reduce((a,t)=>a+daysBetween(t.received,t.delivered),0)/del.length:0;
-  const same=del.filter(t=>t.delivered===t.received).length;
-  const ext=sel.filter(t=>(t.channels||[]).includes("نشر خارجي")).length;
-  const pct=(x,d)=>d?Math.round(x/d*100):0;
-  const ylabel=S.sy==="all"?"كل السنوات":S.sy;
-  let h=`<div class="toolbar"><div class="grp"><h2 style="font-size:22px;font-weight:800">إحصائيات التصوير</h2></div>
+  const sel=photos.filter(t=>inY(t.received));
+  const news=(S.monitor||[]).filter(x=>x.verified!==false&&inY(x.date)),posts=(S.social||[]).filter(x=>x.verified!==false&&inY(x.date));
+  const pct=(x,d)=>d?Math.round(x/d*100):0;const ylabel=S.sy==="all"?"كل السنوات":S.sy;
+  const SECS=[{k:"all",n:"نظرة عامة"},{k:"tasks",n:"المهام"},{k:"photo",n:"التصوير"},{k:"news",n:"الأخبار والرصد"}];
+  let h=`<div class="toolbar"><div class="grp"><h2 style="font-size:22px;font-weight:800">الإحصائيات</h2></div>
     <div class="grp"><div class="seg" role="group" aria-label="السنة">${years.map(y=>`<button type="button" data-act="sy" data-v="${y}" aria-pressed="${S.sy===y}">${y}</button>`).join("")}<button type="button" data-act="sy" data-v="all" aria-pressed="${S.sy==="all"}">الكل</button></div>
-    <button class="btn write-only" type="button" data-act="photo-new">+ تغطية جديدة</button></div></div>`;
+    <button class="btn write-only" type="button" data-act="photo-new">${ic("plus")}تغطية</button></div></div>
+    <div class="seg msw" role="tablist" aria-label="القسم">${SECS.map(s=>`<button type="button" data-act="ss" data-v="${s.k}" aria-pressed="${sec===s.k}">${s.n}</button>`).join("")}</div>`;
   if(!S.ready.tasks&&S.db){el.innerHTML=h+`<div class="empty-note">جارٍ تحميل البيانات…</div>`;return}
-  h+=`<div class="kpis">
-    <div class="kpi"><span class="k">عدد التغطيات</span><span class="v num">${n}</span><span class="sub">${esc(ylabel)}</span></div>
-    <div class="kpi"><span class="k">متوسط مدة تسليم الصور</span><span class="v num">${avg.toFixed(1)}<small>يوم</small></span><span class="sub">من تاريخ الفعالية حتى التسليم</span></div>
-    <div class="kpi"><span class="k">تسليم في نفس اليوم</span><span class="v num">${pct(same,del.length)}<small>%</small></span><span class="sub"><span class="num">${same}</span> من <span class="num">${del.length}</span> تغطية</span></div>
-    <div class="kpi"><span class="k">للنشر الخارجي</span><span class="v num">${pct(ext,n)}<small>%</small></span><span class="sub"><span class="num">${ext}</span> تغطية</span></div>
-  </div><div class="st-grid">`;
-  // monthly chart: last two years compared
-  const cy=years.slice(-2);const cols=["var(--c1)","var(--c2)"];
-  const serie=cy.map(y=>{const a=Array(12).fill(0);photos.forEach(t=>{if(t.received.startsWith(y))a[+t.received.slice(5,7)-1]++});return a});
-  const mx=Math.max(1,...serie.flat());const step=mx<=5?1:mx<=10?2:mx<=25?5:10;const top=Math.ceil(mx/step)*step;
-  const ci=cy.length===2?[1,0]:[0];// latest year gets --c1
-  h+=`<div class="panel wide"><h3>التغطيات حسب الشهر</h3><div class="cap">مقارنة ${cy.join(" و ")} · بحسب تاريخ الفعالية</div>
-    <div class="lgd">${cy.map((y,i)=>`<span><i style="background:${cols[ci[i]]}"></i>${y} · <span class="num">${serie[i].reduce((a,b)=>a+b,0)}</span> تغطية</span>`).join("")}</div>
-    <div class="chart">`;
-  for(let v=0;v<=top;v+=step)h+=`<div class="gl" style="bottom:${v/top*100}%"><span class="num">${v}</span></div>`;
-  h+=`<div class="cols">`;
-  for(let m=0;m<12;m++){
-    const tip=MONTHS[m]+"\n"+cy.map((y,i)=>y+": "+serie[i][m]+" تغطية").join("\n");
-    h+=`<div class="mcol" data-tip="${esc(tip)}">`+cy.map((y,i)=>`<div class="bar" style="height:${serie[i][m]/top*100}%;background:${cols[ci[i]]}"></div>`).join("")+`</div>`;
-  }
-  h+=`</div></div><div class="mlabels">${MONTHS.map(x=>`<span>${x.slice(0,3)}</span>`).join("")}</div>
-    <details class="tblv"><summary>عرض الأرقام كجدول</summary><div style="overflow-x:auto"><table><thead><tr><th>السنة</th>${MONTHS.map(x=>`<th>${x}</th>`).join("")}<th>المجموع</th></tr></thead><tbody>${cy.map((y,i)=>`<tr><td>${y}</td>${serie[i].map(v=>`<td class="num">${v}</td>`).join("")}<td class="num"><b>${serie[i].reduce((a,b)=>a+b,0)}</b></td></tr>`).join("")}</tbody></table></div></details></div>`;
-  // breakdowns
-  const count=(fn)=>{const c=new Map();sel.forEach(t=>fn(t).forEach(k=>{if(k)c.set(k,(c.get(k)||0)+1)}));return [...c.entries()].sort((a,b)=>b[1]-a[1])};
-  const hbars=(rows,lim,fmt)=>{if(!rows.length)return `<div class="empty-note">لا توجد بيانات.</div>`;let r=rows;if(rows.length>lim){const rest=rows.slice(lim-1).reduce((a,x)=>a+x[1],0);r=rows.slice(0,lim-1).concat([["جهات أخرى",rest]])}
-    const m=Math.max(...r.map(x=>x[1]));return `<div class="hbars">`+r.map(([k,v])=>`<div class="hb" data-tip="${esc(k+": "+v+" تغطية ("+pct(v,n)+"%)")}"><div class="nm"><span>${esc(fmt?fmt(k):k)}</span><span class="num muted">${v}</span></div><div class="tr"><div class="fl" style="width:${v/m*100}%"></div></div></div>`).join("")+`</div>`};
-  h+=`<div class="panel"><h3>حسب الجهة الطالبة</h3><div class="cap">أكثر الجهات طلبًا للتصوير</div>${hbars(count(t=>[t.dept||"غير محددة"]),8)}</div>`;
-  h+=`<div class="panel"><h3>استخدام الصور</h3><div class="cap">قد تُستخدم التغطية الواحدة لأكثر من غرض</div>${hbars(CHANNELS.map(c=>[c,sel.filter(t=>(t.channels||[]).includes(c)).length]).concat([["غير محدد",sel.filter(t=>!(t.channels||[]).length).length]]).filter(x=>x[1]),5)}</div>`;
+  const hbars=(rows,lim,unit,tot)=>{rows=rows.filter(x=>x[1]);if(!rows.length)return `<div class="empty-note">لا توجد بيانات.</div>`;let r=rows;if(rows.length>lim){const rest=rows.slice(lim-1).reduce((a,x)=>a+x[1],0);r=rows.slice(0,lim-1).concat([["أخرى",rest]])}
+    const m=Math.max(...r.map(x=>x[1]));const T=tot||rows.reduce((a,x)=>a+x[1],0);return `<div class="hbars">`+r.map(([k,v,c])=>`<div class="hb" data-tip="${esc(k+": "+v+" "+unit+" ("+pct(v,T)+"%)")}"><div class="nm"><span>${esc(k)}</span><span class="num muted">${v}</span></div><div class="tr"><div class="fl" style="width:${v/m*100}%;${c?"background:"+c:""}"></div></div></div>`).join("")+`</div>`};
+  const cnt=(arr,fn)=>{const c=new Map();arr.forEach(t=>fn(t).forEach(k=>{if(k)c.set(k,(c.get(k)||0)+1)}));return [...c.entries()].sort((a,b)=>b[1]-a[1])};
+  const kpi=(k,v,sub)=>`<div class="kpi"><span class="k">${k}</span><span class="v num">${v}</span><span class="sub">${sub}</span></div>`;
+  const monthly=(title,cap,arr,dateFn,unit)=>{const cy=years.slice(-2).filter(y=>arr.some(t=>yOf(dateFn(t))===y));if(!cy.length)return "";const cols=["var(--c1)","var(--c2)"];
+    const serie=cy.map(y=>{const a=Array(12).fill(0);arr.forEach(t=>{const d=dateFn(t);if(validDate(d)&&d.startsWith(y))a[+d.slice(5,7)-1]++});return a});
+    const mx=Math.max(1,...serie.flat());const step=mx<=5?1:mx<=10?2:mx<=25?5:mx<=60?10:20;const top=Math.ceil(mx/step)*step;const ci=cy.length===2?[1,0]:[0];
+    let s=`<div class="panel wide"><h3>${title}</h3><div class="cap">${cap}</div><div class="lgd">${cy.map((y,i)=>`<span><i style="background:${cols[ci[i]]}"></i>${y} · <span class="num">${serie[i].reduce((a,b)=>a+b,0)}</span> ${unit}</span>`).join("")}</div><div class="chart">`;
+    for(let v=0;v<=top;v+=step)s+=`<div class="gl" style="bottom:${v/top*100}%"><span class="num">${v}</span></div>`;
+    s+=`<div class="cols">`;for(let m=0;m<12;m++){const tip=MONTHS[m]+"\n"+cy.map((y,i)=>y+": "+serie[i][m]+" "+unit).join("\n");s+=`<div class="mcol" data-tip="${esc(tip)}">`+cy.map((y,i)=>`<div class="bar" style="height:${serie[i][m]/top*100}%;background:${cols[ci[i]]}"></div>`).join("")+`</div>`}
+    return s+`</div></div><div class="mlabels">${MONTHS.map(x=>`<span>${x.slice(0,3)}</span>`).join("")}</div></div>`};
+  // numbers
+  const doneT=tasks.filter(t=>t.status==="مكتمل").length,openT=tasks.filter(t=>CURRENT.has(t.status||"لم يبدأ")).length;
+  const delP=sel.filter(t=>validDate(t.delivered)&&t.delivered>=t.received);const avg=delP.length?delP.reduce((a,t)=>a+daysBetween(t.received,t.delivered),0)/delP.length:0;
+  const same=delP.filter(t=>t.delivered===t.received).length,ext=sel.filter(t=>(t.channels||[]).includes("نشر خارجي")).length;
+  const issued=news.filter(x=>newsCat(x)==="issued").length+posts.filter(x=>smCat(x)==="issued").length;
+  const high=news.filter(x=>lvlOf(x,false)==="high").length+posts.filter(x=>lvlOf(x,true)==="high").length;
+  h+=`<div class="kpis k5">`;
+  if(sec==="all")h+=kpi("المهام",tasks.length,`<span class="num">${doneT}</span> مكتملة · <span class="num">${openT}</span> جارية`)+kpi("نسبة الإنجاز",pct(doneT,tasks.length)+"<small>%</small>",esc(ylabel))+kpi("تغطيات التصوير",sel.length,`متوسط التسليم <span class="num">${avg.toFixed(1)}</span> يوم`)+kpi("الأخبار الصادرة عن الهيئة",issued,`من <span class="num">${news.length+posts.length}</span> مرصود`)+kpi("أخبار بمستوى عالٍ",high,"صحف وسوشيال");
+  if(sec==="tasks")h+=kpi("إجمالي المهام",tasks.length,esc(ylabel))+kpi("مكتملة",doneT,`<span class="num">${pct(doneT,tasks.length)}</span>%`)+kpi("جارية",openT,"لم تبدأ · قيد التنفيذ · مراجعة · معلقة")+kpi("متوقفة",tasks.filter(t=>t.status==="متوقف").length,"")+kpi("أنواع المهام",new Set(tasks.map(t=>t.type)).size,"");
+  if(sec==="photo")h+=kpi("عدد التغطيات",sel.length,esc(ylabel))+kpi("متوسط مدة التسليم",avg.toFixed(1)+"<small>يوم</small>","من الفعالية حتى التسليم")+kpi("تسليم في نفس اليوم",pct(same,delP.length)+"<small>%</small>",`<span class="num">${same}</span> من <span class="num">${delP.length}</span>`)+kpi("للنشر الخارجي",pct(ext,sel.length)+"<small>%</small>",`<span class="num">${ext}</span> تغطية`)+kpi("جهات طالبة",new Set(sel.map(t=>t.dept).filter(Boolean)).size,"");
+  if(sec==="news")h+=kpi("أخبار الصحف",news.length,esc(ylabel))+kpi("منشورات السوشيال",posts.length,"")+kpi("صادرة عن الهيئة",issued,"")+kpi("مستوى عالٍ",high,"")+kpi("سلبية النبرة",posts.filter(x=>x.tone==="neg").length,"منشورات سوشيال");
+  h+=`</div><div class="st-grid">`;
+  if(sec==="all"||sec==="tasks"){
+    if(sec==="tasks")h+=monthly("المهام حسب الشهر","بحسب تاريخ الاستلام",S.tasks,t=>t.received,"مهمة");
+    h+=`<div class="panel"><h3>المهام حسب النوع</h3><div class="cap">${esc(ylabel)}</div>${hbars(TYPES.map(t=>[t.n,tasks.filter(x=>typeOf(x.type).k===t.k).length,t.c]),8,"مهمة",tasks.length)}</div>`;
+    h+=`<div class="panel"><h3>المهام حسب الحالة</h3><div class="cap">${esc(ylabel)}</div>${hbars(STATUS.map(s=>[s.k,tasks.filter(x=>(x.status||"لم يبدأ")===s.k).length,s.c]),8,"مهمة",tasks.length)}</div>`;
+    if(sec==="tasks"){h+=`<div class="panel"><h3>المهام حسب الموظف</h3><div class="cap">قد يشترك أكثر من موظف في المهمة</div>${hbars(cnt(tasks,t=>(t.owners||[]).map(shortName)),10,"مهمة",tasks.length)}</div>`;
+      h+=`<div class="panel"><h3>حسب الجهة الطالبة</h3><div class="cap">أكثر الجهات طلبًا</div>${hbars(cnt(tasks,t=>[t.dept||"غير محددة"]),8,"مهمة",tasks.length)}</div>`}}
+  if(sec==="all"||sec==="photo"){
+    h+=monthly("التغطيات حسب الشهر","مقارنة آخر سنتين · بحسب تاريخ الفعالية",photos,t=>t.received,"تغطية");
+    if(sec==="photo"){h+=`<div class="panel"><h3>حسب الجهة الطالبة</h3><div class="cap">أكثر الجهات طلبًا للتصوير</div>${hbars(cnt(sel,t=>[t.dept||"غير محددة"]),8,"تغطية",sel.length)}</div>`;
+      h+=`<div class="panel"><h3>استخدام الصور</h3><div class="cap">قد تُستخدم التغطية الواحدة لأكثر من غرض</div>${hbars(CHANNELS.map(c=>[c,sel.filter(t=>(t.channels||[]).includes(c)).length]).concat([["غير محدد",sel.filter(t=>!(t.channels||[]).length).length]]),6,"تغطية",sel.length)}</div>`}}
+  if(sec==="all"||sec==="news"){
+    if(sec==="news")h+=monthly("الأخبار المرصودة حسب الشهر","صحف وسوشيال · بحسب تاريخ النشر",[...(S.monitor||[]),...(S.social||[])].filter(x=>x.verified!==false),x=>x.date,"خبر");
+    h+=`<div class="panel"><h3>الأخبار حسب الفئة</h3><div class="cap">صحف وسوشيال · ${esc(ylabel)}</div>${hbars(RCAT.map(c=>[c.n,news.filter(x=>newsCat(x)===c.k).length+posts.filter(x=>smCat(x)===c.k).length]),3,"خبر")}</div>`;
+    h+=`<div class="panel"><h3>الأخبار حسب المستوى</h3><div class="cap">صحف وسوشيال</div>${hbars(LVL.map(l=>[l.n,news.filter(x=>lvlOf(x,false)===l.k).length+posts.filter(x=>lvlOf(x,true)===l.k).length,l.k==="high"?"var(--stop)":l.k==="med"?"var(--warn)":"var(--idle)"]),3,"خبر")}</div>`;
+    if(sec==="news"){h+=`<div class="panel"><h3>حسب الوسيلة الإعلامية</h3><div class="cap">الصحف ووكالات الأنباء</div>${hbars(cnt(news,x=>[x.outletName||outletOf(x.outlet).n]),10,"خبر")}</div>`;
+      h+=`<div class="panel"><h3>السوشيال حسب المنصة والنبرة</h3><div class="cap">منشورات مرصودة</div>${hbars(SM_PF.map(p=>[p.n,posts.filter(x=>x.platform===p.k).length]).concat(SM_TONE.map(t=>["نبرة "+t.n,posts.filter(x=>(x.tone||"neu")===t.k).length,t.c])),8,"منشور",posts.length)}</div>`;
+      h+=`<div class="panel"><h3>حسب الموضوع</h3><div class="cap">صحف وسوشيال</div>${hbars(MTOPICS.map(t=>[t.n,news.filter(x=>x.topic===t.k).length+posts.filter(x=>x.topic===t.k).length]),8,"خبر")}</div>`}}
   h+=`</div>`;
   el.innerHTML=h;
 }
@@ -995,7 +1058,8 @@ function renderMonitor(){
     ${periodCtl(M)}
     <div class="mrow2">${ic("tag","lbl")}<div class="chips">${MTOPICS.map(t=>`<label><input type="checkbox" data-mt="${t.k}" ${M.topics.includes(t.k)?"checked":""}>${t.n}</label>`).join("")}</div></div>
     <div class="mrow2 sub"><button class="btn small" type="button" data-act="mt-all">${ic("all")}الكل</button><button class="btn small" type="button" data-act="mt-none">${ic("none")}إلغاء التحديد</button></div>
-    ${SCAN_ON()?`<button class="btn primary go" type="button" data-act="scan-run" data-v="news" ${scanState("news").loading?"disabled":""}>${ic(scanState("news").loading?"spin":"search",scanState("news").loading?"spin":"")}${scanState("news").loading?"جارٍ الرصد…":"ارصد الآن"}</button>`:""}
+    ${chanCtl("news",NEWS_CH,M.ch||[])}
+    ${SCAN_ON()?goBtn("news",!newsReady(M).length,newsReady(M),"ارصد الآن"):""}
   </div>${scanPanel("news")}
   <div class="mstat"><span>${ic("news")}<b class="num">${ver.length}</b> خبر</span><span>البحرين <b class="num">${bhN.length}</b></span><span>الخليج <b class="num">${gN.length}</b></span><span class="lvl-high-c">${lvlBadge("high")} <b class="num">${hi}</b></span>${unv.length?`<span>غير مؤكد <b class="num">${unv.length}</b></span>`:""}</div>`;
   // outlet cards
@@ -1016,8 +1080,8 @@ function renderMonitor(){
     <div class="mchk-b"><div class="small muted">البحرين</div><div class="outlets">${OUTLETS.filter(o=>o.r==="bh"&&o.d).map(card).join("")}</div>
     <div class="small muted">الخليج</div><div class="outlets">${OUTLETS.filter(o=>o.r==="gcc").map(card).join("")}</div></div></details>`;
   el.innerHTML=h;
-  $("mon-from").onchange=e=>{if(validDate(e.target.value)){M.from=e.target.value;if(M.to<M.from)M.to=M.from;M.preset="custom";render()}};
-  $("mon-to").onchange=e=>{if(validDate(e.target.value)){M.to=e.target.value;if(M.from>M.to)M.from=M.to;M.preset="custom";render()}};
+  $("mon-from").onchange=e=>{if(validDate(e.target.value)){M.from=e.target.value;if(M.to<M.from)M.to=M.from;M.preset="custom";M.dateSet=true;render()}};
+  $("mon-to").onchange=e=>{if(validDate(e.target.value)){M.to=e.target.value;if(M.from>M.to)M.from=M.to;M.preset="custom";M.dateSet=true;render()}};
   {const d=$("mchk-news");if(d)d.addEventListener("toggle",()=>{S.monChkOpen=d.open})}
   el.querySelectorAll("[data-mt]").forEach(c=>c.onchange=()=>{const k=c.dataset.mt;M.topics=c.checked?[...new Set([...M.topics,k])]:M.topics.filter(x=>x!==k);render()});
   el.querySelectorAll("[data-chk]").forEach(sel=>sel.onchange=async()=>{const id=periodKey(M);const cur=S.checks.find(c=>c.id===id)||{statuses:{}};
@@ -1117,10 +1181,16 @@ function monSwitch(){const m=S.monMode||"news";return `<div class="seg msw" role
 function monHead(title,mode,M,cut){const sm=mode==="social";return `<div class="mon-head"><div><h2 style="font-size:22px;font-weight:800">${title}</h2>
     <div class="period">${ic("cal")} <b class="num">${esc(fmt(M.from))}${M.to!==M.from?" – "+esc(fmt(M.to)):""}</b> · حتى <b class="num">${cut}</b></div></div>
     <div class="grp" style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn primary" type="button" data-act="daily">${ic("report")}التقرير اليومي</button><button class="btn icon" type="button" data-act="${sm?"sm-copy":"mon-copy"}" ${sm?"":'id="mon-copy"'} title="نسخ التقرير" aria-label="نسخ التقرير">${ic("copy")}</button><button class="btn write-only" type="button" data-act="${sm?"sm-add":"mon-add"}">${ic("plus")}${sm?"منشور":"خبر"}</button></div></div>`}
-function periodCtl(M){return `<div class="mon-filters">${ic("cal","lbl")}<div class="seg" role="group" aria-label="الفترة"><button type="button" data-act="mon-preset" data-v="today" aria-pressed="${M.preset==="today"}">اليوم</button><button type="button" data-act="mon-preset" data-v="week" aria-pressed="${M.preset==="week"}">7 أيام</button><button type="button" data-act="mon-preset" data-v="custom" aria-pressed="${M.preset==="custom"}">محددة</button></div>
-  <input type="date" id="mon-from" value="${M.from}" aria-label="من"><span class="muted">–</span><input type="date" id="mon-to" value="${M.to}" aria-label="إلى"></div>`}
-function bindPeriod(M){$("mon-from").onchange=e=>{if(validDate(e.target.value)){M.from=e.target.value;if(M.to<M.from)M.to=M.from;M.preset="custom";render()}};
-  $("mon-to").onchange=e=>{if(validDate(e.target.value)){M.to=e.target.value;if(M.from>M.to)M.from=M.to;M.preset="custom";render()}}}
+function periodCtl(M){return `<div class="mon-filters">${ic("cal","lbl")}<div class="seg" role="group" aria-label="الفترة"><button type="button" data-act="mon-preset" data-v="today" aria-pressed="${!!M.dateSet&&M.preset==="today"}">اليوم</button><button type="button" data-act="mon-preset" data-v="week" aria-pressed="${!!M.dateSet&&M.preset==="week"}">7 أيام</button><button type="button" data-act="mon-preset" data-v="custom" aria-pressed="${!!M.dateSet&&M.preset==="custom"}">محددة</button></div>
+  <input type="date" id="mon-from" value="${M.from}" aria-label="من" class="${M.dateSet?"":"unset"}"><span class="muted">–</span><input type="date" id="mon-to" value="${M.to}" aria-label="إلى" class="${M.dateSet?"":"unset"}"></div>`}
+function chanCtl(kind,list,sel){return `<div class="mrow2 chans">${ic("chan","lbl")}<div class="chips">${list.map(c=>`<label><input type="checkbox" data-ch="${kind}:${c.k}" ${sel.includes(c.k)?"checked":""}>${c.i||""}${c.n}</label>`).join("")}</div></div>`}
+function goBtn(mode,ready,missing,label){const st=scanState(mode);const dis=st.loading||!ready;
+  return `<div class="go-row"><button class="btn primary go" type="button" data-act="scan-run" data-v="${mode}" ${dis?"disabled":""}>${ic(st.loading?"spin":"search",st.loading?"spin":"")}${st.loading?"جارٍ الرصد…":label}</button>${!ready&&!st.loading?`<span class="small muted gohint">${ic("info")} حدّد أولًا: ${missing.join(" · ")}</span>`:""}</div>`}
+const NEWS_CH=[{k:"bh",n:"الصحف البحرينية ووكالة الأنباء"},{k:"gcc",n:"وكالات الأنباء الخليجية"}];
+function newsReady(M){const m=[];if(!M.dateSet)m.push("الفترة");if(!M.topics.length)m.push("المحاور");if(!(M.ch||[]).length)m.push("قنوات البحث");return m}
+function smReady(M){const m=[];if(!M.dateSet)m.push("الفترة");if(!(S.smSel&&S.smSel.size))m.push("الكلمات المفتاحية");if(!(S.smCh||[]).length)m.push("المنصات");return m}
+function bindPeriod(M){$("mon-from").onchange=e=>{if(validDate(e.target.value)){M.from=e.target.value;if(M.to<M.from)M.to=M.from;M.preset="custom";M.dateSet=true;render()}};
+  $("mon-to").onchange=e=>{if(validDate(e.target.value)){M.to=e.target.value;if(M.from>M.to)M.from=M.to;M.preset="custom";M.dateSet=true;render()}}}
 function smThumb(x){const src=monImgSrc(x);if(src)return `<img class="nimg" src="${esc(src)}" alt="" loading="lazy">`;
   const pf=smPf(x.platform);return `<div class="nph" style="background:${TOPIC_COL[x.topic]||"#5a6772"}"><span>${esc(pf.n)}<br><span style="font-weight:500;opacity:.85">${esc(smAccName(x))}</span></span></div>`}
 function smItems(M){return (S.social||[]).filter(x=>inPeriod(x.date,M)).sort((a,b)=>String(a.date).localeCompare(String(b.date)))}
@@ -1138,8 +1208,8 @@ function renderSocial(){
     <div class="mrow2">${ic("tag","lbl")}<div class="chips">${SM_KW.core.map(kwChip).join("")}</div></div>
     <div class="mrow2 sub"><button class="btn small" type="button" data-act="smkw-all">${ic("all")}الكل</button><button class="btn small" type="button" data-act="smkw-none">${ic("none")}إلغاء التحديد</button>
       <details class="kwocc"${S.smOcc?" open":""}><summary>كلمات دورية</summary><div class="chips">${SM_KW.occ.map(kwChip).join("")}</div></details></div>
-    <div class="go-row"><button class="btn primary go" type="button" data-act="scan-run" data-v="social" ${st.loading?"disabled":""}>${ic(st.loading?"spin":"search",st.loading?"spin":"")}${st.loading?"جارٍ الرصد…":"إرصد الآن"}</button>
-      <span class="pfs">${pfIc("x")}${pfIc("ig")}${pfIc("fb")}<span class="small muted num">${S.smSel.size} كلمة</span></span></div>
+    ${chanCtl("sm",SM_PF.map(p=>({k:p.k,n:p.n,i:pfIc(p.k)})),S.smCh||[])}
+    ${goBtn("social",!smReady(M).length,smReady(M),"إرصد الآن")}
   </div>${scanPanel("social")}
   <div class="mstat"><span>${ic("social")}<b class="num">${ver.length}</b> منشور</span>${SM_TONE.map(t=>`<span><i class="dot" style="--tc:${t.c}"></i>${t.n} <b class="num">${tc(t.k)}</b></span>`).join("")}<span>${lvlBadge("high")} <b class="num">${ver.filter(x=>lv(x)==="high").length}</b></span></div>`;
   const tbl=rows=>{if(!rows.length)return `<div class="empty-note">لا توجد منشورات مسجلة لهذه الفترة.</div>`;
@@ -1485,7 +1555,7 @@ const IC={search:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',rep
  list:'<path d="M10 6h10M10 12h10M10 18h10"/><path d="m3 6 1.5 1.5L7 5M3 12l1.5 1.5L7 11M3 18l1.5 1.5L7 17"/>',cal:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
  tag:'<path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"/><circle cx="7.5" cy="7.5" r="1.5"/>',
  all:'<rect x="3" y="3" width="18" height="18" rx="3"/><path d="m8 12 3 3 5-6"/>',none:'<rect x="3" y="3" width="18" height="18" rx="3"/>',
- key:'<circle cx="8" cy="15" r="4"/><path d="m11 12 9-9M17 6l3 3M15 8l2 2"/>',spin:'<path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/>'};
+ chan:'<path d="M4.9 19.1a10 10 0 0 1 0-14.2M19.1 4.9a10 10 0 0 1 0 14.2M7.8 16.2a6 6 0 0 1 0-8.4M16.2 7.8a6 6 0 0 1 0 8.4"/><circle cx="12" cy="12" r="2"/>',info:'<circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v5h1"/>',chart:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',key:'<circle cx="8" cy="15" r="4"/><path d="m11 12 9-9M17 6l3 3M15 8l2 2"/>',spin:'<path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/>'};
 function ic(k,cls){return `<svg class="ic${cls?" "+cls:""}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[k]||""}</svg>`}
 function pfIc(k){return `<img class="pfi" src="rpt/${k==="x"?"x":k==="fb"?"fb":"ig"}.png" alt="${esc(smPf(k).n)}" title="${esc(smPf(k).n)}">`}
 const LVL=[{k:"high",n:"عالي"},{k:"med",n:"متوسط"},{k:"low",n:"منخفض"}];
@@ -1526,13 +1596,15 @@ async function runScan(mode){
   if(mode==="news"){
     const tps=MTOPICS.filter(t=>M.topics.includes(t.k));
     if(!tps.length){st.err="اختر محورًا واحدًا على الأقل.";st.items=null;render();return}
-    for(const t of tps){queries.push({q:"("+t.ar+") "+sitesOf("bh"),lang:"ar"},{q:"("+t.q+") "+sitesOf("bh"),lang:"en"},{q:"("+t.ar+") "+sitesOf("gcc"),lang:"ar"})}
-    payload={queries,from:M.from,to:M.to};
+    if(newsReady(M).length)return;const ch=M.ch||[];
+    for(const t of tps){queries.push(ch.includes("bh")?{q:"("+t.ar+") "+sitesOf("bh"),lang:"ar"}:null,ch.includes("bh")?{q:"("+t.q+") "+sitesOf("bh"),lang:"en"}:null,ch.includes("gcc")?{q:"("+t.ar+") "+sitesOf("gcc"),lang:"ar"}:null)}
+    payload={queries:queries.map(q=>q||{q:"",lang:"ar"}),from:M.from,to:M.to};
   }else{
     const kws=[...(S.smSel||new Set(SM_KW.core))];
     if(!kws.length){st.err="اختر كلمة مفتاحية واحدة على الأقل.";st.items=null;render();return}
     if(!SCAN_ON()){st.items=[];st.needKey=true;st.err="";st.key=M.from+"_"+M.to;render();return}
-    payload={mode:"social",keywords:kws.slice(0,40).map(kw=>({kw,ctx:smNeedsCtx(kw)})),from:M.from,to:M.to};
+    if(smReady(M).length)return;
+    payload={mode:"social",platforms:S.smCh,keywords:kws.slice(0,40).map(kw=>({kw,ctx:smNeedsCtx(kw)})),from:M.from,to:M.to};
   }
   st.loading=true;st.err="";st.key=M.from+"_"+M.to;st.sel=new Set();render();
   try{const r=await window.lmraSearch(payload);st.needKey=!!(r&&r.needKey);
@@ -1545,11 +1617,21 @@ async function runScan(mode){
       return Object.assign(x,{platform:x.platform||u.pf,handle:u.handle,account:acc?acc.k:"",region:reg,date:x.pubDate?bhDateOf(x.pubDate):"",label:x.kw,
         level:lvlAuto({text:[x.title,x.snippet,x.kw].join(" "),region:reg==="bh"?"bh":"gcc"})})});
     st.items=st.items.filter(x=>x.date&&inPeriod(x.date,M));
+    st.items=st.items.filter(x=>mode==="news"?newsRelevant(x):((S.smCh||[]).includes(x.platform)&&smRelevant(x)));
     st.items.forEach(x=>{x.sum=words80(mode==="social"?x.snippet:x.summary)});
   }catch(e){console.error(e);st.err="تعذّر البحث الآن. حاول بعد قليل."}
   finally{st.loading=false;render()}
 }
 function M_all(on){const M=monPeriod();M.topics=on?MTOPICS.map(t=>t.k):[];render()}
+function topicTerms(t){if(!t)return [];const out=[];for(const s of [t.ar,t.q]){String(s||"").replace(/"([^"]+)"|(\S+)/g,(m,a,b)=>{const w=(a||b||"").trim();if(w&&w!=="OR"&&w.length>1)out.push(w.toLowerCase());return m})}return out}
+const normAr=s=>String(s||"").toLowerCase().replace(/[أإآ]/g,"ا").replace(/ة/g,"ه").replace(/ى/g,"ي").replace(/[\u064B-\u0652]/g,"");
+function newsRelevant(x){const txt=normAr([x.title,x.summary].join(" "));if(LVL_LMRA.test(x.title+" "+(x.summary||"")))return true;
+  const t=mtopic(x.label);return topicTerms(t).some(w=>txt.includes(normAr(w)))}
+function smRelevant(x){const txt=normAr([x.title,x.snippet].join(" "));const kw=x.kw||x.label||"";if(!kw)return false;
+  const parts=normAr(kw).split(/\s+/).filter(w=>w.length>1&&!["البحرين","bahrain"].includes(w));
+  if(!parts.every(w=>txt.includes(w)))return false;
+  if(smNeedsCtx(kw)||/البحرين|bahrain/i.test(kw))return BH_RE.test([x.title,x.snippet,x.handle].join(" "))||!!x.account;
+  return true}
 function words80(t){const w=String(t||"").replace(/\s+/g," ").trim().split(" ").filter(Boolean);return w.length>80?w.slice(0,80).join(" ")+"…":w.join(" ")}
 function scanAdded(x,mode){const t=String(x.title||"").trim();if(mode==="social")return (S.social||[]).some(m=>m.link&&m.link===x.link);return S.monitor.some(m=>(m.link&&m.link===x.link)||String(m.headline||"").trim()===t)}
 const SCAN_VIEWS=[{k:"date",n:"التاريخ"},{k:"bh",n:"البحرين"},{k:"out",n:"خارج البحرين"}];
@@ -1756,10 +1838,12 @@ function remembered(){try{return localStorage.getItem("lmra-cc-me")||""}catch(e)
 function remember(n){try{localStorage.setItem("lmra-cc-me",n)}catch(e){}}
 
 /* ---------- events ---------- */
+document.addEventListener("change",e=>{const c=e.target.closest&&e.target.closest("[data-ch]");if(!c)return;const [k,v]=c.dataset.ch.split(":");
+  if(k==="news"){const M=monPeriod();M.ch=M.ch||[];M.ch=c.checked?[...new Set([...M.ch,v])]:M.ch.filter(x=>x!==v)}else{S.smCh=S.smCh||[];S.smCh=c.checked?[...new Set([...S.smCh,v])]:S.smCh.filter(x=>x!==v)}render()});
 document.addEventListener("click",async e=>{
   const a=e.target.closest("[data-act]");if(!a)return;const act=a.dataset.act,v=a.dataset.v;
   switch(act){
-    case "tab":S.view=v;location.hash=v;render();break;
+    case "tab":if(v==="home"&&S.view!=="home")pickQuote();S.view=v;location.hash=v;render();window.scrollTo(0,0);break;
     case "cal-mode":S.calMode=v;render();break;
     case "cal-prev":if(S.calMode==="year")S.year--;else{S.month--;if(S.month<1){S.month=12;S.year--}}render();break;
     case "cal-next":if(S.calMode==="year")S.year++;else{S.month++;if(S.month>12){S.month=1;S.year++}}render();break;
@@ -1774,10 +1858,11 @@ document.addEventListener("click",async e=>{
     case "task-new":openTask(null);break;
     case "task-edit":{const t=S.tasks.find(x=>x.id===v);if(t)openTask(t);break}
     case "f-state":S.f.state=v;render();break;
+    case "ss":S.ss=v;render();break;
     case "sy":S.sy=v;render();break;
     case "mon-add":openMon(null);break;
     case "mon-edit":{if(e.target.closest("[data-noedit]"))return;const x=S.monitor.find(m=>m.id===v);if(x)openMon(x);break}
-    case "mon-preset":{const M=monPeriod(),bh=bhNow();M.preset=v;if(v==="today"){M.from=bh.date;M.to=bh.date}else if(v==="week"){M.to=bh.date;M.from=addDays(bh.date,-6)}render();break}
+    case "mon-preset":{const M=monPeriod(),bh=bhNow();M.preset=v;M.dateSet=true;if(v==="today"){M.from=bh.date;M.to=bh.date}else if(v==="week"){M.to=bh.date;M.from=addDays(bh.date,-6)}render();break}
     case "mon-print":openReport();break;
     case "mon-mode":S.monMode=v;render();break;
     case "daily":openDaily();break;
@@ -1870,7 +1955,7 @@ function copyTSV(btn){
 }
 
 /* ---------- boot ---------- */
-function routeFromHash(){const h=location.hash.replace("#","");if(["tasks","calendar","stats","monitor"].includes(h))S.view=h}
+function routeFromHash(){const h=location.hash.replace("#","");if(["home","tasks","calendar","stats","monitor"].includes(h))S.view=h}
 window.addEventListener("hashchange",()=>{routeFromHash();render()});
 routeFromHash();render();
 

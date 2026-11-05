@@ -61,36 +61,44 @@ function sum80(raw: string, fallback = ""): string {
   return out.join(" ");
 }
 const bhDay = (iso: string) => new Date(new Date(iso).getTime() + 3 * 3600e3).toISOString().slice(0, 10);
-async function socialSearch(kws: { kw: string; ctx: boolean }[], from: string, to: string) {
+async function socialSearch(kws: { kw: string; ctx: boolean }[], from: string, to: string, pfs: string[] = ["x", "ig", "fb"]) {
   const tav = Deno.env.get("TAVILY_API_KEY"), ser = Deno.env.get("SERPER_API_KEY");
   if (!tav && !ser) return { needKey: true, items: [] };
   const seen = new Set<string>(); const items: any[] = [];
-  const pick = (title: string, text: string, list: string[]) => { const s = (title + " " + text).toLowerCase(); return list.find((k) => s.includes(k.toLowerCase())) || list[0]; };
+  const norm = (s: string) => s.toLowerCase().replace(/[أإآ]/g, "ا").replace(/ة/g, "ه").replace(/ى/g, "ي").replace(/[\u064B-\u0652]/g, "");
+  const BH = /بحرين|bahrain|manama|المنامة|المحرق|lmra/i;
+  const ctxOf = new Map(kws.map((k) => [k.kw, k.ctx]));
+  // أدق: يجب أن تظهر كل كلمات العبارة المفتاحية في النص، والعبارات العامة تتطلب ذكر البحرين
+  const pick = (title: string, text: string, list: string[]) => { const s = norm(title + " " + text);
+    return list.find((k) => norm(k).split(/\s+/).filter((w) => w.length > 1 && w !== "البحرين" && w !== "bahrain").every((w) => s.includes(w)) && (!(ctxOf.get(k) || /البحرين|bahrain/i.test(k)) || BH.test(title + " " + text))) || ""; };
+  const domains = SM_DOMAINS.filter((d) => pfs.includes(pfOf("https://" + d + "/")));
   await Promise.all(batches(kws.slice(0, 40)).slice(0, 8).map(async (b) => {
     try {
       let rows: { title: string; link: string; snippet: string; date: string }[] = [];
       if (tav) {
         const r = await fetch("https://api.tavily.com/search", { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${tav}` },
-          body: JSON.stringify({ query: b.q, search_depth: "basic", max_results: 20, include_domains: SM_DOMAINS, start_date: from, end_date: addDay(to), include_raw_content: true }) });
+          body: JSON.stringify({ query: b.q, search_depth: "basic", max_results: 20, include_domains: domains, start_date: from, end_date: addDay(to), include_raw_content: true }) });
         if (!r.ok) return;
         const j = await r.json();
         rows = (j.results || []).map((x: any) => ({ title: x.title || "", link: x.url || "", snippet: sum80(x.raw_content || "", x.content || ""), date: x.published_date || "" }));
       } else {
         const r = await fetch("https://google.serper.dev/search", { method: "POST", headers: { "Content-Type": "application/json", "X-API-KEY": ser! },
-          body: JSON.stringify({ q: `(${b.q}) (site:x.com OR site:instagram.com OR site:facebook.com)`, gl: "bh", num: 20, tbs: `cdr:1,cd_min:${gd(from)},cd_max:${gd(to)}` }) });
+          body: JSON.stringify({ q: `(${b.q}) (${domains.map((d) => "site:" + d).join(" OR ")})`, gl: "bh", num: 20, tbs: `cdr:1,cd_min:${gd(from)},cd_max:${gd(to)}` }) });
         if (!r.ok) return;
         const j = await r.json();
         rows = (j.organic || []).map((x: any) => ({ title: x.title || "", link: x.link || "", snippet: x.snippet || "", date: x.date || "" }));
       }
       for (const x of rows) {
         const platform = pfOf(x.link);
-        if (!platform || seen.has(x.link)) continue;
+        if (!platform || !pfs.includes(platform) || seen.has(x.link)) continue;
+        const kw = pick(x.title, x.snippet, b.kws);
+        if (!kw) continue;
         seen.add(x.link);
         let pub = dateFromUrl(x.link);
         if (!pub) { try { if (x.date) { const d = new Date(x.date); if (!isNaN(+d)) pub = d.toISOString(); } } catch { /* */ } }
         if (!pub) continue; // بدون تاريخ مؤكد لا يُعرض
         { const day = bhDay(pub); if (day < from || day > to) continue; }
-        items.push({ title: x.title.replace(/\s*[|·-]\s*(Instagram|Facebook|X)\s*$/i, ""), link: x.link, snippet: sum80("", x.snippet), pubDate: pub, platform, kw: pick(x.title, x.snippet, b.kws) });
+        items.push({ title: x.title.replace(/\s*[|·-]\s*(Instagram|Facebook|X)\s*$/i, ""), link: x.link, snippet: sum80("", x.snippet), pubDate: pub, platform, kw });
       }
     } catch { /* تجاهل */ }
   }));
@@ -113,13 +121,15 @@ Deno.serve(async (req) => {
   const to = /^\d{4}-\d{2}-\d{2}$/.test(body.to) ? body.to : from;
   if (body.mode === "social") {
     const kws = (Array.isArray(body.keywords) ? body.keywords : []).filter((k: any) => k && typeof k.kw === "string" && k.kw.trim()).map((k: any) => ({ kw: String(k.kw).slice(0, 80), ctx: !!k.ctx }));
-    return json({ ...(await socialSearch(kws, from, to)), from, to });
+    const pfs = (Array.isArray(body.platforms) ? body.platforms : ["x", "ig", "fb"]).filter((x: string) => ["x", "ig", "fb"].includes(x));
+    return json({ ...(await socialSearch(kws, from, to, pfs.length ? pfs : ["x", "ig", "fb"])), from, to });
   }
   const queries = (Array.isArray(body.queries) ? body.queries : []).slice(0, 30);
 
   const seen = new Set<string>();
   const items: any[] = [];
   await Promise.all(queries.map(async (qq: any, qi: number) => {
+    if (!String(qq.q || "").trim()) return;
     const lang = qq.lang === "en" ? "en" : "ar";
     const q = `${String(qq.q || "").slice(0, 400)} after:${from} before:${addDay(to)}`;
     const url = `https://news.google.com/rss/search?q=${encodeURIComponent(q)}&hl=${lang === "ar" ? "ar" : "en-BH"}&gl=BH&ceid=BH:${lang}`;
@@ -147,6 +157,7 @@ Deno.serve(async (req) => {
   if (tav) {
     await Promise.all(queries.map(async (qq: any, qi: number) => {
       const raw = String(qq.q || "");
+      if (!raw.trim()) return;
       const domains = [...raw.matchAll(/site:([\w.-]+)/g)].map((m) => m[1]);
       const q = raw.replace(/\((?:\s*(?:OR\s+)?site:[\w.-]+\s*)+\)/g, " ").replace(/site:[\w.-]+/g, " ").replace(/\s+/g, " ").trim().slice(0, 380);
       try {
