@@ -378,6 +378,7 @@ table.dp-tb .no{color:#8D9091}
 table.scant{min-width:720px}table.scant td{vertical-align:middle}table.scant tbody tr{cursor:default}
 .scan-t{font-weight:700;color:var(--ink);text-decoration:none;line-height:1.6}.scan-t:hover{text-decoration:underline}
 .kw label.kwn{display:inline-flex;align-items:center;gap:6px;cursor:pointer}
+a.btn{text-decoration:none;display:inline-flex;align-items:center}
 </style>
 </head>
 <body>
@@ -1033,14 +1034,15 @@ const SM_ACC=(()=>{const A=[],add=(g,list)=>list.forEach(([h,n,pf])=>A.push({k:h
  add("tip",[["NccTsa","السعودية — اللجنة الوطنية لمكافحة الاتجار","x"],["ncsts_kuwait","الكويت — اللجنة الوطنية"],["nccht_qatar","قطر — اللجنة الوطنية"],["nccht_oman","عُمان — اللجنة الوطنية"],["nccpimandtip","مصر — اللجنة الوطنية"]]);
  add("org",[["iombahrain","المنظمة الدولية للهجرة (البحرين)"],["unodc_hq","الأمم المتحدة (UNODC)"],["un_bahrain","الأمم المتحدة (البحرين)"]]);
  return A})();
-const SM_PF=[{k:"ig",n:"إنستغرام"},{k:"x",n:"إكس"},{k:"tt",n:"تيك توك"},{k:"yt",n:"يوتيوب"},{k:"other",n:"أخرى"}];
+const SM_PF=[{k:"x",n:"إكس"},{k:"ig",n:"إنستغرام"},{k:"fb",n:"فيسبوك"}];
 const SM_TONE=[{k:"neu",n:"محايد",c:"var(--idle)"},{k:"pos",n:"إيجابي",c:"var(--ok)"},{k:"neg",n:"سلبي",c:"var(--stop)"}];
 const SM_KW={core:["هيئة تنظيم سوق العمل","Labour Market","Lmrabh","WPS","Registered Worker","Work Permit","Expat","Worker","Domestic","أجانب البحرين","منزلية البحرين","خدامة البحرين","الوافدين البحرين","العاملات البحرين","عمالة منزلية","مخالفين البحرين","آسيويين البحرين","العمالة البحرين","تصريح عمل","سوق العمل البحرين","حماية الأجور"],
  occ:["الفئة الأولى البحرين","Tier 1 bahrain","Human Trafficking Bahrain","الخارجية الامريكية البحرين","الاتجار بالأشخاص","Trafficking Bahrain"]};
 const SM_CHK=[{k:"",n:"لم يُفحص بعد",c:"var(--line-2)"},{k:"found",n:"منشورات ذات صلة",c:"var(--ok)"},{k:"none",n:"لا توجد منشورات ذات صلة",c:"var(--prog)"},{k:"partial",n:"فحص غير مكتمل",c:"var(--warn)"}];
 function smAcc(k){return SM_ACC.find(a=>a.k===k)}
 function smGroup(k){return SM_GROUPS.find(g=>g.k===k)}
-function smPf(k){return SM_PF.find(p=>p.k===k)||SM_PF[SM_PF.length-1]}
+function smPf(k){return SM_PF.find(p=>p.k===k)||{k:k||"",n:k||"—"}}
+function fbLink(kw){return "https://www.facebook.com/search/posts/?q="+encodeURIComponent(kw+(smNeedsCtx(kw)?" Bahrain":""))}
 function smTone(k){return SM_TONE.find(t=>t.k===k)||SM_TONE[0]}
 function smSec(x){const a=smAcc(x.account);return a?smGroup(a.g).sec:"public"}
 function smAccName(x){const a=smAcc(x.account);return a?a.n:(x.accountName||"حساب آخر")}
@@ -1065,7 +1067,7 @@ function renderSocial(){
   const tc=k=>ver.filter(x=>(x.tone||"neu")===k).length;
   const checked=SM_ACC.filter(a=>["found","none"].includes(chk.statuses[a.k]||"")).length;
   let h=monSwitch()+`<div class="mon-head"><div><h2 style="font-size:22px;font-weight:800">رصد السوشيال ميديا</h2>
-    <div class="period">فترة الرصد: <b class="num">${esc(fmt(M.from))}${M.to!==M.from?" – "+esc(fmt(M.to)):""}</b> · حتى الساعة <b class="num">${cut}</b> بتوقيت البحرين · إنستغرام وإكس</div></div>
+    <div class="period">فترة الرصد: <b class="num">${esc(fmt(M.from))}${M.to!==M.from?" – "+esc(fmt(M.to)):""}</b> · حتى الساعة <b class="num">${cut}</b> بتوقيت البحرين · إكس وإنستغرام وفيسبوك</div></div>
     <div class="grp" style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn primary" type="button" data-act="daily">التقرير اليومي</button><button class="btn" type="button" data-act="sm-copy">نسخ التقرير</button><button class="btn write-only" type="button" data-act="sm-add">+ إضافة منشور</button></div></div>
   <div class="card" style="padding:14px 16px;display:grid;gap:12px">${periodCtl(M)}</div>
   <div class="smstats"><div><b class="num">${ver.length}</b><span>منشور مرصود</span></div>${SM_TONE.map(t=>`<div style="--tc:${t.c}"><b class="num">${tc(t.k)}</b><span><i class="dot"></i>${t.n}</span></div>`).join("")}<div><b class="num">${checked}<small>/${SM_ACC.length}</small></b><span>حساب تم فحصه</span></div></div>`;
@@ -1077,13 +1079,12 @@ function renderSocial(){
   if(unv.length)h+=`<div class="mon-sec"><h3>منشورات لم يتم التحقق منها</h3><span class="small muted">مستبعدة من النتائج المؤكدة</span></div>${tbl(unv)}`;
   // keywords
   S.smSel=S.smSel||new Set(SM_KW.core);
-  const kwRow=kw=>`<div class="kw"><label class="kwn" dir="auto"><input type="checkbox" data-smkw="${esc(kw)}" ${S.smSel.has(kw)?"checked":""}> ${esc(kw)}</label><span class="ql"><a href="${xLink(kw,M.from,M.to)}">إكس</a><a href="${igLink(kw)}">إنستغرام</a><a href="${igGLink(kw,M.from,M.to)}">Google</a></span></div>`;
+  const kwRow=kw=>`<div class="kw"><label class="kwn" dir="auto"><input type="checkbox" data-smkw="${esc(kw)}" ${S.smSel.has(kw)?"checked":""}> ${esc(kw)}</label><span class="ql"><a href="${xLink(kw,M.from,M.to)}">إكس</a><a href="${igLink(kw)}">إنستغرام</a><a href="${fbLink(kw)}">فيسبوك</a></span></div>`;
   h+=`<div class="mon-sec"><h3>الكلمات المفتاحية</h3><span class="small muted">بحث إكس مقيّد بفترة الرصد · الكلمات الإنجليزية العامة يُضاف لها «البحرين» تلقائيًا</span></div>
     <div class="card kwc">
-    <div class="scan-go">${SCAN_ON()?`<button class="btn primary" type="button" data-act="scan-run" data-v="social" ${scanState("social").loading?"disabled":""}>${scanState("social").loading?"جارٍ الرصد…":"ارصد الآن"}</button>`:""}
-      <a class="btn" href="${xMultiLink([...S.smSel],M.from,M.to)}" data-noedit="1">فتح الكلمات المحددة في إكس</a>
+    <div class="scan-go"><a class="btn primary" href="${xMultiLink([...S.smSel],M.from,M.to)}" data-noedit="1">ارصد الآن في إكس</a>
       <span class="small muted"><b class="num">${S.smSel.size}</b> كلمة محددة · <a href="#" data-act="smkw-all" data-noedit="1">تحديد الكل</a> · <a href="#" data-act="smkw-none" data-noedit="1">إلغاء التحديد</a></span></div>
-    ${scanPanel("social")}
+    <div class="small muted">المصادر: إكس · إنستغرام · فيسبوك — «ارصد الآن» يفتح بحث إكس بكل الكلمات المحددة خلال الفترة، ولكل كلمة روابط بحث مباشرة في المنصات الثلاث.</div>
     <div class="kwg">${SM_KW.core.map(kwRow).join("")}</div>
     <details class="kwocc"${S.smOcc?" open":""}><summary>كلمات دورية (عند الحاجة) — تقرير الاتجار بالأشخاص والتصنيف</summary><div class="kwg">${SM_KW.occ.map(kwRow).join("")}</div></details></div>`;
   // accounts
@@ -1222,7 +1223,7 @@ function longDate(s){const p=parts(s);return dayName(s)+" – "+pad2(p.d)+" "+MO
 function isArabic(t){return /[؀-ۿ]/.test(String(t||""))}
 const PRESS_ROWS=[{k:"bna",lang:"ar",n:"وكالة أنباء البحرين (اللغة العربية)"},{k:"bna",lang:"en",n:"وكالة أنباء البحرين (اللغة الإنجليزية)"},{k:"ayam",n:"صحيفة الأيام"},{k:"akhbar",n:"صحيفة أخبار الخليج"},{k:"bilad",n:"صحيفة البلاد"},{k:"watan",n:"صحيفة الوطن"},{k:"gdn",n:"GDN Newspaper"},{k:"tdt",n:"The Daily Tribune"}];
 function pressLabel(x){const o=outletOf(x.outlet);if(o.k==="bna")return isArabic(x.headline)?PRESS_ROWS[0].n:PRESS_ROWS[1].n;const r=PRESS_ROWS.find(r=>r.k===o.k);return r?r.n:(x.outletName||o.n)}
-const PF_LABEL={x:"Twitter",ig:"Instagram",tt:"TikTok",yt:"YouTube",other:"منصات أخرى"};
+const PF_LABEL={x:"Twitter",ig:"Instagram",fb:"Facebook"};
 
 /* Build the page model */
 function buildDaily(){
@@ -1238,7 +1239,7 @@ function buildDaily(){
       P.issued.filter(x=>!used.has(x.id)).forEach(x=>pressIdx.push({t:"row",n:pressLabel(x),items:[x]}));
     }else{if(!P[c.k].length)pressIdx.push({t:"row",n:"",items:[],none:true});else P[c.k].forEach(x=>pressIdx.push({t:"row",n:pressLabel(x),items:[x]}))}}
   // social index: one table per category
-  const smIdx=RCAT.map(c=>{const rows=[{t:"hdr",n:c.n}];const pfs=["x","ig",...["tt","yt","other"].filter(k=>Q[c.k].some(x=>x.platform===k))];
+  const smIdx=RCAT.map(c=>{const rows=[{t:"hdr",n:c.n}];const pfs=["x","ig",...(Q[c.k].some(x=>x.platform==="fb")?["fb"]:[])];
     for(const pf of pfs){rows.push({t:"sub",n:PF_LABEL[pf]});const its=Q[c.k].filter(x=>(x.platform||"other")===pf);if(!its.length)rows.push({t:"row",n:"",items:[],none:true});else its.forEach(x=>rows.push({t:"row",n:smAccName(x),items:[x],sm:true}))}
     return rows});
   // chunk index rows into pages by weight
@@ -1274,7 +1275,7 @@ function dailyHTML(D){
     if(p.kind==="index")return `<div class="dp">${L}<table class="dp-tb"><colgroup><col style="width:1.5in"><col style="width:5.37in"></colgroup>${p.rows.map(r=>r.t==="hdr"?`<tr class="h"><td colspan="2">${esc(r.n)}${r.cont?" (تابع)":""}</td></tr>`:r.t==="sub"?`<tr class="s"><td colspan="2">${esc(r.n)}</td></tr>`:
       `<tr><td class="l">${esc(r.n)}</td><td class="c">${r.none||!r.items.length?`<span class="no">لا يوجد</span>`:r.items.map(x=>`<div class="ix"><span dir="auto">${esc(p.sm?clip(x.text,90):x.headline)}</span><span class="pn">ص ${D.pg[x.id]}</span></div>`).join("")}</td></tr>`).join("")}</table><div class="dp-no">Page ${p.no}</div></div>`;
     const x=p.x,src=monImgSrc(x);
-    return `<div class="dp">${L}${p.sm?`<img class="dp-pf" src="${RA}${x.platform==="x"?"x":"ig"}.png" alt="">`:""}
+    return `<div class="dp">${L}${p.sm?`<img class="dp-pf" src="${RA}${x.platform==="x"?"x":x.platform==="fb"?"fb":"ig"}.png" alt="">`:""}
       <div class="dp-h" dir="auto">${esc(itemTitle(x,p.sm))}</div><div class="dp-m">${esc(itemMeta(x,p.sm))}</div>
       <div class="dp-fr">${src?`<img src="${esc(src)}" alt="" crossorigin="anonymous">`:`<div class="dp-ph">${esc(p.sm?smAccName(x):(x.outletName||outletOf(x.outlet).n))}<small>لا توجد لقطة</small></div>`}</div>
       <div class="dp-sum" dir="auto">${esc(x.summary||"")}</div>
@@ -1298,7 +1299,7 @@ async function toPng(url,max){const b=await (await fetch(url)).blob();const bm=a
 function b64buf(dataUrl){const s=atob(dataUrl.split(",")[1]);const u=new Uint8Array(s.length);for(let i=0;i<s.length;i++)u[i]=s.charCodeAt(i);return u}
 function fitIn(w,h,bw,bh){const k=Math.min(bw/w,bh/h);return {w:w*k,h:h*k,dx:(bw-w*k)/2,dy:(bh-h*k)/2}}
 async function dailyAssets(D){
-  const A={};for(const n of ["logo","bg","handles","teambh","x","ig"])A[n]=await toPng(RA+n+".png",1600);
+  const A={};for(const n of ["logo","bg","handles","teambh","x","ig","fb"])A[n]=await toPng(RA+n+".png",1600);
   A.items={};for(const p of D.pages)if(p.kind==="item"&&p.x.imageId){try{A.items[p.x.id]=await toPng(monImgSrc(p.x),1600)}catch(e){}}
   return A}
 async function offerFile(name,blob){
@@ -1349,7 +1350,7 @@ async function makePptx(D){
       s.addTable(rows,{x:0.31,y:1.78,w:6.87,colW:[5.37,1.5],...T,border:[N,N,B,N],valign:"middle",margin:[3,6,3,6],autoPage:false});pno(s,p.no);continue}
     // item
     const x=p.x,img=A.items[x.id];
-    if(p.sm)s.addImage({data:(x.platform==="x"?A.x:A.ig).data,x:0.61,y:0.48,w:0.56,h:0.56});
+    if(p.sm)s.addImage({data:(x.platform==="x"?A.x:x.platform==="fb"?A.fb:A.ig).data,x:0.61,y:0.48,w:0.56,h:0.56});
     s.addText(itemTitle(x,p.sm),{...T,x:0.62,y:1.3,w:6.26,h:0.75,fontSize:18,bold:true,align:"right",valign:"bottom",fit:"shrink"});
     s.addText(itemMeta(x,p.sm),{...T,x:0.62,y:2.05,w:6.26,h:0.3,fontSize:12,color:"8D9091",align:"right"});
     s.addShape(pp.ShapeType.roundRect,{x:1.17,y:2.45,w:5.16,h:4.7,rectRadius:0.12,line:{color:"DDD5C9",width:1},fill:{color:"FFFFFF"}});
@@ -1390,7 +1391,7 @@ async function makeDocx(D){
           new d.TableCell({width:{size:Math.round(5.37*IN),type:d.WidthType.DXA},borders:{top:NB,left:NB,right:NB,bottom:BD},verticalAlign:d.VerticalAlign.CENTER,children:lines})]})});
       kids.push(new d.Table({rows,visuallyRightToLeft:true,width:{size:Math.round(6.87*IN),type:d.WidthType.DXA},columnWidths:[Math.round(1.5*IN),Math.round(5.37*IN)]}));continue}
     const x=p.x,im=A.items[x.id];
-    if(p.sm)kids.push(new d.Paragraph({children:[img(x.platform==="x"?A.x:A.ig,0.45,0.45,{floating:{horizontalPosition:{relative:d.HorizontalPositionRelativeFrom.PAGE,offset:Math.round(0.61*914400)},verticalPosition:{relative:d.VerticalPositionRelativeFrom.PAGE,offset:Math.round(0.48*914400)},wrap:{type:d.TextWrappingType.NONE}}})]}));
+    if(p.sm)kids.push(new d.Paragraph({children:[img(x.platform==="x"?A.x:x.platform==="fb"?A.fb:A.ig,0.45,0.45,{floating:{horizontalPosition:{relative:d.HorizontalPositionRelativeFrom.PAGE,offset:Math.round(0.61*914400)},verticalPosition:{relative:d.VerticalPositionRelativeFrom.PAGE,offset:Math.round(0.48*914400)},wrap:{type:d.TextWrappingType.NONE}}})]}));
     kids.push(para([run(itemTitle(x,p.sm),{...sz(18),bold:true,boldComplexScript:true})],{spacing:{after:60}}));
     kids.push(para([run(itemMeta(x,p.sm),{...sz(12),color:"8D9091"})],{spacing:{after:200}}));
     if(im){const f=fitIn(im.w,im.h,5.16,4.7);kids.push(new d.Paragraph({alignment:d.AlignmentType.CENTER,border:{top:BD,bottom:BD,left:BD,right:BD},children:[img(im,f.w,f.h)]}))}
