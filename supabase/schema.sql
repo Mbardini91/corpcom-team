@@ -14,7 +14,7 @@ create table if not exists public.docs (
 );
 alter table public.docs replica identity full;      -- لتصل عمليات الحذف للتحديث اللحظي
 
-create or replace function public.docs_touch() returns trigger language plpgsql as $$
+create or replace function public.docs_touch() returns trigger language plpgsql set search_path = public as $$
 begin new.updated_at := now(); new.updated_by := auth.uid(); return new; end $$;
 drop trigger if exists docs_touch on public.docs;
 create trigger docs_touch before insert or update on public.docs for each row execute function public.docs_touch();
@@ -28,13 +28,13 @@ create table if not exists public.team_access (
 
 -- 3) دوال التحقق من الصلاحية
 create or replace function public.norm_contact(t text) returns text
-language sql immutable as $$
+language sql immutable set search_path = public as $$
   select case when coalesce(t,'') like '%@%' then lower(trim(t))
               else regexp_replace(coalesce(t,''), '\D', '', 'g') end
 $$;
 
 create or replace function public.my_contacts() returns text[]
-language sql stable as $$
+language sql stable set search_path = public as $$
   select array_remove(array[
     nullif(public.norm_contact(auth.jwt() ->> 'email'), ''),
     nullif(public.norm_contact(auth.jwt() ->> 'phone'), '')
@@ -74,6 +74,10 @@ $$;
 
 revoke all on function public.can_login(text) from public;
 grant execute on function public.can_login(text)   to anon, authenticated;
+revoke all on function public.my_membership() from public, anon;
+revoke all on function public.is_member() from public, anon;
+revoke all on function public.can_write() from public, anon;
+revoke all on function public.is_admin() from public, anon;
 grant execute on function public.my_membership()   to authenticated;
 grant execute on function public.is_member()       to authenticated;
 grant execute on function public.can_write()       to authenticated;
@@ -105,9 +109,8 @@ insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_typ
 values ('images', 'images', true, 8388608, array['image/png','image/jpeg','image/webp','image/gif'])
 on conflict (id) do nothing;
 
-drop policy if exists images_read   on storage.objects;
 drop policy if exists images_insert on storage.objects;
 drop policy if exists images_delete on storage.objects;
-create policy images_read   on storage.objects for select using (bucket_id = 'images');
+-- الحاوية عامة: الصور تُعرض بروابطها المباشرة دون الحاجة لسياسة قراءة (تمنع سرد الملفات)
 create policy images_insert on storage.objects for insert to authenticated with check (bucket_id = 'images' and public.can_write());
 create policy images_delete on storage.objects for delete to authenticated using (bucket_id = 'images' and public.can_write());
