@@ -186,7 +186,7 @@
         if (e1) throw e1;
         if (!ok) { msg(mode === "email" ? "هذا الإيميل غير مسجّل في الفريق. تواصل مع مسؤول المنصة." : "هذا الرقم غير مسجّل في الفريق. تواصل مع مسؤول المنصة.", true); btn.disabled = false; return; }
         const { error } = mode === "email"
-          ? await sb.auth.signInWithOtp({ email: target, options: { shouldCreateUser: true } })
+          ? await sb.auth.signInWithOtp({ email: target, options: { shouldCreateUser: true, emailRedirectTo: location.origin + location.pathname } })
           : await sb.auth.signInWithOtp({ phone: target, options: { shouldCreateUser: true, channel: "whatsapp" } });
         if (error) throw error;
         showStep2();
@@ -195,7 +195,7 @@
   }
   function showStep2() {
     screen(`<form id="auth-f2" style="display:grid;gap:10px">
-        <div class="k">أرسلنا رمز دخول ${mode === "email" ? "إلى إيميلك" : "إلى الواتساب"}: <b dir="ltr">${esc(target)}</b></div>
+        <div class="k">أرسلنا رمز دخول ${mode === "email" ? "إلى إيميلك" : "إلى الواتساب"}: <b dir="ltr">${esc(target)}</b>${mode === "email" ? "<br>اكتب الرمز هنا، أو اضغط رابط الدخول الموجود في الإيميل." : ""}</div>
         <input id="auth-code" class="code" inputmode="numeric" autocomplete="one-time-code" maxlength="8" dir="ltr" required>
         <button class="go" type="submit">دخول</button>
         <div id="auth-msg" class="msg"></div>
