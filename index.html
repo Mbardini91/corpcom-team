@@ -2020,6 +2020,10 @@ function remembered(){try{return localStorage.getItem("lmra-cc-me")||""}catch(e)
 function remember(n){try{localStorage.setItem("lmra-cc-me",n)}catch(e){}}
 
 /* ---------- events ---------- */
+// كل رابط خارجي يُفتح في تبويب جديد ولا يغادر المنصة
+document.addEventListener("click",e=>{const l=e.target.closest&&e.target.closest("a[href]");if(!l)return;
+  let u;try{u=new URL(l.getAttribute("href"),location.href)}catch(_){return}
+  if(/^https?:$/.test(u.protocol)&&u.origin!==location.origin){l.target="_blank";l.rel="noopener noreferrer"}},true);
 document.addEventListener("change",e=>{const c=e.target.closest&&e.target.closest("[data-ch]");if(!c)return;const [k,v]=c.dataset.ch.split(":");
   if(k==="news"){const M=monPeriod();M.ch=M.ch||[];M.ch=c.checked?[...new Set([...M.ch,v])]:M.ch.filter(x=>x!==v)}else{S.smCh=S.smCh||[];S.smCh=c.checked?[...new Set([...S.smCh,v])]:S.smCh.filter(x=>x!==v)}render()});
 document.addEventListener("click",async e=>{
