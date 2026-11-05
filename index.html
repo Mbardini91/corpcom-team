@@ -384,6 +384,53 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
 .smp{border:1px solid var(--line);border-radius:10px;background:var(--surface-2);padding:12px;display:grid;gap:10px;align-content:start}
 .smp-h{display:flex;align-items:center;gap:8px;font-weight:800;flex-wrap:wrap}.smp-h img{width:26px;height:26px}.smp-h .muted{font-weight:500}
 .smp-b{display:flex;flex-wrap:wrap;gap:6px}.smp-b .btn{font-size:12.5px;color:var(--ink)}.smp-b .btn:visited{color:var(--mute)}
+
+/* monitoring v3 — icons, compact controls, level */
+.ic{width:16px;height:16px;flex:none}
+.ic.lbl{width:18px;height:18px;color:var(--mute);margin-top:4px}
+.ic.spin{animation:icspin 1s linear infinite}@keyframes icspin{to{transform:rotate(360deg)}}
+.msw button{display:inline-flex;align-items:center;gap:7px}
+.period{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.mctl{padding:14px 16px;display:grid;gap:12px}
+.mctl .mon-filters{align-items:center;gap:8px}
+.mctl .mon-filters input[type=date]{min-height:34px;padding:4px 8px;width:auto}
+.mrow2{display:flex;gap:10px;align-items:flex-start}.mrow2 .chips{flex:1}
+.mrow2.sub{align-items:center;flex-wrap:wrap;gap:8px;padding-inline-start:28px}.mrow2.sub .kwocc{flex:1}
+[hidden]{display:none!important}
+.mrow2.sub .kwocc summary{font-size:13px;color:var(--mute);font-weight:600}
+.go-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.btn.go{padding:10px 22px;font-size:15px;font-weight:800;justify-self:start}
+.pfs{display:inline-flex;align-items:center;gap:6px}
+.pfi{width:20px;height:20px;border-radius:5px;flex:none;object-fit:contain}
+.acc{display:flex;gap:8px;align-items:center}
+.mstat{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.mstat>span{display:inline-flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:13px;color:var(--mute)}
+.mstat b{color:var(--ink);font-size:15px}
+.mstat .dot{width:8px;height:8px;border-radius:50%;background:var(--tc);display:inline-block}
+.lvl{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:800;white-space:nowrap;color:var(--lc)}
+.lvl .bars{display:inline-flex;align-items:flex-end;gap:2px;height:12px;direction:ltr}
+.lvl i{width:4px;border-radius:1px;background:var(--line-2);display:block}
+.lvl i:nth-child(1){height:5px}.lvl i:nth-child(2){height:8px}.lvl i:nth-child(3){height:12px}
+.lvl-high{--lc:var(--stop)}.lvl-high i{background:var(--lc)}
+.lvl-med{--lc:var(--warn)}.lvl-med i:nth-child(-n+2){background:var(--lc)}
+.lvl-low{--lc:var(--mute)}.lvl-low i:nth-child(1){background:var(--lc)}
+.mtbl .btn.icon.small,.scant .btn.icon.small{padding:5px 7px;text-decoration:none;color:var(--ink)}
+.snip{color:var(--ink-2,var(--mute));margin-top:3px;line-height:1.5}
+.mchk{background:var(--surface);border:1px solid var(--line);border-radius:12px;margin-top:22px}
+.mchk>summary{display:flex;align-items:center;gap:8px;padding:12px 16px;cursor:pointer;font-weight:700;list-style:none}
+.mchk>summary::-webkit-details-marker{display:none}
+.mchk>summary>span:nth-child(2){flex:1}
+.mchk>summary::after{content:"▾";color:var(--mute)}.mchk:not([open])>summary::after{content:"◂"}
+.mchk-b{padding:0 16px 16px;display:grid;gap:10px}
+.mchk .smg{background:var(--surface-2);margin:0}
+.oc .dm{display:inline-flex;align-items:center;gap:4px;text-decoration:none}
+.oc .dm .ic{width:12px;height:12px}
+.qchips{display:flex;flex-wrap:wrap;gap:6px}
+.qc{display:inline-flex;align-items:center;gap:4px;font-size:12px;border:1px solid var(--line);border-radius:999px;padding:2px 4px 2px 9px;background:var(--surface-2)}
+.qc a{font-size:11px;font-weight:700;text-decoration:none;color:var(--ink);border-radius:999px;padding:1px 7px;background:var(--surface);border:1px solid var(--line-2)}
+.qc a:hover{border-color:var(--accent);background:var(--accent-soft)}.qc a:visited{color:var(--mute)}
+.sa-t{display:flex;align-items:center;gap:6px}.sa-t .san{flex:1}
+.hl .hlk{display:none}
 </style>
 </head>
 <body>
@@ -494,7 +541,7 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
       </div>
       <label class="field"><span>التفاعل (اختياري)</span><input type="text" id="s-eng" placeholder="مثال: 2.4 ألف إعجاب · 180 تعليق · 35 مشاركة"></label>
       <label class="field"><span>ملخص المنشور</span><textarea id="s-sum" rows="4"></textarea></label>
-      <label class="field"><span>مؤشر مخاطر (اختياري، فقط إن كان مدعومًا بالمنشور)</span><input type="text" id="s-risk"></label>
+      <div class="row2"><label class="field"><span>مستوى الخبر <small class="muted" id="s-lvl-h">تلقائي</small></span><select id="s-lvl"></select></label><label class="field"><span>مؤشر مخاطر (اختياري)</span><input type="text" id="s-risk"></label></div>
       <label class="small" style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="s-ver" checked> تم التحقق من التاريخ والحساب والرابط من المنشور الأصلي</label>
       <label class="field" id="s-why-w"><span>سبب عدم التحقق</span><input type="text" id="s-why" placeholder="مثال: المنشور محذوف، أو الحساب غير موثق"></label>
       <div class="err-msg" id="sm-err"></div>
@@ -520,7 +567,7 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
       <div class="field"><span>صورة الخبر</span><div class="imgpick"><img id="m-img-prev" alt="" hidden><input type="file" id="m-img" accept="image/*"><button class="btn small" type="button" id="m-img-rm" hidden>إزالة الصورة</button></div><span class="small muted" id="m-img-st">الصق لقطة الشاشة هنا مباشرة (Ctrl+V) أو اسحبها، أو اختر ملفًا.</span></div>
       <div class="row2"><label class="field"><span>الموضوع</span><select id="m-topic"></select></label><label class="field"><span>فئة التقرير اليومي</span><select id="m-cat"><option value="issued">أخبار صادرة عن الهيئة (كتبتها الهيئة ونشرتها)</option><option value="related">أخبار ذات علاقة بالهيئة (غير صادرة عنها)</option><option value="intl">أخبار دولية (مصدرها خارج البحرين)</option></select></label></div>
       <label class="field"><span>ملخص موجز</span><textarea id="m-sum" rows="4"></textarea></label>
-      <label class="field"><span>مؤشر مخاطر (اختياري، فقط إن كان مدعومًا بالخبر)</span><input type="text" id="m-risk"></label>
+      <div class="row2"><label class="field"><span>مستوى الخبر <small class="muted" id="m-lvl-h">تلقائي</small></span><select id="m-lvl"></select></label><label class="field"><span>مؤشر مخاطر (اختياري)</span><input type="text" id="m-risk"></label></div>
       <label class="small" style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="m-ver" checked> تم التحقق من تاريخ النشر والعنوان والرابط من المصدر الأصلي</label>
       <label class="field" id="m-why-w"><span>سبب عدم التحقق</span><input type="text" id="m-why" placeholder="مثال: الرابط محجوب، أو لم يتأكد تاريخ النشر"></label>
       <div class="err-msg" id="m-err"></div>
@@ -933,36 +980,36 @@ function renderMonitor(){
   const chk=S.checks.find(c=>c.id===periodKey(M))||{statuses:{}};
   const items=S.monitor.filter(x=>inPeriod(x.date,M)).sort((a,b)=>String(a.date).localeCompare(String(b.date)));
   const ver=items.filter(x=>x.verified!==false),unv=items.filter(x=>x.verified===false);
-  let h=monSwitch()+`<div class="mon-head"><div><h2 style="font-size:22px;font-weight:800">الرصد الإعلامي</h2>
-    <div class="period">فترة الرصد: <b class="num">${esc(fmt(M.from))}${M.to!==M.from?" – "+esc(fmt(M.to)):""}</b> · حتى الساعة <b class="num">${cut}</b> بتوقيت البحرين</div></div>
-    <div class="grp" style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn primary" type="button" data-act="daily">التقرير اليومي</button><button class="btn" type="button" data-act="mon-copy" id="mon-copy">نسخ التقرير</button><button class="btn write-only" type="button" data-act="mon-add">+ إضافة خبر</button></div></div>
-  <div class="card" style="padding:14px 16px;display:grid;gap:12px">
-    <div class="mon-filters">
-      <div class="seg" role="group" aria-label="الفترة"><button type="button" data-act="mon-preset" data-v="today" aria-pressed="${M.preset==="today"}">اليوم</button><button type="button" data-act="mon-preset" data-v="week" aria-pressed="${M.preset==="week"}">آخر 7 أيام</button><button type="button" data-act="mon-preset" data-v="custom" aria-pressed="${M.preset==="custom"}">فترة محددة</button></div>
-      <label class="field"><span>من</span><input type="date" id="mon-from" value="${M.from}"></label>
-      <label class="field"><span>إلى</span><input type="date" id="mon-to" value="${M.to}"></label>
-    </div>
-    <div class="field"><span>محاور البحث</span><div class="chips">${MTOPICS.map(t=>`<label><input type="checkbox" data-mt="${t.k}" ${M.topics.includes(t.k)?"checked":""}>${t.n}</label>`).join("")}</div></div>
-    ${SCAN_ON()?`<div class="scan-go"><button class="btn primary" type="button" data-act="scan-run" data-v="news" ${scanState("news").loading?"disabled":""}>${scanState("news").loading?"جارٍ الرصد…":"ارصد الآن"}</button><span class="small muted">يبحث في الصحف ووكالات الأنباء المعتمدة عن المحاور المحددة خلال الفترة</span></div>`:""}
-  </div>${scanPanel("news")}`;
+  const lv=x=>lvlOf(x,false);const hi=ver.filter(x=>lv(x)==="high").length;
+  const bhN=ver.filter(x=>outletOf(x.outlet).r==="bh"),gN=ver.filter(x=>outletOf(x.outlet).r==="gcc");
+  let h=monSwitch()+monHead("الرصد الإعلامي","news",M,cut)+`
+  <div class="card mctl">
+    ${periodCtl(M)}
+    <div class="mrow2">${ic("tag","lbl")}<div class="chips">${MTOPICS.map(t=>`<label><input type="checkbox" data-mt="${t.k}" ${M.topics.includes(t.k)?"checked":""}>${t.n}</label>`).join("")}</div></div>
+    ${SCAN_ON()?`<button class="btn primary go" type="button" data-act="scan-run" data-v="news" ${scanState("news").loading?"disabled":""}>${ic(scanState("news").loading?"spin":"search",scanState("news").loading?"spin":"")}${scanState("news").loading?"جارٍ الرصد…":"ارصد الآن"}</button>`:""}
+  </div>${scanPanel("news")}
+  <div class="mstat"><span>${ic("news")}<b class="num">${ver.length}</b> خبر</span><span>البحرين <b class="num">${bhN.length}</b></span><span>الخليج <b class="num">${gN.length}</b></span><span class="lvl-high-c">${lvlBadge("high")} <b class="num">${hi}</b></span>${unv.length?`<span>غير مؤكد <b class="num">${unv.length}</b></span>`:""}</div>`;
   // outlet cards
   const card=o=>{const st=chk.statuses[o.k]||"";const sc=CHECK_ST.find(x=>x.k===st).c;const cnt=items.filter(x=>x.outlet===o.k).length;
-    return `<div class="oc" style="--sc:${sc}"><div class="top"><div><div class="nm">${esc(o.n)}${cnt?` <span class="tag num">${cnt} خبر</span>`:""}</div><div class="dm">${esc(o.d)}</div></div>
+    return `<div class="oc" style="--sc:${sc}"><div class="top"><div><div class="nm">${esc(o.n)}${cnt?` <span class="tag num">${cnt}</span>`:""}</div><a class="dm" href="https://${o.d}" title="فتح الموقع">${esc(o.d)} ${ic("ext")}</a></div>
       <select data-chk="${o.k}" aria-label="حالة فحص ${esc(o.n)}" ${S.canWrite?"":"disabled"}>${CHECK_ST.map(x=>`<option value="${x.k}" ${x.k===st?"selected":""}>${x.n}</option>`).join("")}</select></div>
-      <div style="display:grid;gap:5px">${MTOPICS.filter(t=>M.topics.includes(t.k)).map(t=>`<div class="qrow"><span class="muted">${t.n}</span><span class="ql"><a href="${gLink("site:"+o.d+" "+t.ar,M.from,M.to)}">بحث عربي</a><a href="${gLink("site:"+o.d+" "+t.q,M.from,M.to)}">English</a></span></div>`).join("")}
-      <div class="qrow"><span class="muted">الموقع مباشرة</span><span class="ql"><a href="https://${o.d}">فتح ${esc(o.d)}</a></span></div></div></div>`};
+      <div class="qchips">${MTOPICS.filter(t=>M.topics.includes(t.k)).map(t=>`<span class="qc">${t.n}<a href="${gLink("site:"+o.d+" "+t.ar,M.from,M.to)}" title="بحث عربي">ع</a><a href="${gLink("site:"+o.d+" "+t.q,M.from,M.to)}" title="English search">EN</a></span>`).join("")}</div></div>`};
   // results tables
   const tbl=(rows)=>{if(!rows.length)return `<div class="empty-note">لا توجد أخبار مسجلة لهذه الفترة.</div>`;
-    return `<div class="tbl-wrap"><table class="mtbl" style="min-width:860px"><thead><tr><th>التاريخ</th><th>الوسيلة الإعلامية</th><th>الموضوع</th><th>ملخص موجز</th><th>رابط الخبر</th></tr></thead><tbody>${rows.map(x=>{const o=outletOf(x.outlet),t=mtopic(x.topic);
-      return `<tr class="hlrow" data-act="mon-edit" data-v="${esc(x.id)}" tabindex="0"><td colspan="5" class="hl" dir="auto"><span class="hlk">العنوان الأصلي</span>${esc(x.headline)}</td></tr><tr class="mrow" data-act="mon-edit" data-v="${esc(x.id)}"><td class="dt">${esc(fmtShort(x.date))}</td><td>${esc(x.outletName||o.n)}</td><td>${esc(t?t.n:(x.topic||""))}</td><td class="sum"><div class="sumw">${monThumb(x,o,t)}<div class="tx" dir="auto">${esc(x.summary||"")}${x.risk?`<span class="flag">مؤشر مخاطر: ${esc(x.risk)}</span>`:""}${x.verified===false?`<span class="flag">غير مؤكد: ${esc(x.why||"")}</span>`:""}</div></div></td><td>${/^https?:\/\//.test(x.link||"")?`<a href="${esc(x.link)}" data-noedit="1">فتح الخبر</a>`:"—"}</td></tr>`}).join("")}</tbody></table></div>`};
-  h+=`<div class="mon-sec"><h3>نتائج الرصد — البحرين <span class="num muted small">(${ver.filter(x=>outletOf(x.outlet).r==="bh").length})</span></h3></div>${tbl(ver.filter(x=>outletOf(x.outlet).r==="bh"))}`;
-  h+=`<div class="mon-sec"><h3>نتائج الرصد — الخليج <span class="num muted small">(${ver.filter(x=>outletOf(x.outlet).r==="gcc").length})</span></h3></div>${tbl(ver.filter(x=>outletOf(x.outlet).r==="gcc"))}`;
-  if(unv.length)h+=`<div class="mon-sec"><h3>أخبار لم يتم التحقق منها</h3><span class="small muted">مستبعدة من النتائج المؤكدة</span></div>${tbl(unv)}`;
-  h+=`<div class="mon-sec"><h3>الصحف ووكالة الأنباء البحرينية</h3><span class="small muted">ابحث في كل مصدر على حدة، ثم حدّد حالة الفحص</span></div><div class="outlets">${OUTLETS.filter(o=>o.r==="bh"&&o.d).map(card).join("")}</div>`;
-  h+=`<div class="mon-sec"><h3>وكالات الأنباء الخليجية</h3><span class="small muted">بعد استكمال المصادر البحرينية</span></div><div class="outlets">${OUTLETS.filter(o=>o.r==="gcc").map(card).join("")}</div>`;
+    return `<div class="tbl-wrap"><table class="mtbl" style="min-width:860px"><thead><tr><th>التاريخ</th><th>الوسيلة</th><th>الموضوع</th><th>الملخص</th><th>المستوى</th><th></th></tr></thead><tbody>${rows.map(x=>{const o=outletOf(x.outlet),t=mtopic(x.topic);
+      return `<tr class="hlrow" data-act="mon-edit" data-v="${esc(x.id)}" tabindex="0"><td colspan="6" class="hl" dir="auto">${esc(x.headline)}</td></tr><tr class="mrow" data-act="mon-edit" data-v="${esc(x.id)}"><td class="dt">${esc(fmtShort(x.date))}</td><td>${esc(x.outletName||o.n)}</td><td>${esc(t?t.n:(x.topic||""))}</td><td class="sum"><div class="sumw">${monThumb(x,o,t)}<div class="tx" dir="auto">${esc(x.summary||"")}${x.risk?`<span class="flag">مؤشر مخاطر: ${esc(x.risk)}</span>`:""}${x.verified===false?`<span class="flag">غير مؤكد: ${esc(x.why||"")}</span>`:""}</div></div></td><td>${lvlBadge(lv(x))}</td><td>${/^https?:\/\//.test(x.link||"")?`<a class="btn icon small" href="${esc(x.link)}" data-noedit="1" title="فتح الخبر" aria-label="فتح الخبر">${ic("ext")}</a>`:"—"}</td></tr>`}).join("")}</tbody></table></div>`};
+  if(!ver.length&&!unv.length)h+=`<div class="empty-note" style="margin-top:18px">لا توجد أخبار مسجلة لهذه الفترة.</div>`;
+  if(bhN.length)h+=`<div class="mon-sec"><h3>البحرين <span class="num muted small">(${bhN.length})</span></h3></div>${tbl(bhN)}`;
+  if(gN.length)h+=`<div class="mon-sec"><h3>الخليج <span class="num muted small">(${gN.length})</span></h3></div>${tbl(gN)}`;
+  if(unv.length)h+=`<div class="mon-sec"><h3>لم يتم التحقق منها</h3></div>${tbl(unv)}`;
+  const srcs=OUTLETS.filter(o=>o.d);const done=srcs.filter(o=>chk.statuses[o.k]).length;
+  h+=`<details class="mchk" id="mchk-news" ${S.monChkOpen?"open":""}><summary>${ic("list")}<span>الفحص اليدوي للمصادر</span><span class="small muted num">${done}/${srcs.length}</span></summary>
+    <div class="mchk-b"><div class="small muted">البحرين</div><div class="outlets">${OUTLETS.filter(o=>o.r==="bh"&&o.d).map(card).join("")}</div>
+    <div class="small muted">الخليج</div><div class="outlets">${OUTLETS.filter(o=>o.r==="gcc").map(card).join("")}</div></div></details>`;
   el.innerHTML=h;
   $("mon-from").onchange=e=>{if(validDate(e.target.value)){M.from=e.target.value;if(M.to<M.from)M.to=M.from;M.preset="custom";render()}};
   $("mon-to").onchange=e=>{if(validDate(e.target.value)){M.to=e.target.value;if(M.from>M.to)M.from=M.to;M.preset="custom";render()}};
+  {const d=$("mchk-news");if(d)d.addEventListener("toggle",()=>{S.monChkOpen=d.open})}
   el.querySelectorAll("[data-mt]").forEach(c=>c.onchange=()=>{const k=c.dataset.mt;M.topics=c.checked?[...new Set([...M.topics,k])]:M.topics.filter(x=>x!==k);render()});
   el.querySelectorAll("[data-chk]").forEach(sel=>sel.onchange=async()=>{const id=periodKey(M);const cur=S.checks.find(c=>c.id===id)||{statuses:{}};
     const data={from:M.from,to:M.to,cutoff:bhNow().date+" "+bhNow().time,statuses:Object.assign({},cur.statuses,{[sel.dataset.chk]:sel.value}),updatedAt:new Date().toISOString()};
@@ -978,8 +1025,8 @@ function monReport(){
   const items=S.monitor.filter(x=>inPeriod(x.date,M)).sort((a,b)=>String(a.date).localeCompare(String(b.date)));
   const cl=v=>String(v||"").replace(/\|/g,"/").replace(/\s*\n\s*/g," ");
   const CH_AR={found:"تغطية ذات صلة تم التحقق منها",none:"لا توجد تغطية ذات صلة بعد الفحص الكامل",partial:"بحث غير مكتمل","":"لم يُفحص"};
-  const row=x=>{const o=outletOf(x.outlet),t=mtopic(x.topic);return `| ${fmt(x.date)} | ${cl(x.outletName||o.n)} | ${cl(x.headline)} | ${cl(t?t.n:x.topic)} | ${cl(x.summary)}${x.risk?" **مؤشر مخاطر:** "+cl(x.risk):""} | ${x.link?`[رابط الخبر](${x.link})`:"—"} |`};
-  const head="| التاريخ | الوسيلة الإعلامية | العنوان الأصلي | الموضوع | ملخص موجز | رابط الخبر |\n|---|---|---|---|---|---|";
+  const row=x=>{const o=outletOf(x.outlet),t=mtopic(x.topic);return `| ${fmt(x.date)} | ${cl(x.outletName||o.n)} | ${cl(x.headline)} | ${cl(t?t.n:x.topic)} | ${cl(x.summary)}${x.risk?" **مؤشر مخاطر:** "+cl(x.risk):""} | ${lvlName(lvlOf(x,false))} | ${x.link?`[رابط الخبر](${x.link})`:"—"} |`};
+  const head="| التاريخ | الوسيلة الإعلامية | العنوان الأصلي | الموضوع | ملخص موجز | المستوى | رابط الخبر |\n|---|---|---|---|---|---|---|";
   const ver=items.filter(x=>x.verified!==false),unv=items.filter(x=>x.verified===false);
   const bhR=ver.filter(x=>outletOf(x.outlet).r==="bh"),gR=ver.filter(x=>outletOf(x.outlet).r==="gcc");
   let t=`**فترة الرصد:** ${fmt(M.from)}${M.to!==M.from?" إلى "+fmt(M.to):""} (شاملة)، حتى الساعة ${cut} بتوقيت البحرين.\n\n`;
@@ -1057,9 +1104,12 @@ function smNeedsCtx(kw){return /^[A-Za-z0-9 ]+$/.test(kw)&&!/bahrain|lmra/i.test
 function xLink(kw,from,to){const q=(/\s/.test(kw)?'"'+kw+'"':kw)+(smNeedsCtx(kw)?" (Bahrain OR البحرين)":"")+" since:"+from+" until:"+addDays(to,1);return "https://x.com/search?q="+encodeURIComponent(q)+"&src=typed_query&f=live"}
 function igLink(kw){return "https://www.instagram.com/explore/search/keyword/?q="+encodeURIComponent(kw)}
 function igGLink(kw,from,to){return gLink('site:instagram.com "'+kw+'"'+(smNeedsCtx(kw)?" Bahrain":""),from,to)}
-function monSwitch(){const m=S.monMode||"news";return `<div class="seg msw" role="tablist" aria-label="نوع الرصد"><button type="button" role="tab" data-act="mon-mode" data-v="news" aria-pressed="${m==="news"}">الرصد الإعلامي</button><button type="button" role="tab" data-act="mon-mode" data-v="social" aria-pressed="${m==="social"}">رصد السوشيال ميديا</button></div>`}
-function periodCtl(M){return `<div class="mon-filters"><div class="seg" role="group" aria-label="الفترة"><button type="button" data-act="mon-preset" data-v="today" aria-pressed="${M.preset==="today"}">اليوم</button><button type="button" data-act="mon-preset" data-v="week" aria-pressed="${M.preset==="week"}">آخر 7 أيام</button><button type="button" data-act="mon-preset" data-v="custom" aria-pressed="${M.preset==="custom"}">فترة محددة</button></div>
-  <label class="field"><span>من</span><input type="date" id="mon-from" value="${M.from}"></label><label class="field"><span>إلى</span><input type="date" id="mon-to" value="${M.to}"></label></div>`}
+function monSwitch(){const m=S.monMode||"news";return `<div class="seg msw" role="tablist" aria-label="نوع الرصد"><button type="button" role="tab" data-act="mon-mode" data-v="news" aria-pressed="${m==="news"}">${ic("news")}الصحف والوكالات</button><button type="button" role="tab" data-act="mon-mode" data-v="social" aria-pressed="${m==="social"}">${ic("social")}السوشيال ميديا</button></div>`}
+function monHead(title,mode,M,cut){const sm=mode==="social";return `<div class="mon-head"><div><h2 style="font-size:22px;font-weight:800">${title}</h2>
+    <div class="period">${ic("cal")} <b class="num">${esc(fmt(M.from))}${M.to!==M.from?" – "+esc(fmt(M.to)):""}</b> · حتى <b class="num">${cut}</b></div></div>
+    <div class="grp" style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn primary" type="button" data-act="daily">${ic("report")}التقرير اليومي</button><button class="btn icon" type="button" data-act="${sm?"sm-copy":"mon-copy"}" ${sm?"":'id="mon-copy"'} title="نسخ التقرير" aria-label="نسخ التقرير">${ic("copy")}</button><button class="btn write-only" type="button" data-act="${sm?"sm-add":"mon-add"}">${ic("plus")}${sm?"منشور":"خبر"}</button></div></div>`}
+function periodCtl(M){return `<div class="mon-filters">${ic("cal","lbl")}<div class="seg" role="group" aria-label="الفترة"><button type="button" data-act="mon-preset" data-v="today" aria-pressed="${M.preset==="today"}">اليوم</button><button type="button" data-act="mon-preset" data-v="week" aria-pressed="${M.preset==="week"}">7 أيام</button><button type="button" data-act="mon-preset" data-v="custom" aria-pressed="${M.preset==="custom"}">محددة</button></div>
+  <input type="date" id="mon-from" value="${M.from}" aria-label="من"><span class="muted">–</span><input type="date" id="mon-to" value="${M.to}" aria-label="إلى"></div>`}
 function bindPeriod(M){$("mon-from").onchange=e=>{if(validDate(e.target.value)){M.from=e.target.value;if(M.to<M.from)M.to=M.from;M.preset="custom";render()}};
   $("mon-to").onchange=e=>{if(validDate(e.target.value)){M.to=e.target.value;if(M.from>M.to)M.from=M.to;M.preset="custom";render()}}}
 function smThumb(x){const src=monImgSrc(x);if(src)return `<img class="nimg" src="${esc(src)}" alt="" loading="lazy">`;
@@ -1069,39 +1119,39 @@ function renderSocial(){
   const el=$("view-monitor");const M=monPeriod();const bh=bhNow();const cut=M.to===bh.date?bh.time:"23:59";
   const chk=(S.smChecks||[]).find(c=>c.id===periodKey(M))||{statuses:{}};
   const items=smItems(M);const ver=items.filter(x=>x.verified!==false),unv=items.filter(x=>x.verified===false);
-  const tc=k=>ver.filter(x=>(x.tone||"neu")===k).length;
-  const checked=SM_ACC.filter(a=>["found","none"].includes(chk.statuses[a.k]||"")).length;
-  let h=monSwitch()+`<div class="mon-head"><div><h2 style="font-size:22px;font-weight:800">رصد السوشيال ميديا</h2>
-    <div class="period">فترة الرصد: <b class="num">${esc(fmt(M.from))}${M.to!==M.from?" – "+esc(fmt(M.to)):""}</b> · حتى الساعة <b class="num">${cut}</b> بتوقيت البحرين · إكس وإنستغرام وفيسبوك</div></div>
-    <div class="grp" style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn primary" type="button" data-act="daily">التقرير اليومي</button><button class="btn" type="button" data-act="sm-copy">نسخ التقرير</button><button class="btn write-only" type="button" data-act="sm-add">+ إضافة منشور</button></div></div>
-  <div class="card" style="padding:14px 16px;display:grid;gap:12px">${periodCtl(M)}</div>
-  <div class="smstats"><div><b class="num">${ver.length}</b><span>منشور مرصود</span></div>${SM_TONE.map(t=>`<div style="--tc:${t.c}"><b class="num">${tc(t.k)}</b><span><i class="dot"></i>${t.n}</span></div>`).join("")}<div><b class="num">${checked}<small>/${SM_ACC.length}</small></b><span>حساب تم فحصه</span></div></div>`;
-  const tbl=rows=>{if(!rows.length)return `<div class="empty-note">لا توجد منشورات مسجلة لهذه الفترة.</div>`;
-    return `<div class="tbl-wrap"><table class="mtbl" style="min-width:900px"><thead><tr><th>التاريخ</th><th>المنصة والحساب</th><th>الموضوع</th><th>ملخص المنشور</th><th>النبرة</th><th>الرابط</th></tr></thead><tbody>${rows.map(x=>{const t=mtopic(x.topic),tn=smTone(x.tone),pf=smPf(x.platform);
-      return `<tr class="hlrow" data-act="sm-edit" data-v="${esc(x.id)}" tabindex="0"><td colspan="6" class="hl" dir="auto"><span class="hlk">نص المنشور</span>${esc(clip(x.text,220))}</td></tr><tr class="mrow" data-act="sm-edit" data-v="${esc(x.id)}"><td class="dt">${esc(fmtShort(x.date))}</td><td><div style="font-weight:700">${esc(smAccName(x))}</div><div class="small muted" dir="ltr">${pf.n}${smHandle(x)?" · @"+esc(smHandle(x)):""}</div>${x.keyword?`<div class="small muted">«${esc(x.keyword)}»</div>`:""}</td><td>${esc(t?t.n:(x.topic||""))}</td><td class="sum"><div class="sumw">${smThumb(x)}<div class="tx" dir="auto">${esc(x.summary||"")}${x.engagement?`<span class="small muted" style="display:block;margin-top:4px">التفاعل: ${esc(x.engagement)}</span>`:""}${x.risk?`<span class="flag">مؤشر مخاطر: ${esc(x.risk)}</span>`:""}${x.verified===false?`<span class="flag">غير مؤكد: ${esc(x.why||"")}</span>`:""}</div></div></td><td><span class="tone" style="--tc:${tn.c}">${tn.n}</span></td><td>${/^https?:\/\//.test(x.link||"")?`<a href="${esc(x.link)}" data-noedit="1">فتح المنشور</a>`:"—"}</td></tr>`}).join("")}</tbody></table></div>`};
-  for(const sec of SM_SECS){const rows=ver.filter(x=>smSec(x)===sec.k);if(sec.k==="public"&&!rows.length)continue;
-    h+=`<div class="mon-sec"><h3>${sec.n} <span class="num muted small">(${rows.length})</span></h3></div>${tbl(rows)}`}
-  if(unv.length)h+=`<div class="mon-sec"><h3>منشورات لم يتم التحقق منها</h3><span class="small muted">مستبعدة من النتائج المؤكدة</span></div>${tbl(unv)}`;
-  // keywords
+  const tc=k=>ver.filter(x=>(x.tone||"neu")===k).length;const lv=x=>lvlOf(x,true);
   S.smSel=S.smSel||new Set(SM_KW.core);
-  const kwRow=kw=>`<div class="kw"><label class="kwn" dir="auto"><input type="checkbox" data-smkw="${esc(kw)}" ${S.smSel.has(kw)?"checked":""}> ${esc(kw)}</label><span class="ql"><a href="${xLink(kw,M.from,M.to)}">إكس</a><a href="${igLink(kw)}">إنستغرام</a><a href="${fbLink(kw)}">فيسبوك</a></span></div>`;
-  h+=`<div class="mon-sec"><h3>الكلمات المفتاحية</h3><span class="small muted">بحث إكس مقيّد بفترة الرصد · الكلمات الإنجليزية العامة يُضاف لها «البحرين» تلقائيًا</span></div>
-    <div class="card kwc">
-    <div class="scan-go"><button class="btn primary" type="button" data-act="sm-scan">إرصد الآن</button>
-      <span class="small muted"><b class="num">${S.smSel.size}</b> كلمة محددة · <a href="#" data-act="smkw-all" data-noedit="1">تحديد الكل</a> · <a href="#" data-act="smkw-none" data-noedit="1">إلغاء التحديد</a></span></div>
-    <div class="small muted">المصادر: إكس · إنستغرام · فيسبوك — «إرصد الآن» يجهّز بحث الكلمات المحددة في المنصات الثلاث خلال فترة الرصد.</div>
-    ${S.smScan?smScanPanel(M):""}
-    <div class="kwg">${SM_KW.core.map(kwRow).join("")}</div>
-    <details class="kwocc"${S.smOcc?" open":""}><summary>كلمات دورية (عند الحاجة) — تقرير الاتجار بالأشخاص والتصنيف</summary><div class="kwg">${SM_KW.occ.map(kwRow).join("")}</div></details></div>`;
-  // accounts
-  h+=`<div class="mon-sec"><h3>الحسابات المرصودة</h3><span class="small muted">افتح كل حساب، راجع منشورات الفترة، ثم حدّد حالة الفحص · تحديث القائمة: 27 يوليو 2026</span></div>`;
-  for(const g of SM_GROUPS){const acc=SM_ACC.filter(a=>a.g===g.k);const done=acc.filter(a=>chk.statuses[a.k]).length;
-    h+=`<details class="smg" ${S.smOpen&&S.smOpen[g.k]===false?"":"open"} data-g="${g.k}"><summary><span>${g.n}</span><span class="small muted num">${done}/${acc.length} تم فحصه</span></summary><div class="smacc">${acc.map(a=>{const st=chk.statuses[a.k]||"";const sc=SM_CHK.find(c=>c.k===st).c;const cnt=ver.filter(x=>x.account===a.k).length;
-      return `<div class="sa" style="--sc:${sc}"><div class="sa-t"><a href="${smProfile(a)}" class="san">${esc(a.n)}</a>${cnt?`<span class="tag num">${cnt}</span>`:""}<div class="small muted" dir="ltr">${a.pf==="x"?"X":"IG"} · @${esc(a.h)}</div></div>
-        <select data-smchk="${esc(a.k)}" aria-label="حالة فحص ${esc(a.n)}" ${S.canWrite?"":"disabled"}>${SM_CHK.map(c=>`<option value="${c.k}" ${c.k===st?"selected":""}>${c.n}</option>`).join("")}</select></div>`}).join("")}</div></details>`}
+  const st=scanState("social");
+  const kwChip=kw=>`<label><input type="checkbox" data-smkw="${esc(kw)}" ${S.smSel.has(kw)?"checked":""}><span dir="auto">${esc(kw)}</span></label>`;
+  let h=monSwitch()+monHead("رصد السوشيال ميديا","social",M,cut)+`
+  <div class="card mctl">
+    ${periodCtl(M)}
+    <div class="mrow2">${ic("tag","lbl")}<div class="chips">${SM_KW.core.map(kwChip).join("")}</div></div>
+    <div class="mrow2 sub"><button class="btn small" type="button" data-act="smkw-all">${ic("all")}الكل</button><button class="btn small" type="button" data-act="smkw-none">${ic("none")}لا شيء</button>
+      <details class="kwocc"${S.smOcc?" open":""}><summary>كلمات دورية</summary><div class="chips">${SM_KW.occ.map(kwChip).join("")}</div></details></div>
+    <div class="go-row"><button class="btn primary go" type="button" data-act="scan-run" data-v="social" ${st.loading?"disabled":""}>${ic(st.loading?"spin":"search",st.loading?"spin":"")}${st.loading?"جارٍ الرصد…":"إرصد الآن"}</button>
+      <span class="pfs">${pfIc("x")}${pfIc("ig")}${pfIc("fb")}<span class="small muted num">${S.smSel.size} كلمة</span></span></div>
+  </div>${scanPanel("social")}
+  <div class="mstat"><span>${ic("social")}<b class="num">${ver.length}</b> منشور</span>${SM_TONE.map(t=>`<span><i class="dot" style="--tc:${t.c}"></i>${t.n} <b class="num">${tc(t.k)}</b></span>`).join("")}<span>${lvlBadge("high")} <b class="num">${ver.filter(x=>lv(x)==="high").length}</b></span></div>`;
+  const tbl=rows=>{if(!rows.length)return `<div class="empty-note">لا توجد منشورات مسجلة لهذه الفترة.</div>`;
+    return `<div class="tbl-wrap"><table class="mtbl" style="min-width:900px"><thead><tr><th>التاريخ</th><th>الحساب</th><th>الموضوع</th><th>الملخص</th><th>النبرة</th><th>المستوى</th><th></th></tr></thead><tbody>${rows.map(x=>{const t=mtopic(x.topic),tn=smTone(x.tone);
+      return `<tr class="hlrow" data-act="sm-edit" data-v="${esc(x.id)}" tabindex="0"><td colspan="7" class="hl" dir="auto">${esc(clip(x.text,220))}</td></tr><tr class="mrow" data-act="sm-edit" data-v="${esc(x.id)}"><td class="dt">${esc(fmtShort(x.date))}</td><td><div class="acc">${pfIc(x.platform)}<div><div style="font-weight:700">${esc(smAccName(x))}</div>${smHandle(x)?`<div class="small muted" dir="ltr">@${esc(smHandle(x))}</div>`:""}</div></div>${x.keyword?`<div class="small muted">«${esc(x.keyword)}»</div>`:""}</td><td>${esc(t?t.n:(x.topic||""))}</td><td class="sum"><div class="sumw">${smThumb(x)}<div class="tx" dir="auto">${esc(x.summary||"")}${x.engagement?`<span class="small muted" style="display:block;margin-top:4px">التفاعل: ${esc(x.engagement)}</span>`:""}${x.risk?`<span class="flag">مؤشر مخاطر: ${esc(x.risk)}</span>`:""}${x.verified===false?`<span class="flag">غير مؤكد: ${esc(x.why||"")}</span>`:""}</div></div></td><td><span class="tone" style="--tc:${tn.c}">${tn.n}</span></td><td>${lvlBadge(lv(x))}</td><td>${/^https?:\/\//.test(x.link||"")?`<a class="btn icon small" href="${esc(x.link)}" data-noedit="1" title="فتح المنشور" aria-label="فتح المنشور">${ic("ext")}</a>`:"—"}</td></tr>`}).join("")}</tbody></table></div>`};
+  if(!ver.length&&!unv.length)h+=`<div class="empty-note" style="margin-top:18px">لا توجد منشورات مسجلة لهذه الفترة.</div>`;
+  for(const sec of SM_SECS){const rows=ver.filter(x=>smSec(x)===sec.k);if(!rows.length)continue;
+    h+=`<div class="mon-sec"><h3>${sec.n} <span class="num muted small">(${rows.length})</span></h3></div>${tbl(rows)}`}
+  if(unv.length)h+=`<div class="mon-sec"><h3>لم يتم التحقق منها</h3></div>${tbl(unv)}`;
+  // accounts — manual check, collapsed
+  const done=SM_ACC.filter(a=>chk.statuses[a.k]).length;
+  h+=`<details class="mchk" id="mchk-sm" ${S.smAccOpen?"open":""}><summary>${ic("list")}<span>الفحص اليدوي للحسابات</span><span class="small muted num">${done}/${SM_ACC.length}</span></summary><div class="mchk-b">`;
+  for(const g of SM_GROUPS){const acc=SM_ACC.filter(a=>a.g===g.k);const gd=acc.filter(a=>chk.statuses[a.k]).length;
+    h+=`<details class="smg" ${S.smOpen&&S.smOpen[g.k]?"open":""} data-g="${g.k}"><summary><span>${g.n}</span><span class="small muted num">${gd}/${acc.length}</span></summary><div class="smacc">${acc.map(a=>{const s=chk.statuses[a.k]||"";const sc=SM_CHK.find(c=>c.k===s).c;const cnt=ver.filter(x=>x.account===a.k).length;
+      return `<div class="sa" style="--sc:${sc}"><div class="sa-t">${pfIc(a.pf)}<a href="${smProfile(a)}" class="san">${esc(a.n)}</a>${cnt?`<span class="tag num">${cnt}</span>`:""}</div>
+        <select data-smchk="${esc(a.k)}" aria-label="حالة فحص ${esc(a.n)}" ${S.canWrite?"":"disabled"}>${SM_CHK.map(c=>`<option value="${c.k}" ${c.k===s?"selected":""}>${c.n}</option>`).join("")}</select></div>`}).join("")}</div></details>`}
+  h+=`</div></details>`;
   el.innerHTML=h;bindPeriod(M);
   el.querySelectorAll("[data-smkw]").forEach(c=>c.onchange=()=>{const k=c.dataset.smkw;if(c.checked)S.smSel.add(k);else S.smSel.delete(k);render()});
   el.querySelectorAll("details.smg").forEach(d=>d.addEventListener("toggle",()=>{S.smOpen=S.smOpen||{};S.smOpen[d.dataset.g]=d.open}));
+  {const d=$("mchk-sm");if(d)d.addEventListener("toggle",()=>{S.smAccOpen=d.open})}
   const occ=el.querySelector("details.kwocc");if(occ)occ.addEventListener("toggle",()=>{S.smOcc=occ.open});
   el.querySelectorAll("[data-smchk]").forEach(sel=>sel.onchange=async()=>{const id=periodKey(M);const cur=(S.smChecks||[]).find(c=>c.id===id)||{statuses:{}};
     const data={from:M.from,to:M.to,cutoff:bhNow().date+" "+bhNow().time,statuses:Object.assign({},cur.statuses,{[sel.dataset.smchk]:sel.value}),updatedAt:new Date().toISOString()};
@@ -1113,8 +1163,8 @@ function smReport(){
   const chk=(S.smChecks||[]).find(c=>c.id===periodKey(M))||{statuses:{}};
   const items=smItems(M);const ver=items.filter(x=>x.verified!==false),unv=items.filter(x=>x.verified===false);
   const cl=v=>String(v||"").replace(/\|/g,"/").replace(/\s*\n\s*/g," ");
-  const head="| التاريخ | المنصة | الحساب | نص المنشور | الموضوع | ملخص | النبرة | الرابط |\n|---|---|---|---|---|---|---|---|";
-  const row=x=>{const t=mtopic(x.topic);return `| ${fmt(x.date)} | ${smPf(x.platform).n} | ${cl(smAccName(x))} | ${cl(clip(x.text,200))} | ${cl(t?t.n:x.topic)} | ${cl(x.summary)}${x.risk?" **مؤشر مخاطر:** "+cl(x.risk):""} | ${smTone(x.tone).n} | ${x.link?`[رابط](${x.link})`:"—"} |`};
+  const head="| التاريخ | المنصة | الحساب | نص المنشور | الموضوع | ملخص | النبرة | المستوى | الرابط |\n|---|---|---|---|---|---|---|---|---|";
+  const row=x=>{const t=mtopic(x.topic);return `| ${fmt(x.date)} | ${smPf(x.platform).n} | ${cl(smAccName(x))} | ${cl(clip(x.text,200))} | ${cl(t?t.n:x.topic)} | ${cl(x.summary)}${x.risk?" **مؤشر مخاطر:** "+cl(x.risk):""} | ${smTone(x.tone).n} | ${lvlName(lvlOf(x,true))} | ${x.link?`[رابط](${x.link})`:"—"} |`};
   let t=`**رصد السوشيال ميديا — فترة الرصد:** ${fmt(M.from)}${M.to!==M.from?" إلى "+fmt(M.to):""} (شاملة)، حتى الساعة ${cut} بتوقيت البحرين.\n\n`;
   t+=`**الملخص:** ${ver.length} منشور مرصود — ${SM_TONE.map(x=>x.n+" "+ver.filter(y=>(y.tone||"neu")===x.k).length).join("، ")}.\n\n`;
   for(const sec of SM_SECS){const rows=ver.filter(x=>smSec(x)===sec.k);if(sec.k==="public"&&!rows.length)continue;t+=`## ${sec.n}\n\n`+(rows.length?head+"\n"+rows.map(row).join("\n"):"لا توجد منشورات ذات صلة.")+"\n\n"}
@@ -1161,7 +1211,12 @@ function openSm(x){
   $("s-cat").value=x?smCat(x):"related";S.smCatTouched=!!(x&&x.cat);smOtherVis();$("sm-err").textContent="";$("s-ai-st").textContent="";$("sm-h").textContent=x?"تعديل منشور":"إضافة منشور للرصد";$("s-del").style.visibility=x?"visible":"hidden";$("s-ai").style.display=S.sample?"":"none";
   S.smImg={file:null,remove:false};$("s-img").value="";const pv=$("s-img-prev"),src=x?monImgSrc(x):"";pv.hidden=!src;pv.src=src||"";$("s-img-rm").hidden=!src;
   $("s-img").disabled=!S.assets;$("s-img-st").textContent=S.assets?"الصق لقطة الشاشة للمنشور هنا (Ctrl+V) أو اسحبها، أو اختر ملفًا.":"رفع الصور متاح لمن لديهم صلاحية «مساهم» أو أعلى.";
+  S.smLvlTouched=!!(x&&x.level&&!x.levelAuto);$("s-lvl").innerHTML=lvlOpts(x?lvlOf(x,true):"med");if(!x)smLvlSync();$("s-lvl-h").hidden=S.smLvlTouched;
   $("dlg-sm").showModal()}
+function smFormLvl(){const k=$("s-acc").value;return smLvlAuto({account:k==="__other"?"":k,text:$("s-text").value,summary:$("s-sum").value,keyword:$("s-kw").value,risk:$("s-risk").value.trim(),tone:$("s-tone").value,topic:$("s-topic").value,cat:$("s-cat").value})}
+function smLvlSync(){if(!S.smLvlTouched)$("s-lvl").value=smFormLvl()}
+$("s-lvl").addEventListener("change",()=>{S.smLvlTouched=true;$("s-lvl-h").hidden=true});
+["input","change"].forEach(ev=>$("f-sm").addEventListener(ev,e=>{if(e.target.id!=="s-lvl")smLvlSync()}));
 function smOtherVis(){const o=$("s-acc").value==="__other";$("s-other").style.display=o?"":"none";if(!o){const a=smAcc($("s-acc").value);if(a)$("s-pf").value=a.pf}if(!S.smCatTouched)$("s-cat").value=smDefCat($("s-acc").value)}
 $("s-cat").addEventListener("change",()=>{S.smCatTouched=true});
 $("s-acc").addEventListener("change",smOtherVis);
@@ -1193,7 +1248,7 @@ Post text:
 ${text.slice(0,10000)}`;
   btn.disabled=true;st.textContent="جارٍ الصياغة…";
   try{const r=await S.sample.json(prompt,{modelTier:"default"});
-    if(r&&r.summary)$("s-sum").value=r.summary;if(r&&r.risk!==undefined)$("s-risk").value=r.risk||"";if(r&&mtopic(r.topic))$("s-topic").value=r.topic;if(r&&SM_TONE.some(t=>t.k===r.tone))$("s-tone").value=r.tone;
+    if(r&&r.summary)$("s-sum").value=r.summary;if(r&&r.risk!==undefined)$("s-risk").value=r.risk||"";if(r&&mtopic(r.topic))$("s-topic").value=r.topic;if(r&&SM_TONE.some(t=>t.k===r.tone))$("s-tone").value=r.tone;smLvlSync();
     st.textContent=r&&r.relevant===false?"تنبيه: يرى Claude أن المنشور قد لا يكون ذا صلة. راجعه قبل الحفظ.":"تمت الصياغة. راجع النص قبل الحفظ.";
   }catch(err){st.textContent=err&&err.code==="rate_limited"?"طلبات كثيرة، انتظر قليلًا ثم حاول.":"تعذّرت الصياغة. اكتب الملخص يدويًا."}
   finally{btn.disabled=false}});
@@ -1205,7 +1260,7 @@ $("f-sm").addEventListener("submit",async e=>{
   if(link&&!/^https?:\/\//.test(link)){$("sm-err").textContent="الرابط يجب أن يبدأ بـ https://";return}
   const verified=$("s-ver").checked;if(!verified&&!$("s-why").value.trim()){$("sm-err").textContent="اذكر سبب عدم التحقق.";return}
   const data={date,platform:$("s-pf").value,account:accK==="__other"?"":accK,accountName:accK==="__other"?$("s-oname").value.trim():"",handle:accK==="__other"?$("s-ohandle").value.trim().replace(/^@/,""):"",
-    keyword:$("s-kw").value,cat:$("s-cat").value,text,link,engagement:$("s-eng").value.trim(),topic:$("s-topic").value,tone:$("s-tone").value,summary:$("s-sum").value.trim(),risk:$("s-risk").value.trim(),verified,why:verified?"":$("s-why").value.trim(),
+    keyword:$("s-kw").value,cat:$("s-cat").value,text,link,engagement:$("s-eng").value.trim(),topic:$("s-topic").value,tone:$("s-tone").value,summary:$("s-sum").value.trim(),risk:$("s-risk").value.trim(),level:S.smLvlTouched?$("s-lvl").value:smFormLvl(),levelAuto:!S.smLvlTouched,verified,why:verified?"":$("s-why").value.trim(),
     updatedAt:new Date().toISOString(),createdAt:x?x.createdAt||"":new Date().toISOString()};
   if(S.me&&!x)data.by=S.me;
   if(x&&x.imageId&&!(S.smImg&&S.smImg.remove))data.imageId=x.imageId;
@@ -1265,7 +1320,7 @@ function buildDaily(){
 function dailyDateLine(M){return M.from===M.to?longDate(M.to):longDate(M.from)+" إلى "+longDate(M.to)}
 function dailyFileName(M,ext){const p=parts(M.to);return "LMRA - Daily News Report "+pad2(p.d)+"-"+pad2(p.m)+"-"+p.y+"."+ext}
 function itemTitle(x,sm){return sm?clip(x.text,170):String(x.headline||"")}
-function itemMeta(x,sm){return sm?(smPf(x.platform).n+" · "+smAccName(x)+(smHandle(x)?" @"+smHandle(x):"")+" · "+fmt(x.date)):(pressLabel(x)+" · "+fmt(x.date))}
+function itemMeta(x,sm){return (sm?(smPf(x.platform).n+" · "+smAccName(x)+(smHandle(x)?" @"+smHandle(x):"")+" · "+fmt(x.date)):(pressLabel(x)+" · "+fmt(x.date)))+" · المستوى: "+lvlName(lvlOf(x,sm))}
 function idxText(r,pg,sm){if(r.none)return "لا يوجد";if(!r.items.length)return "لا يوجد";return r.items.map(x=>(sm?clip(x.text,90):x.headline)+"  —  ص "+(pg[x.id]||"")).join("\n")}
 
 /* ---------- HTML pages (preview + PDF) ---------- */
@@ -1412,66 +1467,113 @@ async function makeDocx(D){
   return await d.Packer.toBlob(doc)}
 
 
+
+/* ===== أيقونات ومستوى الخبر ===== */
+const IC={search:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',report:'<path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/>',
+ copy:'<rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/>',plus:'<path d="M12 5v14M5 12h14"/>',
+ ext:'<path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>',close:'<path d="M18 6 6 18M6 6l12 12"/>',check:'<path d="m5 12 5 5L20 7"/>',
+ news:'<path d="M4 5h13v14H6a2 2 0 0 1-2-2zM17 9h3v8a2 2 0 0 1-2 2"/><path d="M8 9h5M8 13h5"/>',social:'<path d="M4 9h16M4 15h16M10 3 8 21M16 3l-2 18"/>',
+ list:'<path d="M10 6h10M10 12h10M10 18h10"/><path d="m3 6 1.5 1.5L7 5M3 12l1.5 1.5L7 11M3 18l1.5 1.5L7 17"/>',cal:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+ tag:'<path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"/><circle cx="7.5" cy="7.5" r="1.5"/>',
+ all:'<rect x="3" y="3" width="18" height="18" rx="3"/><path d="m8 12 3 3 5-6"/>',none:'<rect x="3" y="3" width="18" height="18" rx="3"/>',
+ key:'<circle cx="8" cy="15" r="4"/><path d="m11 12 9-9M17 6l3 3M15 8l2 2"/>',spin:'<path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/>'};
+function ic(k,cls){return `<svg class="ic${cls?" "+cls:""}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[k]||""}</svg>`}
+function pfIc(k){return `<img class="pfi" src="rpt/${k==="x"?"x":k==="fb"?"fb":"ig"}.png" alt="${esc(smPf(k).n)}" title="${esc(smPf(k).n)}">`}
+const LVL=[{k:"high",n:"عالي"},{k:"med",n:"متوسط"},{k:"low",n:"منخفض"}];
+const LVL_LMRA=/هيئة تنظيم سوق العمل|تنظيم سوق العمل|اللجنة الوطنية لمكافحة الاتجار|\bLMRA\b|lmrabh|Labou?r Market Regulatory|NCCTIP/i;
+const LVL_NEG=/مخالف|احتيال|نصب|هروب|هارب|وفاة|شكو|استغلال|اتجار|إضراب|اضراب|متأخرات|تأخر|ضبط|القبض|إساءة|اساءة|سوء معاملة|العمل الجبري|حجز جواز|فضيحة|غضب|fraud|abuse|complain|traffick|arrest|strike|unpaid|death|exploit|forced|scandal|violation/i;
+const LVL_LAB=/عمال|عمالة|العمل|وافد|منزلي|أجور|اجور|رواتب|تصريح|توظيف|بحرنة|تأشير|labou?r|worker|wage|permit|expat|employ|visa|trafficking/i;
+function lvlAuto(o){let s=0;const t=String(o.text||"");
+  if(o.cat==="issued"||LVL_LMRA.test(t))s+=2;
+  if(o.risk||o.tone==="neg"||LVL_NEG.test(t))s+=2;
+  if((o.topic&&o.topic!=="")||LVL_LAB.test(t))s+=1;
+  if(o.region==="bh")s+=1;else if(o.region==="gcc"||o.cat==="intl")s-=1;
+  return s>=4?"high":s>=2?"med":"low"}
+function newsLvlAuto(x){return lvlAuto({text:[x.headline,x.summary].join(" "),risk:x.risk,topic:x.topic,cat:x.cat,region:outletOf(x.outlet).r})}
+function smLvlAuto(x){const a=smAcc(x.account);return lvlAuto({text:[x.text,x.summary,x.keyword].join(" "),risk:x.risk,tone:x.tone,topic:x.topic,cat:x.cat,region:a&&smGroup(a.g).sec==="intl"?"gcc":"bh"})}
+function lvlOf(x,sm){return LVL.some(l=>l.k===x.level)?x.level:(sm?smLvlAuto(x):newsLvlAuto(x))}
+function lvlName(k){return (LVL.find(l=>l.k===k)||LVL[1]).n}
+function lvlBadge(k){return `<span class="lvl lvl-${k}" title="مستوى الخبر: ${lvlName(k)}"><span class="bars"><i></i><i></i><i></i></span>${lvlName(k)}</span>`}
+function lvlOpts(sel){return LVL.map(l=>`<option value="${l.k}" ${l.k===sel?"selected":""}>${l.n}</option>`).join("")}
+function copyFlash(a,ok){a.innerHTML=ic(ok?"check":"close");a.title=ok?"تم النسخ":"تعذّر النسخ";setTimeout(()=>{a.innerHTML=ic("copy");a.title="نسخ التقرير"},1800)}
+
 /* ===== «ارصد الآن» — بحث آلي في الأخبار ===== */
 const SCAN_ON=()=>typeof window.lmraSearch==="function";
 function sitesOf(r){return "("+OUTLETS.filter(o=>o.r===r&&o.d).map(o=>"site:"+o.d).join(" OR ")+")"}
 function outletFromUrl(u){try{const h=new URL(u).hostname.replace(/^www\./,"");const o=OUTLETS.find(o=>o.d&&(h===o.d||h.endsWith("."+o.d)));return o?o.k:"other"}catch(e){return "other"}}
 function bhDateOf(iso){if(!iso)return "";const f=new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Bahrain",year:"numeric",month:"2-digit",day:"2-digit"});return f.format(new Date(iso))}
-function scanState(mode){S.scan=S.scan||{};return S.scan[mode]||(S.scan[mode]={items:null,loading:false,err:"",key:""})}
+function scanState(mode){S.scan=S.scan||{};return S.scan[mode]||(S.scan[mode]={items:null,loading:false,err:"",key:"",needKey:false})}
+function smHandleFromUrl(u){try{const x=new URL(u);const h=x.hostname.replace(/^(www|m|mobile)\./,"");const seg=x.pathname.split("/").filter(Boolean);
+  const pf=/(^|\.)x\.com$|twitter\.com$/.test(h)?"x":/instagram\.com$/.test(h)?"ig":/facebook\.com$|fb\.com$/.test(h)?"fb":"";
+  const bad=["p","reel","reels","explore","search","hashtag","i","status","stories","watch","groups","photo","photos","videos","permalink.php","story.php","share","tv"];
+  const handle=seg[0]&&!bad.includes(seg[0].toLowerCase())?seg[0]:"";return {pf,handle}}catch(e){return {pf:"",handle:""}}}
 async function runScan(mode){
-  const M=monPeriod();const st=scanState(mode);let queries=[];
+  const M=monPeriod();const st=scanState(mode);let queries=[],payload;
   if(mode==="news"){
     const tps=MTOPICS.filter(t=>M.topics.includes(t.k));
-    if(!tps.length){st.err="اختر محورًا واحدًا على الأقل.";render();return}
+    if(!tps.length){st.err="اختر محورًا واحدًا على الأقل.";st.items=null;render();return}
     for(const t of tps){queries.push({q:"("+t.ar+") "+sitesOf("bh"),lang:"ar"},{q:"("+t.q+") "+sitesOf("bh"),lang:"en"},{q:"("+t.ar+") "+sitesOf("gcc"),lang:"ar"})}
+    payload={queries,from:M.from,to:M.to};
   }else{
     const kws=[...(S.smSel||new Set(SM_KW.core))];
-    if(!kws.length){st.err="اختر كلمة مفتاحية واحدة على الأقل.";render();return}
-    queries=kws.slice(0,30).map(kw=>({q:(/\s/.test(kw)?'"'+kw+'"':kw)+(smNeedsCtx(kw)?" Bahrain":""),lang:isArabic(kw)?"ar":"en",kw}));
+    if(!kws.length){st.err="اختر كلمة مفتاحية واحدة على الأقل.";st.items=null;render();return}
+    if(!SCAN_ON()){st.items=[];st.needKey=true;st.err="";st.key=M.from+"_"+M.to;render();return}
+    payload={mode:"social",keywords:kws.slice(0,40).map(kw=>({kw,ctx:smNeedsCtx(kw)})),from:M.from,to:M.to};
   }
   st.loading=true;st.err="";st.key=M.from+"_"+M.to;render();
-  try{const r=await window.lmraSearch({queries:queries.map(q=>({q:q.q,lang:q.lang})),from:M.from,to:M.to});
-    st.items=(r&&r.items||[]).map(x=>Object.assign(x,{outlet:outletFromUrl(x.sourceUrl),date:bhDateOf(x.pubDate),label:mode==="news"?(MTOPICS.filter(t=>M.topics.includes(t.k))[Math.floor(x.q/3)]||{}).k:(queries[x.q]||{}).kw}));
+  try{const r=await window.lmraSearch(payload);st.needKey=!!(r&&r.needKey);
+    const tps=MTOPICS.filter(t=>M.topics.includes(t.k));
+    st.items=(r&&r.items||[]).map(x=>{
+      if(mode==="news"){const o=outletFromUrl(x.sourceUrl);const lab=(tps[Math.floor(x.q/3)]||{}).k;
+        return Object.assign(x,{outlet:o,date:bhDateOf(x.pubDate),label:lab,level:lvlAuto({text:x.title,topic:lab,region:outletOf(o).r})})}
+      const u=smHandleFromUrl(x.link);const acc=SM_ACC.find(a=>u.handle&&a.h.toLowerCase()===u.handle.toLowerCase());
+      return Object.assign(x,{platform:x.platform||u.pf,handle:u.handle,account:acc?acc.k:"",date:x.pubDate?bhDateOf(x.pubDate):"",label:x.kw,
+        level:lvlAuto({text:[x.title,x.snippet,x.kw].join(" "),region:acc&&smGroup(acc.g).sec==="intl"?"gcc":"bh"})})});
+    const rank={high:0,med:1,low:2};st.items.sort((a,b)=>rank[a.level]-rank[b.level]||String(b.date||"").localeCompare(String(a.date||"")));
   }catch(e){console.error(e);st.err="تعذّر البحث الآن. حاول بعد قليل."}
   finally{st.loading=false;render()}
 }
-function scanAdded(x){const t=String(x.title||"").trim();return S.monitor.some(m=>(m.link&&m.link===x.link)||String(m.headline||"").trim()===t)}
+function scanAdded(x,mode){const t=String(x.title||"").trim();if(mode==="social")return (S.social||[]).some(m=>m.link&&m.link===x.link);return S.monitor.some(m=>(m.link&&m.link===x.link)||String(m.headline||"").trim()===t)}
 function scanPanel(mode){
-  if(!SCAN_ON())return "";const st=scanState(mode);const M=monPeriod();
-  if(st.loading)return `<div class="card scanp"><div class="scan-h"><b>جارٍ الرصد…</b><span class="small muted">يبحث في الأخبار المنشورة خلال الفترة المحددة</span></div></div>`;
+  const st=scanState(mode);const M=monPeriod();const sm=mode==="social";
+  if(!sm&&!SCAN_ON())return "";
+  if(st.loading)return `<div class="card scanp"><div class="scan-h">${ic("spin","spin")}<b>جارٍ الرصد…</b></div></div>`;
   if(st.err&&!st.items)return `<div class="card scanp"><div class="err-msg">${esc(st.err)}</div></div>`;
   if(!st.items)return "";
   const stale=st.key!==M.from+"_"+M.to;
-  const rows=st.items.map((x,i)=>{const o=outletOf(x.outlet);const added=scanAdded(x);const lab=mode==="news"?(mtopic(x.label)||{}).n:x.label;
-    return `<tr><td class="dt">${esc(x.date?fmtShort(x.date):"—")}</td><td><div style="font-weight:700">${esc(x.source||o.n)}</div>${x.outlet!=="other"?`<span class="tag">${esc(o.n)}</span>`:""}</td>
-      <td dir="auto"><a href="${esc(x.link)}" data-noedit="1" class="scan-t">${esc(x.title)}</a>${lab?`<div class="small muted">${esc(lab)}</div>`:""}</td>
-      <td style="white-space:nowrap">${added?`<span class="tone" style="--tc:var(--ok)">مضاف</span>`:`<button class="btn small write-only" type="button" data-act="scan-add" data-v="${mode}:${i}">إضافة للرصد</button>`}</td></tr>`}).join("");
-  return `<div class="card scanp"><div class="scan-h"><b>نتائج «ارصد الآن» <span class="num muted">(${st.items.length})</span></b>
-    <span class="small muted">${stale?"⚠ النتائج لفترة سابقة — اضغط «ارصد الآن» للتحديث":"المصدر: Google News · راجع كل خبر قبل إضافته"}</span>
-    <button class="btn small" type="button" data-act="scan-clear" data-v="${mode}">إخفاء</button></div>
-    ${st.items.length?`<div class="tbl-wrap"><table class="scant"><thead><tr><th>التاريخ</th><th>المصدر</th><th>العنوان</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`:`<div class="empty-note">لا توجد نتائج لهذه الفترة والمحاور.</div>`}</div>`}
-function scanAddOpen(mode,i){const x=(scanState(mode).items||[])[i];if(!x)return;openMon(null);
+  const close=`<button class="btn icon small" type="button" data-act="scan-clear" data-v="${mode}" title="إخفاء" aria-label="إخفاء">${ic("close")}</button>`;
+  if(sm&&st.needKey)return `<div class="card scanp"><div class="scan-h"><b>إرصد الآن</b><span class="small muted">${ic("key")} عرض نتائج المنصات داخل المنصة يحتاج تفعيل مفتاح البحث — افتح النتائج مباشرة:</span>${close}</div>${smLaunch(M)}</div>`;
+  const rows=st.items.map((x,i)=>{const added=scanAdded(x,mode);
+    const src=sm?`<div class="acc">${pfIc(x.platform)}<div>${x.account?`<div style="font-weight:700">${esc(smAcc(x.account).n)}</div>`:""}${x.handle?`<div class="small muted" dir="ltr">@${esc(x.handle)}</div>`:`<div class="small muted">${esc(smPf(x.platform).n)}</div>`}</div></div>`
+      :`<div style="font-weight:700">${esc(x.source||outletOf(x.outlet).n)}</div>`;
+    const lab=sm?(x.label?"«"+x.label+"»":""):(mtopic(x.label)||{}).n;
+    return `<tr><td class="dt">${esc(x.date?fmtShort(x.date):"—")}</td><td>${src}</td>
+      <td><a href="${esc(x.link)}" data-noedit="1" class="scan-t" dir="auto">${esc(x.title)}</a>${sm&&x.snippet?`<div class="small snip" dir="auto">${esc(clip(x.snippet,180))}</div>`:""}${lab?`<div class="small muted">${esc(lab)}</div>`:""}</td>
+      <td>${lvlBadge(x.level)}</td>
+      <td style="white-space:nowrap">${added?`<span class="tone" style="--tc:var(--ok)">مضاف</span>`:`<button class="btn icon small write-only" type="button" data-act="scan-add" data-v="${mode}:${i}" title="إضافة للرصد" aria-label="إضافة للرصد">${ic("plus")}</button>`}</td></tr>`}).join("");
+  return `<div class="card scanp"><div class="scan-h"><b>النتائج <span class="num muted">(${st.items.length})</span></b>
+    <span class="small muted">${stale?"⚠ لفترة سابقة — أعد الرصد":"مرتبة حسب المستوى · راجع قبل الإضافة"}</span>${close}</div>
+    ${st.items.length?`<div class="tbl-wrap"><table class="scant"><thead><tr><th>التاريخ</th><th>${sm?"الحساب":"المصدر"}</th><th>${sm?"المنشور":"العنوان"}</th><th>المستوى</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`:`<div class="empty-note">لا توجد نتائج لهذه الفترة.</div>`}
+    ${sm?`<details class="kwocc"><summary>فتح البحث في المنصات مباشرة</summary>${smLaunch(M)}</details>`:""}</div>`}
+function scanAddOpen(mode,i){const x=(scanState(mode).items||[])[i];if(!x)return;
+  if(mode==="social"){openSm(null);
+    if(x.account){$("s-acc").value=x.account}else{$("s-acc").value="__other";$("s-ohandle").value=x.handle||"";$("s-oname").value=x.handle||""}
+    smOtherVis();if(x.platform)$("s-pf").value=x.platform;
+    $("s-text").value=[x.title,x.snippet].filter(Boolean).join("\n");$("s-link").value=x.link||"";if(x.date)$("s-date").value=x.date;
+    if([...$("s-kw").options].some(o=>o.value===x.label))$("s-kw").value=x.label;$("s-lvl").value=x.level;return}
+  openMon(null);
   $("m-head").value=x.title||"";$("m-link").value=x.link||"";if(x.date)$("m-date").value=x.date;
-  $("m-outlet").value=x.outlet||"other";if(mode==="news"&&mtopic(x.label))$("m-topic").value=x.label;
-  $("m-outlet").dispatchEvent(new Event("change"))}
+  $("m-outlet").value=x.outlet||"other";if(mtopic(x.label))$("m-topic").value=x.label;
+  $("m-outlet").dispatchEvent(new Event("change"));$("m-lvl").value=x.level}
 function xMultiLink(kws,from,to){let q="";for(const kw of kws){const t=(/\s/.test(kw)?'"'+kw+'"':kw);const n=q?q+" OR "+t:t;if(n.length>420)break;q=n}
   return "https://x.com/search?q="+encodeURIComponent("("+q+") since:"+from+" until:"+addDays(to,1))+"&src=typed_query&f=live"}
-
-
-function smScanPanel(M){
-  const kws=[...S.smSel];if(!kws.length)return `<div class="card scanp"><div class="err-msg">اختر كلمة مفتاحية واحدة على الأقل.</div></div>`;
-  const chip=(href,t)=>`<a class="btn small" href="${href}" data-noedit="1" dir="auto">${esc(t)}</a>`;
-  return `<div class="card scanp smscan"><div class="scan-h"><b>إرصد الآن — ${kws.length} كلمة · ${esc(fmt(M.from))}${M.to!==M.from?" – "+esc(fmt(M.to)):""}</b>
-    <span class="small muted">اضغط أي منصة لفتح نتائجها، ثم أضف المنشورات ذات الصلة بزر «+ إضافة منشور»</span>
-    <button class="btn small" type="button" data-act="sm-scan-close">إخفاء</button></div>
-    <div class="smscan-g">
-      <div class="smp"><div class="smp-h"><img src="rpt/x.png" alt="">إكس <span class="small muted">بحث واحد بكل الكلمات · مقيّد بالفترة</span></div>
-        <div class="smp-b">${chip(xMultiLink(kws,M.from,M.to),"فتح نتائج إكس")}</div></div>
-      <div class="smp"><div class="smp-h"><img src="rpt/ig.png" alt="">إنستغرام <span class="small muted">بحث لكل كلمة</span></div>
-        <div class="smp-b">${kws.map(k=>chip(igLink(k),k)).join("")}</div></div>
-      <div class="smp"><div class="smp-h"><img src="rpt/fb.png" alt="">فيسبوك <span class="small muted">بحث لكل كلمة</span></div>
-        <div class="smp-b">${kws.map(k=>chip(fbLink(k),k)).join("")}</div></div>
-    </div></div>`}
+function smLaunch(M){
+  const kws=[...S.smSel];const chip=(href,t)=>`<a class="btn small" href="${href}" data-noedit="1" dir="auto">${esc(t)}</a>`;
+  return `<div class="smscan-g">
+      <div class="smp"><div class="smp-h">${pfIc("x")}إكس</div><div class="smp-b">${chip(xMultiLink(kws,M.from,M.to),"كل الكلمات")}</div></div>
+      <div class="smp"><div class="smp-h">${pfIc("ig")}إنستغرام</div><div class="smp-b">${kws.map(k=>chip(igLink(k),k)).join("")}</div></div>
+      <div class="smp"><div class="smp-h">${pfIc("fb")}فيسبوك</div><div class="smp-b">${kws.map(k=>chip(fbLink(k),k)).join("")}</div></div>
+    </div>`}
 
 function openMon(x){
   S.editMon=x||null;const M=monPeriod();
@@ -1486,8 +1588,13 @@ function openMon(x){
   S.monImg={file:null,remove:false};$("m-img").value="";
   const pv=$("m-img-prev"),src=x?monImgSrc(x):"";pv.hidden=!src;pv.src=src||"";$("m-img-rm").hidden=!src;
   $("m-img").disabled=!S.assets;$("m-img-st").textContent=S.assets?"الصق لقطة الشاشة هنا مباشرة (Ctrl+V) أو اسحبها، أو اختر ملفًا.":"رفع الصور متاح لمن لديهم صلاحية «مساهم» أو أعلى.";
+  S.lvlTouched=!!(x&&x.level&&!x.levelAuto);$("m-lvl").innerHTML=lvlOpts(x?lvlOf(x,false):"med");if(!x)monLvlSync();$("m-lvl-h").hidden=S.lvlTouched;
   $("dlg-mon").showModal();
 }
+function monFormLvl(){const o=$("m-outlet").value;return newsLvlAuto({outlet:o,headline:$("m-head").value,summary:$("m-sum").value,risk:$("m-risk").value.trim(),topic:$("m-topic").value,cat:$("m-cat").value})}
+function monLvlSync(){if(!S.lvlTouched)$("m-lvl").value=monFormLvl()}
+$("m-lvl").addEventListener("change",()=>{S.lvlTouched=true;$("m-lvl-h").hidden=true});
+["input","change"].forEach(ev=>$("f-mon").addEventListener(ev,e=>{if(e.target.id!=="m-lvl")monLvlSync()}));
 function setMonImg(f,src){if(!f||!S.assets)return;if(!/^image\//.test(f.type||"")){$("m-img-st").textContent="الملف ليس صورة.";return}
   if(f.size>8*1024*1024){$("m-img-st").textContent="حجم الصورة كبير، الحد الأقصى 8 ميغابايت.";$("m-img").value="";return}
   S.monImg={file:f,remove:false};const pv=$("m-img-prev");pv.src=URL.createObjectURL(f);pv.hidden=false;$("m-img-rm").hidden=false;$("m-img-st").textContent=(src==="paste"?"تم لصق الصورة ✓ ":"")+"ستُرفع الصورة عند الحفظ."}
@@ -1518,7 +1625,7 @@ Article text:
 ${body.slice(0,12000)}`;
   btn.disabled=true;st.textContent="جارٍ الصياغة…";
   try{const r=await S.sample.json(prompt,{modelTier:"default"});
-    if(r&&r.summary)$("m-sum").value=r.summary;if(r&&r.risk!==undefined)$("m-risk").value=r.risk||"";if(r&&mtopic(r.topic))$("m-topic").value=r.topic;if(r&&RCAT.some(c=>c.k===r.category)&&!S.catTouched)$("m-cat").value=r.category;
+    if(r&&r.summary)$("m-sum").value=r.summary;if(r&&r.risk!==undefined)$("m-risk").value=r.risk||"";if(r&&mtopic(r.topic))$("m-topic").value=r.topic;if(r&&RCAT.some(c=>c.k===r.category)&&!S.catTouched)$("m-cat").value=r.category;monLvlSync();
     st.textContent=r&&r.relevant===false?"تنبيه: يرى Claude أن الخبر قد لا يكون ذا صلة. راجعه قبل الحفظ.":"تمت الصياغة. راجع النص قبل الحفظ.";
   }catch(err){st.textContent=err&&err.code==="rate_limited"?"طلبات كثيرة، انتظر قليلًا ثم حاول.":"تعذّرت الصياغة. اكتب الملخص يدويًا."}
   finally{btn.disabled=false}
@@ -1530,7 +1637,7 @@ $("f-mon").addEventListener("submit",async e=>{
   if(link&&!/^https?:\/\//.test(link)){$("m-err").textContent="الرابط يجب أن يبدأ بـ https://";return}
   const verified=$("m-ver").checked;if(!verified&&!$("m-why").value.trim()){$("m-err").textContent="اذكر سبب عدم التحقق.";return}
   const o=outletOf($("m-outlet").value);
-  const data={date,outlet:o.k,region:o.r,headline:head,link,topic:$("m-topic").value,cat:$("m-cat").value,summary:$("m-sum").value.trim(),risk:$("m-risk").value.trim(),verified,why:verified?"":$("m-why").value.trim(),updatedAt:new Date().toISOString(),createdAt:x?x.createdAt||"":new Date().toISOString()};
+  const data={date,outlet:o.k,region:o.r,headline:head,link,topic:$("m-topic").value,cat:$("m-cat").value,summary:$("m-sum").value.trim(),risk:$("m-risk").value.trim(),level:S.lvlTouched?$("m-lvl").value:monFormLvl(),levelAuto:!S.lvlTouched,verified,why:verified?"":$("m-why").value.trim(),updatedAt:new Date().toISOString(),createdAt:x?x.createdAt||"":new Date().toISOString()};
   if(S.me&&!x)data.by=S.me;
   if(x&&x.imageId&&!(S.monImg&&S.monImg.remove))data.imageId=x.imageId;
   try{
@@ -1642,10 +1749,10 @@ document.addEventListener("click",async e=>{
     case "sm-add":openSm(null);break;
     case "sm-edit":{if(e.target.closest("[data-noedit]"))return;const x=(S.social||[]).find(m=>m.id===v);if(x)openSm(x);break}
     case "sm-print":{const r=$("rpt");r.innerHTML=smPrintHTML();r.hidden=false;document.body.classList.add("rpt-open");window.scrollTo(0,0);break}
-    case "sm-copy":{const t=smReport();const done=ok=>{a.textContent=ok?"تم نسخ التقرير ✓":"تعذّر النسخ";setTimeout(()=>a.textContent="نسخ التقرير",2000)};try{navigator.clipboard.writeText(t).then(()=>done(true),()=>done(false))}catch(err){done(false)}break}
+    case "sm-copy":{const t=smReport();const done=ok=>copyFlash(a,ok);try{navigator.clipboard.writeText(t).then(()=>done(true),()=>done(false))}catch(err){done(false)}break}
     case "rpt-close":closeReport();break;
     case "rpt-print":{try{window.print()}catch(err){const h=$("rpt-hint");if(h)h.textContent="الطباعة غير متاحة هنا — استخدم Ctrl+P (أو ⌘+P)."}break}
-    case "mon-copy":{const t=monReport();const done=ok=>{a.textContent=ok?"تم نسخ التقرير ✓":"تعذّر النسخ";setTimeout(()=>a.textContent="نسخ التقرير",2000)};try{navigator.clipboard.writeText(t).then(()=>done(true),()=>done(false))}catch(err){done(false)}break}
+    case "mon-copy":{const t=monReport();const done=ok=>copyFlash(a,ok);try{navigator.clipboard.writeText(t).then(()=>done(true),()=>done(false))}catch(err){done(false)}break}
     case "photo-new":openTask(null,"photo");break;
     case "f-type":S.f.type=S.f.type===v?"all":v;render();break;
     case "more":S.limit=(S.limit||300)+300;render();break;
