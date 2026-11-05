@@ -14,7 +14,7 @@
   --bg:#f4f2ee; --surface:#ffffff; --surface-2:#f8f6f2; --line:#e3ded5; --line-2:#cfc8bb;
   --accent:#17325a; --accent-ink:#ffffff; --accent-soft:#e6ebf2;
   --hol-bg:#fbe9e8; --hol-ink:#a8211f; --wknd:#f1eee8; --today:#17325a;
-  --t-design:#2f5d9a; --t-video:#7d5aa0; --t-photo:#2b8577; --t-news:#b7832a; --t-other:#7d8184;
+  --t-design:#2f5d9a; --t-video:#7d5aa0; --t-photo:#2b8577; --t-news:#b7832a; --t-form:#b4466a; --t-other:#7d8184;
   --ok:#2e7d4f; --warn:#b7832a; --hold:#c0632b; --stop:#a8211f; --prog:#2f5d9a; --idle:#7d8184;
   --c1:#2f5d9a; --c2:#a8741c; --grid:#ebe7e0;
   --font-display:"Frutiger LT Arabic","Frutiger Arabic","Frutiger LT Std","Frutiger","Tajawal","Segoe UI","Noto Sans Arabic",Tahoma,sans-serif;
@@ -24,12 +24,12 @@
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#0e1828; --surface:#152237; --surface-2:#1a2a43; --ink:#ebe7df; --mute:#9aa4b3; --line:#243652; --line-2:#30476a;
   --accent:#9cb8e3; --accent-ink:#0e1828; --accent-soft:#1f3354; --hol-bg:#3a1d22; --hol-ink:#f0a19e; --wknd:#122036; --today:#9cb8e3;
-  --t-design:#7ea4dc; --t-video:#b497d6; --t-photo:#6cc2b3; --t-news:#e0b45f; --t-other:#a3a8ad;
+  --t-design:#7ea4dc; --t-video:#b497d6; --t-photo:#6cc2b3; --t-news:#e0b45f; --t-form:#e88aa8; --t-other:#a3a8ad;
   --ok:#6cc28f; --warn:#e0b45f; --hold:#e8935c; --stop:#f0a19e; --prog:#7ea4dc; --idle:#a3a8ad; --c1:#5a86c8; --c2:#b8822a; --grid:#22324d; color-scheme:dark;}}
 :root[data-theme="dark"]{
   --bg:#0e1828; --surface:#152237; --surface-2:#1a2a43; --ink:#ebe7df; --mute:#9aa4b3; --line:#243652; --line-2:#30476a;
   --accent:#9cb8e3; --accent-ink:#0e1828; --accent-soft:#1f3354; --hol-bg:#3a1d22; --hol-ink:#f0a19e; --wknd:#122036; --today:#9cb8e3;
-  --t-design:#7ea4dc; --t-video:#b497d6; --t-photo:#6cc2b3; --t-news:#e0b45f; --t-other:#a3a8ad;
+  --t-design:#7ea4dc; --t-video:#b497d6; --t-photo:#6cc2b3; --t-news:#e0b45f; --t-form:#e88aa8; --t-other:#a3a8ad;
   --ok:#6cc28f; --warn:#e0b45f; --hold:#e8935c; --stop:#f0a19e; --prog:#7ea4dc; --idle:#a3a8ad; --c1:#5a86c8; --c2:#b8822a; --grid:#22324d; color-scheme:dark;}
 
 *{box-sizing:border-box}
@@ -146,7 +146,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);outline-
 .empty-note{color:var(--mute);font-size:14px;padding:6px 4px}
 
 /* tasks */
-.tiles{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin-bottom:18px}
+.tiles{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;margin-bottom:18px}
 @media (max-width:900px){.tiles{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media (max-width:520px){.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .tile{appearance:none;text-align:start;cursor:pointer;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 14px 12px;position:relative;overflow:hidden;display:grid;gap:4px}
@@ -564,7 +564,7 @@ const DOW=["أحد","إثنين","ثلاثاء","أربعاء","خميس","جم�
 const DOW_S=["ح","ن","ث","ر","خ","ج","س"];
 const TYPES=[
   {k:"design",n:"تصميم",c:"var(--t-design)"},{k:"video",n:"إنتاج فيديو",c:"var(--t-video)"},
-  {k:"photo",n:"تصوير",c:"var(--t-photo)"},{k:"news",n:"رصد الأخبار",c:"var(--t-news)"},{k:"other",n:"أخرى",c:"var(--t-other)"}];
+  {k:"photo",n:"تصوير",c:"var(--t-photo)"},{k:"news",n:"رصد الأخبار",c:"var(--t-news)"},{k:"form",n:"استمارات",c:"var(--t-form)"},{k:"other",n:"أخرى",c:"var(--t-other)"}];
 const STATUS=[
   {k:"لم يبدأ",d:"تم استلام الطلب، ولكن لم يتم العمل بعد",c:"var(--idle)"},
   {k:"قيد التنفيذ",d:"جاري العمل على التصميم/ التطوير",c:"var(--prog)"},
@@ -612,7 +612,7 @@ function hj(s,full){const f=full?hijriFmt:hijriDay;if(!f)return "";try{return f.
 function memberNames(){return (S.settings.members||[]).map(m=>typeof m==="string"?m:m.name).filter(Boolean)}
 function pcolor(name){const i=memberNames().indexOf(name);if(i>=0)return PCOL[i%PCOL.length];let h=0;for(const ch of String(name))h=(h*31+ch.charCodeAt(0))>>>0;return PCOL[h%PCOL.length]}
 function shortName(n){const w=String(n||"").split("(")[0].trim().split(/\s+/);return w.length>2?w[0]+" "+w[w.length-1]:n}
-function typeOf(k){return TYPES.find(t=>t.k===k)||TYPES[4]}
+function typeOf(k){return TYPES.find(t=>t.k===k)||TYPES.find(t=>t.k==="other")}
 function statusOf(k){return STATUS.find(s=>s.k===k)||STATUS[0]}
 
 /* ---------- holidays ---------- */
