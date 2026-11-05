@@ -379,6 +379,11 @@ table.scant{min-width:720px}table.scant td{vertical-align:middle}table.scant tbo
 .scan-t{font-weight:700;color:var(--ink);text-decoration:none;line-height:1.6}.scan-t:hover{text-decoration:underline}
 .kw label.kwn{display:inline-flex;align-items:center;gap:6px;cursor:pointer}
 a.btn{text-decoration:none;display:inline-flex;align-items:center}
+.smscan-g{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+@media (max-width:900px){.smscan-g{grid-template-columns:1fr}}
+.smp{border:1px solid var(--line);border-radius:10px;background:var(--surface-2);padding:12px;display:grid;gap:10px;align-content:start}
+.smp-h{display:flex;align-items:center;gap:8px;font-weight:800;flex-wrap:wrap}.smp-h img{width:26px;height:26px}.smp-h .muted{font-weight:500}
+.smp-b{display:flex;flex-wrap:wrap;gap:6px}.smp-b .btn{font-size:12.5px;color:var(--ink)}.smp-b .btn:visited{color:var(--mute)}
 </style>
 </head>
 <body>
@@ -1082,9 +1087,10 @@ function renderSocial(){
   const kwRow=kw=>`<div class="kw"><label class="kwn" dir="auto"><input type="checkbox" data-smkw="${esc(kw)}" ${S.smSel.has(kw)?"checked":""}> ${esc(kw)}</label><span class="ql"><a href="${xLink(kw,M.from,M.to)}">إكس</a><a href="${igLink(kw)}">إنستغرام</a><a href="${fbLink(kw)}">فيسبوك</a></span></div>`;
   h+=`<div class="mon-sec"><h3>الكلمات المفتاحية</h3><span class="small muted">بحث إكس مقيّد بفترة الرصد · الكلمات الإنجليزية العامة يُضاف لها «البحرين» تلقائيًا</span></div>
     <div class="card kwc">
-    <div class="scan-go"><a class="btn primary" href="${xMultiLink([...S.smSel],M.from,M.to)}" data-noedit="1">ارصد الآن في إكس</a>
+    <div class="scan-go"><button class="btn primary" type="button" data-act="sm-scan">إرصد الآن</button>
       <span class="small muted"><b class="num">${S.smSel.size}</b> كلمة محددة · <a href="#" data-act="smkw-all" data-noedit="1">تحديد الكل</a> · <a href="#" data-act="smkw-none" data-noedit="1">إلغاء التحديد</a></span></div>
-    <div class="small muted">المصادر: إكس · إنستغرام · فيسبوك — «ارصد الآن» يفتح بحث إكس بكل الكلمات المحددة خلال الفترة، ولكل كلمة روابط بحث مباشرة في المنصات الثلاث.</div>
+    <div class="small muted">المصادر: إكس · إنستغرام · فيسبوك — «إرصد الآن» يجهّز بحث الكلمات المحددة في المنصات الثلاث خلال فترة الرصد.</div>
+    ${S.smScan?smScanPanel(M):""}
     <div class="kwg">${SM_KW.core.map(kwRow).join("")}</div>
     <details class="kwocc"${S.smOcc?" open":""}><summary>كلمات دورية (عند الحاجة) — تقرير الاتجار بالأشخاص والتصنيف</summary><div class="kwg">${SM_KW.occ.map(kwRow).join("")}</div></details></div>`;
   // accounts
@@ -1451,6 +1457,22 @@ function scanAddOpen(mode,i){const x=(scanState(mode).items||[])[i];if(!x)return
 function xMultiLink(kws,from,to){let q="";for(const kw of kws){const t=(/\s/.test(kw)?'"'+kw+'"':kw);const n=q?q+" OR "+t:t;if(n.length>420)break;q=n}
   return "https://x.com/search?q="+encodeURIComponent("("+q+") since:"+from+" until:"+addDays(to,1))+"&src=typed_query&f=live"}
 
+
+function smScanPanel(M){
+  const kws=[...S.smSel];if(!kws.length)return `<div class="card scanp"><div class="err-msg">اختر كلمة مفتاحية واحدة على الأقل.</div></div>`;
+  const chip=(href,t)=>`<a class="btn small" href="${href}" data-noedit="1" dir="auto">${esc(t)}</a>`;
+  return `<div class="card scanp smscan"><div class="scan-h"><b>إرصد الآن — ${kws.length} كلمة · ${esc(fmt(M.from))}${M.to!==M.from?" – "+esc(fmt(M.to)):""}</b>
+    <span class="small muted">اضغط أي منصة لفتح نتائجها، ثم أضف المنشورات ذات الصلة بزر «+ إضافة منشور»</span>
+    <button class="btn small" type="button" data-act="sm-scan-close">إخفاء</button></div>
+    <div class="smscan-g">
+      <div class="smp"><div class="smp-h"><img src="rpt/x.png" alt="">إكس <span class="small muted">بحث واحد بكل الكلمات · مقيّد بالفترة</span></div>
+        <div class="smp-b">${chip(xMultiLink(kws,M.from,M.to),"فتح نتائج إكس")}</div></div>
+      <div class="smp"><div class="smp-h"><img src="rpt/ig.png" alt="">إنستغرام <span class="small muted">بحث لكل كلمة</span></div>
+        <div class="smp-b">${kws.map(k=>chip(igLink(k),k)).join("")}</div></div>
+      <div class="smp"><div class="smp-h"><img src="rpt/fb.png" alt="">فيسبوك <span class="small muted">بحث لكل كلمة</span></div>
+        <div class="smp-b">${kws.map(k=>chip(fbLink(k),k)).join("")}</div></div>
+    </div></div>`}
+
 function openMon(x){
   S.editMon=x||null;const M=monPeriod();
   $("m-outlet").innerHTML=OUTLETS.map(o=>`<option value="${o.k}" ${x&&x.outlet===o.k?"selected":""}>${esc(o.n)}${o.d?" — "+o.d:""}</option>`).join("");
@@ -1608,6 +1630,8 @@ document.addEventListener("click",async e=>{
     case "mon-mode":S.monMode=v;render();break;
     case "daily":openDaily();break;
     case "scan-run":runScan(v);break;
+    case "sm-scan":S.smScan=true;render();break;
+    case "sm-scan-close":S.smScan=false;render();break;
     case "scan-clear":{const st=scanState(v);st.items=null;st.err="";render();break}
     case "scan-add":{const [m,i]=v.split(":");scanAddOpen(m,+i);break}
     case "smkw-all":e.preventDefault();S.smSel=new Set([...SM_KW.core,...SM_KW.occ]);render();break;
