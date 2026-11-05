@@ -610,6 +610,22 @@ html{-webkit-text-size-adjust:100%}
 @media (max-width:380px){.bnav button span{font-size:10px}.tiles .tile{flex-basis:48%}}
 .dupw{display:grid;gap:8px;padding:12px 14px;border-radius:10px;background:color-mix(in srgb,var(--warn) 12%,var(--surface));border:1px solid color-mix(in srgb,var(--warn) 45%,transparent)}
 .dupw b{color:var(--ink)}.dupw span{font-size:13px;color:var(--mute)}.dupw .grp{display:flex;gap:6px;flex-wrap:wrap}
+
+/* daily report preview: scale pages to the screen */
+.dp-wrap{--k:1}
+.dp-fit{width:calc(7.5in * var(--k));height:calc(10.833in * var(--k));position:relative;margin:0 auto}
+.dp-fit>.dp{position:absolute;top:0;right:0;transform:scale(var(--k));transform-origin:top right}
+.dp-wrap.capturing .dp-fit>.dp{transform:none}
+@media print{.dp-fit{width:auto;height:auto}.dp-fit>.dp{position:relative;transform:none}}
+@media (max-width:760px){
+  #rpt{padding:0 12px 40px}
+  .rbar{position:sticky;top:0;z-index:2;background:var(--bg);margin:0 -12px 12px;padding:10px 12px;border-bottom:1px solid var(--line);display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+  .rbar .btn{justify-content:center;padding:9px 6px;font-size:13px;min-height:40px}
+  .rbar [data-act="rpt-close"]{grid-column:1/-1;order:-1}
+  .rbar #dl-st,.rbar #rpt-hint{grid-column:1/-1;text-align:center}
+  .dp-wrap{gap:12px}
+  .dp-fit>.dp{box-shadow:0 1px 8px rgba(0,0,0,.14)}
+}
 </style>
 </head>
 <body>
@@ -1585,16 +1601,19 @@ function dailyHTML(D){
       <div class="dp-fr">${src?`<img src="${esc(src)}" alt="" crossorigin="anonymous">`:`<div class="dp-ph">${esc(p.sm?smAccName(x):(x.outletName||outletOf(x.outlet).n))}<small>لا توجد لقطة</small></div>`}</div>
       <div class="dp-sum" dir="auto">${esc(x.summary||"")}</div>
       ${/^https?:\/\//.test(x.link||"")?`<a class="dp-lk" href="${esc(x.link)}">${p.sm?"رابط المنشور":"رابط الخبر"}</a>`:""}<div class="dp-no">Page ${p.no}</div></div>`;
-  }).join("");
+  }).map(s=>`<div class="dp-fit">${s}</div>`).join("");
   return h;
 }
-function refreshDaily(){if(!S.dailyOpen)return;const D=buildDaily();S.daily=D;const w=$("dp-wrap");if(w)w.innerHTML=dailyHTML(D);const st=$("dl-st");if(st&&!st.dataset.busy)st.textContent=D.pages.length+" صفحة · "+D.counts.news+" خبر · "+D.counts.posts+" منشور"}
+// ملاءمة صفحات التقرير لعرض الشاشة (الجوال والتابلت) دون تغيير مقاس الصفحة الأصلي
+function fitDaily(){const w=$("dp-wrap");if(!w)return;const avail=($("rpt").clientWidth||innerWidth)-(innerWidth<760?24:32);w.style.setProperty("--k",Math.min(1,avail/720).toFixed(4))}
+addEventListener("resize",()=>{if(S.dailyOpen)fitDaily()});
+function refreshDaily(){if(!S.dailyOpen)return;const D=buildDaily();S.daily=D;const w=$("dp-wrap");if(w){w.innerHTML=dailyHTML(D);fitDaily()}const st=$("dl-st");if(st&&!st.dataset.busy)st.textContent=D.pages.length+" صفحة · "+D.counts.news+" خبر · "+D.counts.posts+" منشور"}
 function openDaily(){
   S.dailyOpen=true;const D=buildDaily();S.daily=D;const r=$("rpt");
   r.innerHTML=`<div class="rbar no-print"><button class="btn primary" type="button" data-act="dl-pdf">تحميل PDF</button><button class="btn" type="button" data-act="dl-pptx">تحميل PowerPoint</button><button class="btn" type="button" data-act="dl-docx">تحميل Word</button><button class="btn" type="button" data-act="rpt-close">إغلاق</button>
     <span class="small muted" id="dl-st">${D.pages.length} صفحة · ${D.counts.news} خبر · ${D.counts.posts} منشور</span></div>
     <div class="dp-wrap" id="dp-wrap">${dailyHTML(D)}</div>`;
-  r.hidden=false;document.body.classList.add("rpt-open");r.scrollTop=0;
+  r.hidden=false;document.body.classList.add("rpt-open");r.scrollTop=0;fitDaily();
 }
 /* ---------- helpers ---------- */
 const _libs={};
@@ -1624,12 +1643,15 @@ async function runDl(kind,btn){
 async function makePdf(D){
   await loadLib("lib/html2canvas.min.js");await loadLib("lib/jspdf.umd.min.js");
   const {jsPDF}=window.jspdf;const doc=new jsPDF({unit:"pt",format:[540,780],compress:true});
+  const wrap=$("dp-wrap");const k0=wrap.style.getPropertyValue("--k");wrap.style.setProperty("--k","1");wrap.classList.add("capturing");
+  try{
   const els=[...document.querySelectorAll("#dp-wrap .dp")];
   for(let i=0;i<els.length;i++){dlStatus("جارٍ إنشاء PDF… صفحة "+(i+1)+" من "+els.length);const el=els[i];
     const cv=await html2canvas(el,{scale:2,backgroundColor:"#ffffff",useCORS:true,logging:false});
     if(i)doc.addPage([540,780],"portrait");doc.addImage(cv.toDataURL("image/jpeg",.9),"JPEG",0,0,540,780);
     const r0=el.getBoundingClientRect(),k=540/r0.width;
     el.querySelectorAll("a[href]").forEach(a=>{const r=a.getBoundingClientRect();doc.link((r.left-r0.left)*k,(r.top-r0.top)*k,r.width*k,r.height*k,{url:a.href})})}
+  }finally{wrap.style.setProperty("--k",k0||"1");wrap.classList.remove("capturing")}
   return doc.output("blob")}
 
 /* ---------- PowerPoint ---------- */
