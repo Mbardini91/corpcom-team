@@ -35,6 +35,19 @@ function batches(kws: { kw: string; ctx: boolean }[]) {
   if (cur.length) out.push({ q, kws: cur });
   return out;
 }
+const IG_ABC = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
+// تاريخ النشر من الرابط نفسه: معرّف تغريدة إكس ومعرّف منشور إنستغرام يحملان وقت النشر
+function dateFromUrl(u: string): string {
+  try {
+    const x = u.match(/(?:x|twitter)\.com\/[^/]+\/status(?:es)?\/(\d{15,20})/);
+    if (x) return new Date(Number((BigInt(x[1]) >> 22n) + 1288834974657n)).toISOString();
+    const ig = u.match(/instagram\.com\/(?:[^/]+\/)?(?:p|reel|reels|tv)\/([A-Za-z0-9_-]{6,})/);
+    if (ig) { let id = 0n; for (const c of ig[1].slice(0, 11)) { const i = IG_ABC.indexOf(c); if (i < 0) return ""; id = id * 64n + BigInt(i); }
+      const ms = Number((id >> 23n) + 1314220021721n); if (ms > 1.3e12 && ms < Date.now() + 864e5) return new Date(ms).toISOString(); }
+  } catch { /* */ }
+  return "";
+}
+const bhDay = (iso: string) => new Date(new Date(iso).getTime() + 3 * 3600e3).toISOString().slice(0, 10);
 async function socialSearch(kws: { kw: string; ctx: boolean }[], from: string, to: string) {
   const tav = Deno.env.get("TAVILY_API_KEY"), ser = Deno.env.get("SERPER_API_KEY");
   if (!tav && !ser) return { needKey: true, items: [] };
@@ -60,7 +73,9 @@ async function socialSearch(kws: { kw: string; ctx: boolean }[], from: string, t
         const platform = pfOf(x.link);
         if (!platform || seen.has(x.link)) continue;
         seen.add(x.link);
-        let pub = ""; try { if (x.date) { const d = new Date(x.date); if (!isNaN(+d)) pub = d.toISOString(); } } catch { /* */ }
+        let pub = dateFromUrl(x.link);
+        if (!pub) { try { if (x.date) { const d = new Date(x.date); if (!isNaN(+d)) pub = d.toISOString(); } } catch { /* */ } }
+        if (pub) { const day = bhDay(pub); if (day < from || day > to) continue; }
         items.push({ title: x.title.replace(/\s*[|·-]\s*(Instagram|Facebook|X)\s*$/i, ""), link: x.link, snippet: x.snippet.slice(0, 400), pubDate: pub, platform, kw: pick(x.title, x.snippet, b.kws) });
       }
     } catch { /* تجاهل */ }

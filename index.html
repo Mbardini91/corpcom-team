@@ -1529,6 +1529,7 @@ async function runScan(mode){
       const u=smHandleFromUrl(x.link);const acc=SM_ACC.find(a=>u.handle&&a.h.toLowerCase()===u.handle.toLowerCase());
       return Object.assign(x,{platform:x.platform||u.pf,handle:u.handle,account:acc?acc.k:"",date:x.pubDate?bhDateOf(x.pubDate):"",label:x.kw,
         level:lvlAuto({text:[x.title,x.snippet,x.kw].join(" "),region:acc&&smGroup(acc.g).sec==="intl"?"gcc":"bh"})})});
+    if(mode==="social")st.items=st.items.filter(x=>!x.date||inPeriod(x.date,M));
     const rank={high:0,med:1,low:2};st.items.sort((a,b)=>rank[a.level]-rank[b.level]||String(b.date||"").localeCompare(String(a.date||"")));
   }catch(e){console.error(e);st.err="تعذّر البحث الآن. حاول بعد قليل."}
   finally{st.loading=false;render()}
@@ -1543,17 +1544,21 @@ function scanPanel(mode){
   const stale=st.key!==M.from+"_"+M.to;
   const close=`<button class="btn icon small" type="button" data-act="scan-clear" data-v="${mode}" title="إخفاء" aria-label="إخفاء">${ic("close")}</button>`;
   if(sm&&st.needKey)return `<div class="card scanp"><div class="scan-h"><b>إرصد الآن</b><span class="small muted">${ic("key")} عرض نتائج المنصات داخل المنصة يحتاج تفعيل مفتاح البحث — افتح النتائج مباشرة:</span>${close}</div>${smLaunch(M)}</div>`;
-  const rows=st.items.map((x,i)=>{const added=scanAdded(x,mode);
+  const row=(x,i)=>{const added=scanAdded(x,mode);
     const src=sm?`<div class="acc">${pfIc(x.platform)}<div>${x.account?`<div style="font-weight:700">${esc(smAcc(x.account).n)}</div>`:""}${x.handle?`<div class="small muted" dir="ltr">@${esc(x.handle)}</div>`:`<div class="small muted">${esc(smPf(x.platform).n)}</div>`}</div></div>`
       :`<div style="font-weight:700">${esc(x.source||outletOf(x.outlet).n)}</div>`;
     const lab=sm?(x.label?"«"+x.label+"»":""):(mtopic(x.label)||{}).n;
     return `<tr><td class="dt">${esc(x.date?fmtShort(x.date):"—")}</td><td>${src}</td>
       <td><a href="${esc(x.link)}" data-noedit="1" class="scan-t" dir="auto">${esc(x.title)}</a>${sm&&x.snippet?`<div class="small snip" dir="auto">${esc(clip(x.snippet,180))}</div>`:""}${lab?`<div class="small muted">${esc(lab)}</div>`:""}</td>
       <td>${lvlBadge(x.level)}</td>
-      <td style="white-space:nowrap">${added?`<span class="tone" style="--tc:var(--ok)">مضاف</span>`:`<button class="btn icon small write-only" type="button" data-act="scan-add" data-v="${mode}:${i}" title="إضافة للرصد" aria-label="إضافة للرصد">${ic("plus")}</button>`}</td></tr>`}).join("");
-  return `<div class="card scanp"><div class="scan-h"><b>النتائج <span class="num muted">(${st.items.length})</span></b>
+      <td style="white-space:nowrap">${added?`<span class="tone" style="--tc:var(--ok)">مضاف</span>`:`<button class="btn icon small write-only" type="button" data-act="scan-add" data-v="${mode}:${i}" title="إضافة للرصد" aria-label="إضافة للرصد">${ic("plus")}</button>`}</td></tr>`};
+  const idx=st.items.map((x,i)=>[x,i]);const main=sm?idx.filter(([x])=>x.date):idx,und=sm?idx.filter(([x])=>!x.date):[];
+  const thead=`<thead><tr><th>التاريخ</th><th>${sm?"الحساب":"المصدر"}</th><th>${sm?"المنشور":"العنوان"}</th><th>المستوى</th><th></th></tr></thead>`;
+  const rows=main.map(([x,i])=>row(x,i)).join("");
+  return `<div class="card scanp"><div class="scan-h"><b>النتائج <span class="num muted">(${sm?main.length:st.items.length})</span></b>
     <span class="small muted">${stale?"⚠ لفترة سابقة — أعد الرصد":"مرتبة حسب المستوى · راجع قبل الإضافة"}</span>${close}</div>
-    ${st.items.length?`<div class="tbl-wrap"><table class="scant"><thead><tr><th>التاريخ</th><th>${sm?"الحساب":"المصدر"}</th><th>${sm?"المنشور":"العنوان"}</th><th>المستوى</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`:`<div class="empty-note">لا توجد نتائج لهذه الفترة.</div>`}
+    ${main.length?`<div class="tbl-wrap"><table class="scant">${thead}<tbody>${rows}</tbody></table></div>`:`<div class="empty-note">لا توجد نتائج مؤكدة التاريخ ضمن هذه الفترة.</div>`}
+    ${und.length?`<details class="kwocc"><summary>نتائج بدون تاريخ نشر واضح (${und.length}) — تحقق من تاريخها قبل الإضافة</summary><div class="tbl-wrap"><table class="scant">${thead}<tbody>${und.map(([x,i])=>row(x,i)).join("")}</tbody></table></div></details>`:""}
     ${sm?`<details class="kwocc"><summary>فتح البحث في المنصات مباشرة</summary>${smLaunch(M)}</details>`:""}</div>`}
 function scanAddOpen(mode,i){const x=(scanState(mode).items||[])[i];if(!x)return;
   if(mode==="social"){openSm(null);
