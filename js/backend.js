@@ -190,7 +190,15 @@
           : await sb.auth.signInWithOtp({ phone: target, options: { shouldCreateUser: true, channel: "whatsapp" } });
         if (error) throw error;
         showStep2();
-      } catch (err) { console.error(err); msg(/rate|seconds/i.test(err.message || "") ? "طلبات كثيرة. انتظر دقيقة ثم حاول مجددًا." : "تعذّر إرسال الرمز. حاول مجددًا.", true); btn.disabled = false; }
+      } catch (err) {
+        console.error(err);
+        const m = (err && (err.code || "") + " " + (err.message || "")) || "";
+        msg(/over_email_send_rate_limit|email rate limit/i.test(m) ? "تعذّر إرسال الإيميل حاليًا: تم بلوغ حد الإرسال في خدمة البريد. أبلغ مسؤول المنصة."
+          : /seconds|over_request_rate_limit/i.test(m) ? "طلبت رمزًا قبل قليل. انتظر دقيقة، أو استخدم الرمز/الرابط الذي وصلك."
+          : /not authorized|smtp|sending/i.test(m) ? "تعذّر إرسال الإيميل. أبلغ مسؤول المنصة."
+          : "تعذّر إرسال الرمز. حاول مجددًا.", true);
+        btn.disabled = false;
+      }
     };
   }
   function showStep2() {
