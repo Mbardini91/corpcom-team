@@ -459,6 +459,7 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
 .gohint{display:inline-flex;align-items:center;gap:6px}.gohint .ic{color:var(--warn)}
 .chans .chips label{gap:7px}.chans .pfi{width:18px;height:18px}
 .btn.go:disabled{opacity:.45;cursor:not-allowed}
+.accst{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;background:var(--surface-2);color:var(--mute)}.accst .ic{flex:none}
 </style>
 </head>
 <body>
@@ -1612,15 +1613,13 @@ async function runScan(mode){
     st.items=(r&&r.items||[]).map(x=>{
       if(mode==="news"){const o=outletFromUrl(x.sourceUrl);const lab=(tps[Math.floor(x.q/3)]||{}).k;const reg=o==="other"?(BH_RE.test(x.title+" "+(x.summary||""))?"bh":"out"):(outletOf(o).r==="bh"?"bh":"out");
         return Object.assign(x,{outlet:o,region:reg,date:bhDateOf(x.pubDate),label:lab,level:lvlAuto({text:[x.title,x.summary].join(" "),topic:lab,region:reg==="bh"?"bh":"gcc"})})}
-      const u=smHandleFromUrl(x.link);const acc=SM_ACC.find(a=>u.handle&&a.h.toLowerCase()===u.handle.toLowerCase());
-      const reg=acc?(smGroup(acc.g).sec==="intl"?"out":"bh"):(BH_RE.test([x.title,x.snippet,x.handle].join(" "))?"bh":"out");
-      return Object.assign(x,{platform:x.platform||u.pf,handle:u.handle,account:acc?acc.k:"",region:reg,date:x.pubDate?bhDateOf(x.pubDate):"",label:x.kw,
-        level:lvlAuto({text:[x.title,x.snippet,x.kw].join(" "),region:reg==="bh"?"bh":"gcc"})})});
+      return mapSocial(x)});
     st.items=st.items.filter(x=>x.date&&inPeriod(x.date,M));
     st.items=st.items.filter(x=>mode==="news"?newsRelevant(x):((S.smCh||[]).includes(x.platform)&&smRelevant(x)));
     st.items.forEach(x=>{x.sum=words80(mode==="social"?x.snippet:x.summary)});
-  }catch(e){console.error(e);st.err="تعذّر البحث الآن. حاول بعد قليل."}
+  }catch(e){console.error(e);st.err="تعذّر البحث الآن. حاول بعد قليل.";if(mode==="social"&&!st.items)st.items=[]}
   finally{st.loading=false;render()}
+  if(mode==="social"&&(S.smCh||[]).includes("ig")&&!st.needKey)runAccounts(M);
 }
 function M_all(on){const M=monPeriod();M.topics=on?MTOPICS.map(t=>t.k):[];render()}
 function topicTerms(t){if(!t)return [];const out=[];for(const s of [t.ar,t.q]){String(s||"").replace(/"([^"]+)"|(\S+)/g,(m,a,b)=>{const w=(a||b||"").trim();if(w&&w!=="OR"&&w.length>1)out.push(w.toLowerCase());return m})}return out}
@@ -1632,6 +1631,28 @@ function smRelevant(x){const txt=normAr([x.title,x.snippet].join(" "));const kw=
   if(!parts.every(w=>txt.includes(w)))return false;
   if(smNeedsCtx(kw)||/البحرين|bahrain/i.test(kw))return BH_RE.test([x.title,x.snippet,x.handle].join(" "))||!!x.account;
   return true}
+function mapSocial(x){const u=smHandleFromUrl(x.link);const h=x.handle||u.handle;const acc=SM_ACC.find(a=>h&&a.h.toLowerCase()===String(h).toLowerCase());
+  const reg=acc?(smGroup(acc.g).sec==="intl"?"out":"bh"):(BH_RE.test([x.title,x.snippet,h].join(" "))?"bh":"out");
+  return Object.assign(x,{platform:x.platform||u.pf,handle:h,account:acc?acc.k:"",region:reg,date:x.pubDate?bhDateOf(x.pubDate):"",label:x.kw||"",
+    level:lvlAuto({text:[x.title,x.caption||x.snippet,x.kw].join(" "),region:reg==="bh"?"bh":"gcc"})})}
+// منشورات الحسابات المدرجة: تُعرض إن طابقت كلمة محددة أو ذكرت الهيئة (وكل منشورات حساب الهيئة)
+function accMatch(x){const kws=[...(S.smSel||[])];const txt=normAr([x.title,x.caption||x.snippet].join(" "));
+  const hit=kws.find(kw=>{const parts=normAr(kw).split(/\s+/).filter(w=>w.length>1&&!["البحرين","bahrain"].includes(w));return parts.length&&parts.every(w=>txt.includes(w))});
+  if(hit){x.kw=hit;return true}if(x.handle==="lmrabh"||LVL_LMRA.test(x.title+" "+(x.caption||""))){x.kw="";return true}return false}
+async function runAccounts(M){const st=scanState("social");const handles=SM_ACC.filter(a=>a.pf==="ig").map(a=>a.h);const key=M.from+"_"+M.to;
+  st.acc={status:"running"};render();
+  try{const s=await window.lmraSearch({mode:"acc-start",handles,from:M.from,to:M.to});
+    if(s&&s.needKey){st.acc={status:"needKey"};render();return}
+    if(!s||!s.runId)throw new Error("start");
+    const t0=Date.now();
+    while(Date.now()-t0<6*60e3){await new Promise(r=>setTimeout(r,6000));if(st.key!==key)return;
+      const r=await window.lmraSearch({mode:"acc-poll",runId:s.runId,from:M.from,to:M.to});
+      if(r.status==="running")continue;if(r.status!=="done")throw new Error(r.detail||"failed");
+      const have=new Set((st.items||[]).map(x=>(x.link||"").replace(/[?#].*$/,"").replace(/\/$/,"")));
+      const add=(r.items||[]).map(mapSocial).filter(x=>x.date&&inPeriod(x.date,M)&&accMatch(x)&&!have.has(x.link.replace(/[?#].*$/,"").replace(/\/$/,"")));
+      add.forEach(x=>{x.sum=words80(x.snippet)});st.items=(st.items||[]).concat(add);st.acc={status:"done",n:add.length,total:(r.items||[]).length};render();return}
+    st.acc={status:"err",msg:"استغرق رصد الحسابات وقتًا أطول من المتوقع."};render();
+  }catch(e){console.error(e);st.acc={status:"err",msg:"تعذّر رصد الحسابات الآن."};render()}}
 function words80(t){const w=String(t||"").replace(/\s+/g," ").trim().split(" ").filter(Boolean);return w.length>80?w.slice(0,80).join(" ")+"…":w.join(" ")}
 function scanAdded(x,mode){const t=String(x.title||"").trim();if(mode==="social")return (S.social||[]).some(m=>m.link&&m.link===x.link);return S.monitor.some(m=>(m.link&&m.link===x.link)||String(m.headline||"").trim()===t)}
 const SCAN_VIEWS=[{k:"date",n:"التاريخ"},{k:"bh",n:"البحرين"},{k:"out",n:"خارج البحرين"}];
@@ -1652,7 +1673,7 @@ function scanPanel(mode){
   const row=([x,i])=>{const added=scanAdded(x,mode);
     const src=sm?`<div class="acc">${pfIc(x.platform)}<div>${x.account?`<div style="font-weight:700">${esc(smAcc(x.account).n)}</div>`:""}${x.handle?`<div class="small muted" dir="ltr">@${esc(x.handle)}</div>`:`<div class="small muted">${esc(smPf(x.platform).n)}</div>`}</div></div>`
       :`<div style="font-weight:700">${esc(x.source||outletOf(x.outlet).n)}</div>`;
-    const lab=sm?(x.label?"«"+x.label+"»":""):(mtopic(x.label)||{}).n;
+    const lab=sm?((x.src==="acc"?"حساب مرصود":"")+(x.label?(x.src==="acc"?" · ":"")+"«"+x.label+"»":"")):(mtopic(x.label)||{}).n;
     return `<tr class="${st.sel.has(i)&&!added?"sel":""}"><td class="ck">${added?"":`<input type="checkbox" class="write-only" data-act="scan-tg" data-v="${mode}:${i}" ${st.sel.has(i)?"checked":""} aria-label="تحديد">`}</td>
       <td class="dt">${esc(fmtShort(x.date))}</td><td>${src}</td>
       <td class="ttl"><a href="${esc(x.link)}" data-noedit="1" class="scan-t" dir="auto">${esc(x.title)}</a>${lab?`<div class="small muted">${esc(lab)}</div>`:""}<div style="margin-top:6px">${lvlBadge(x.level)}</div></td>
@@ -1666,12 +1687,13 @@ function scanPanel(mode){
       <button class="btn small write-only" type="button" data-act="scan-selnone" data-v="${mode}" ${st.sel.size?"":"disabled"}>${ic("none")}إلغاء التحديد</button>
       <button class="btn primary small write-only" type="button" data-act="scan-addsel" data-v="${mode}" ${selN?"":"disabled"}>${ic("report")}إضافة المحدد للتقرير${selN?` <span class="num">(${selN})</span>`:""}</button></div>
     ${st.msg?`<div class="small" style="color:var(--ok)">${esc(st.msg)}</div>`:""}
+    ${sm&&st.acc?`<div class="accst small">${st.acc.status==="running"?`${ic("spin","spin")} جارٍ رصد ${SM_ACC.filter(a=>a.pf==="ig").length} حسابًا مدرجًا على إنستغرام مباشرة… تُضاف منشوراتها هنا تلقائيًا (قد يستغرق دقيقة إلى ثلاث)`:st.acc.status==="done"?`${ic("check")} رصد الحسابات المدرجة اكتمل: ${st.acc.n} منشور ذو صلة من ${st.acc.total} منشور خلال الفترة`:st.acc.status==="needKey"?`${ic("key")} الرصد المباشر للحسابات يحتاج تفعيل مفتاح Apify`:`${ic("info")} ${esc(st.acc.msg||"")}`}</div>`:""}
     ${vis.length?`<div class="tbl-wrap"><table class="scant"><colgroup><col style="width:34px"><col style="width:84px"><col style="width:150px"><col style="width:30%"><col><col style="width:56px"></colgroup><thead><tr><th></th><th>التاريخ</th><th>${sm?"الحساب":"المصدر"}</th><th>${sm?"المنشور":"العنوان"}</th><th>الملخص</th><th></th></tr></thead><tbody>${vis.map(row).join("")}</tbody></table></div>`:`<div class="empty-note">لا توجد نتائج في هذا التصنيف ضمن الفترة.</div>`}
     ${sm?`<details class="kwocc"><summary>فتح البحث في المنصات مباشرة</summary>${smLaunch(M)}</details>`:""}</div>`}
 function scanToItem(mode,x){const now=new Date().toISOString();
   if(mode==="social"){const acc=x.account?smAcc(x.account):null;const topic=guessTopic([x.title,x.snippet,x.label].join(" "));
     const d={date:x.date,platform:x.platform||"x",account:acc?acc.k:"",accountName:acc?"":(x.handle||smPf(x.platform).n),handle:acc?"":(x.handle||""),keyword:x.label||"",
-      cat:acc?smDefCat(acc.k):(x.region==="out"?"intl":"related"),text:[x.title,x.snippet].filter(Boolean).join("\n"),link:x.link,engagement:"",topic,tone:"neu",summary:x.sum||"",risk:"",verified:true,why:"",createdAt:now,updatedAt:now};
+      cat:acc?smDefCat(acc.k):(x.region==="out"?"intl":"related"),text:x.caption||[x.title,x.snippet].filter(Boolean).join("\n"),link:x.link,engagement:x.likes!=null?`${x.likes} إعجاب · ${x.comments||0} تعليق`:"",topic,tone:"neu",summary:x.sum||"",risk:"",verified:true,why:"",createdAt:now,updatedAt:now};
     d.level=smLvlAuto(d);d.levelAuto=true;if(S.me)d.by=S.me;return d}
   const o=outletOf(x.outlet);const topic=mtopic(x.label)?x.label:guessTopic(x.title);
   const d={date:x.date,outlet:o.k,region:o.r,headline:x.title,link:x.link,topic,cat:x.region==="out"?"intl":(LVL_LMRA.test(x.title)&&o.k==="bna"?"issued":"related"),summary:x.sum||"",risk:"",verified:true,why:"",createdAt:now,updatedAt:now};

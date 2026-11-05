@@ -105,6 +105,49 @@ async function socialSearch(kws: { kw: string; ctx: boolean }[], from: string, t
   return { items, provider: tav ? "tavily" : "serper" };
 }
 
+// رصد مباشر لحسابات إنستغرام المدرجة عبر Apify (APIFY_TOKEN) — تشغيل غير متزامن ثم استعلام عن النتيجة
+const ACTOR = "sones~instagram-posts-scraper-lowcost";
+async function accStart(handles: string[], from: string, to: string) {
+  const tok = Deno.env.get("APIFY_TOKEN");
+  if (!tok) return { needKey: true };
+  const days = Math.max(1, Math.round((Date.parse(to) - Date.parse(from)) / 864e5) + 1);
+  const input = { usernames: handles.slice(0, 80), postsPerProfile: Math.min(30, Math.max(6, days * 4)), newerThan: `${from}T00:00:00+03:00` };
+  const r = await fetch(`https://api.apify.com/v2/acts/${ACTOR}/runs?token=${tok}`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(input) });
+  if (!r.ok) return { error: "start_failed", status: r.status };
+  const j = await r.json();
+  return { runId: j.data?.id };
+}
+async function accPoll(runId: string, from: string, to: string) {
+  const tok = Deno.env.get("APIFY_TOKEN");
+  if (!tok) return { needKey: true };
+  if (!/^[A-Za-z0-9]{8,30}$/.test(runId)) return { error: "bad_run" };
+  const r = await fetch(`https://api.apify.com/v2/actor-runs/${runId}?token=${tok}`);
+  if (!r.ok) return { error: "poll_failed" };
+  const run = (await r.json()).data || {};
+  if (["READY", "RUNNING"].includes(run.status)) return { status: "running" };
+  if (run.status !== "SUCCEEDED") return { status: "failed", detail: run.status };
+  const d = await fetch(`https://api.apify.com/v2/datasets/${run.defaultDatasetId}/items?token=${tok}&clean=true&limit=3000`);
+  const rows = d.ok ? await d.json() : [];
+  const items: any[] = [];
+  const seen = new Set<string>();
+  for (const x of rows) {
+    const code = x.code || x.shortCode || x.shortcode || "";
+    const link = x.post_url || x.url || (code ? `https://www.instagram.com/p/${code}/` : "");
+    if (!link || seen.has(link)) continue;
+    const ts = x.taken_at ? (x.taken_at > 1e12 ? x.taken_at : x.taken_at * 1000) : (x.timestamp ? Date.parse(x.timestamp) : 0);
+    let pub = ts ? new Date(ts).toISOString() : dateFromUrl(link);
+    if (!pub) continue;
+    const day = bhDay(pub); if (day < from || day > to) continue;
+    seen.add(link);
+    const cap = String((x.caption && typeof x.caption === "object" ? x.caption.text : x.caption) || "").trim();
+    const handle = (x.user && x.user.username) || x.ownerUsername || x.scraped_username || "";
+    const first = cap.split(/\n/)[0].trim();
+    items.push({ title: first.length > 140 ? first.slice(0, 140) + "…" : (first || "منشور بدون نص"), link, snippet: sum80("", cap), caption: cap.slice(0, 4000), pubDate: pub, platform: "ig", handle, src: "acc",
+      likes: x.like_count ?? x.likesCount ?? null, comments: x.comment_count ?? x.commentsCount ?? null });
+  }
+  return { status: "done", items };
+}
+
 Deno.serve(async (req) => {
   const h = cors(req.headers.get("origin"));
   if (req.method === "OPTIONS") return new Response("ok", { headers: h });
@@ -119,6 +162,11 @@ Deno.serve(async (req) => {
   try { body = await req.json(); } catch { /* */ }
   const from = /^\d{4}-\d{2}-\d{2}$/.test(body.from) ? body.from : new Date().toISOString().slice(0, 10);
   const to = /^\d{4}-\d{2}-\d{2}$/.test(body.to) ? body.to : from;
+  if (body.mode === "acc-start") {
+    const handles = (Array.isArray(body.handles) ? body.handles : []).map((h: any) => String(h || "").replace(/[^A-Za-z0-9._]/g, "")).filter(Boolean);
+    return json(await accStart(handles, from, to));
+  }
+  if (body.mode === "acc-poll") return json(await accPoll(String(body.runId || ""), from, to));
   if (body.mode === "social") {
     const kws = (Array.isArray(body.keywords) ? body.keywords : []).filter((k: any) => k && typeof k.kw === "string" && k.kw.trim()).map((k: any) => ({ kw: String(k.kw).slice(0, 80), ctx: !!k.ctx }));
     const pfs = (Array.isArray(body.platforms) ? body.platforms : ["x", "ig", "fb"]).filter((x: string) => ["x", "ig", "fb"].includes(x));
