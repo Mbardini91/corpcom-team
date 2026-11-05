@@ -398,7 +398,13 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
 .mrow2.sub{align-items:center;flex-wrap:wrap;gap:8px;padding-inline-start:28px}.mrow2.sub .kwocc{flex:1}
 [hidden]{display:none!important}
 .scan-sum{margin:6px 0 2px;font-size:13.5px;line-height:1.8;color:var(--ink);max-width:78ch;text-align:justify}
-.scant td{vertical-align:top}
+.scant td{vertical-align:top}.scant{table-layout:fixed;min-width:960px}
+.scant td.ck{padding-inline:8px}.scant td.ck input{width:17px;height:17px;accent-color:var(--accent);cursor:pointer}
+.scant tr.sel td{background:var(--accent-soft)}
+.scant .smry .scan-sum{margin:0;max-width:none}
+.added{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:color-mix(in srgb,var(--ok) 15%,transparent);color:var(--ok)}
+.scan-tools{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.scan-tools .grow{flex:1}
+.scan-tools .seg button{display:inline-flex;gap:6px;align-items:center}
 .mrow2.sub .kwocc summary{font-size:13px;color:var(--mute);font-weight:600}
 .go-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .btn.go{padding:10px 22px;font-size:15px;font-weight:800;justify-self:start}
@@ -988,6 +994,7 @@ function renderMonitor(){
   <div class="card mctl">
     ${periodCtl(M)}
     <div class="mrow2">${ic("tag","lbl")}<div class="chips">${MTOPICS.map(t=>`<label><input type="checkbox" data-mt="${t.k}" ${M.topics.includes(t.k)?"checked":""}>${t.n}</label>`).join("")}</div></div>
+    <div class="mrow2 sub"><button class="btn small" type="button" data-act="mt-all">${ic("all")}الكل</button><button class="btn small" type="button" data-act="mt-none">${ic("none")}إلغاء التحديد</button></div>
     ${SCAN_ON()?`<button class="btn primary go" type="button" data-act="scan-run" data-v="news" ${scanState("news").loading?"disabled":""}>${ic(scanState("news").loading?"spin":"search",scanState("news").loading?"spin":"")}${scanState("news").loading?"جارٍ الرصد…":"ارصد الآن"}</button>`:""}
   </div>${scanPanel("news")}
   <div class="mstat"><span>${ic("news")}<b class="num">${ver.length}</b> خبر</span><span>البحرين <b class="num">${bhN.length}</b></span><span>الخليج <b class="num">${gN.length}</b></span><span class="lvl-high-c">${lvlBadge("high")} <b class="num">${hi}</b></span>${unv.length?`<span>غير مؤكد <b class="num">${unv.length}</b></span>`:""}</div>`;
@@ -1129,7 +1136,7 @@ function renderSocial(){
   <div class="card mctl">
     ${periodCtl(M)}
     <div class="mrow2">${ic("tag","lbl")}<div class="chips">${SM_KW.core.map(kwChip).join("")}</div></div>
-    <div class="mrow2 sub"><button class="btn small" type="button" data-act="smkw-all">${ic("all")}الكل</button><button class="btn small" type="button" data-act="smkw-none">${ic("none")}لا شيء</button>
+    <div class="mrow2 sub"><button class="btn small" type="button" data-act="smkw-all">${ic("all")}الكل</button><button class="btn small" type="button" data-act="smkw-none">${ic("none")}إلغاء التحديد</button>
       <details class="kwocc"${S.smOcc?" open":""}><summary>كلمات دورية</summary><div class="chips">${SM_KW.occ.map(kwChip).join("")}</div></details></div>
     <div class="go-row"><button class="btn primary go" type="button" data-act="scan-run" data-v="social" ${st.loading?"disabled":""}>${ic(st.loading?"spin":"search",st.loading?"spin":"")}${st.loading?"جارٍ الرصد…":"إرصد الآن"}</button>
       <span class="pfs">${pfIc("x")}${pfIc("ig")}${pfIc("fb")}<span class="small muted num">${S.smSel.size} كلمة</span></span></div>
@@ -1509,6 +1516,11 @@ function smHandleFromUrl(u){try{const x=new URL(u);const h=x.hostname.replace(/^
   const pf=/(^|\.)x\.com$|twitter\.com$/.test(h)?"x":/instagram\.com$/.test(h)?"ig":/facebook\.com$|fb\.com$/.test(h)?"fb":"";
   const bad=["p","reel","reels","explore","search","hashtag","i","status","stories","watch","groups","photo","photos","videos","permalink.php","story.php","share","tv"];
   const handle=seg[0]&&!bad.includes(seg[0].toLowerCase())?seg[0]:"";return {pf,handle}}catch(e){return {pf:"",handle:""}}}
+const BH_RE=/بحرين|البحرين|bahrain|manama|المنامة|المحرق|lmra|هيئة تنظيم سوق العمل/i;
+function guessTopic(t){t=String(t||"");if(/اتجار|traffick|عمل جبري|forced/i.test(t))return "tip";if(/أجور|اجور|رواتب|wage|wps|salary/i.test(t))return "wages";
+  if(/تصريح|تفتيش|مخالف|permit|inspect|violation/i.test(t))return "permits";if(/منزلي|خادم|خدامة|domestic|maid/i.test(t))return "expat";
+  if(/وافد|أجانب|اجانب|expat|migrant|آسيوي/i.test(t))return "expat";if(/حقوق|نزاع|شكو|dispute|rights|complain/i.test(t))return "rights";
+  if(LVL_LMRA.test(t))return "lmra";return "market"}
 async function runScan(mode){
   const M=monPeriod();const st=scanState(mode);let queries=[],payload;
   if(mode==="news"){
@@ -1522,48 +1534,72 @@ async function runScan(mode){
     if(!SCAN_ON()){st.items=[];st.needKey=true;st.err="";st.key=M.from+"_"+M.to;render();return}
     payload={mode:"social",keywords:kws.slice(0,40).map(kw=>({kw,ctx:smNeedsCtx(kw)})),from:M.from,to:M.to};
   }
-  st.loading=true;st.err="";st.key=M.from+"_"+M.to;render();
+  st.loading=true;st.err="";st.key=M.from+"_"+M.to;st.sel=new Set();render();
   try{const r=await window.lmraSearch(payload);st.needKey=!!(r&&r.needKey);
     const tps=MTOPICS.filter(t=>M.topics.includes(t.k));
     st.items=(r&&r.items||[]).map(x=>{
-      if(mode==="news"){const o=outletFromUrl(x.sourceUrl);const lab=(tps[Math.floor(x.q/3)]||{}).k;
-        return Object.assign(x,{outlet:o,date:bhDateOf(x.pubDate),label:lab,level:lvlAuto({text:x.title,topic:lab,region:outletOf(o).r})})}
+      if(mode==="news"){const o=outletFromUrl(x.sourceUrl);const lab=(tps[Math.floor(x.q/3)]||{}).k;const reg=o==="other"?(BH_RE.test(x.title+" "+(x.summary||""))?"bh":"out"):(outletOf(o).r==="bh"?"bh":"out");
+        return Object.assign(x,{outlet:o,region:reg,date:bhDateOf(x.pubDate),label:lab,level:lvlAuto({text:[x.title,x.summary].join(" "),topic:lab,region:reg==="bh"?"bh":"gcc"})})}
       const u=smHandleFromUrl(x.link);const acc=SM_ACC.find(a=>u.handle&&a.h.toLowerCase()===u.handle.toLowerCase());
-      return Object.assign(x,{platform:x.platform||u.pf,handle:u.handle,account:acc?acc.k:"",date:x.pubDate?bhDateOf(x.pubDate):"",label:x.kw,
-        level:lvlAuto({text:[x.title,x.snippet,x.kw].join(" "),region:acc&&smGroup(acc.g).sec==="intl"?"gcc":"bh"})})});
+      const reg=acc?(smGroup(acc.g).sec==="intl"?"out":"bh"):(BH_RE.test([x.title,x.snippet,x.handle].join(" "))?"bh":"out");
+      return Object.assign(x,{platform:x.platform||u.pf,handle:u.handle,account:acc?acc.k:"",region:reg,date:x.pubDate?bhDateOf(x.pubDate):"",label:x.kw,
+        level:lvlAuto({text:[x.title,x.snippet,x.kw].join(" "),region:reg==="bh"?"bh":"gcc"})})});
     st.items=st.items.filter(x=>x.date&&inPeriod(x.date,M));
-    st.items.forEach(x=>{x.sum=words60(mode==="social"?x.snippet:x.summary)});
-    const rank={high:0,med:1,low:2};st.items.sort((a,b)=>rank[a.level]-rank[b.level]||String(b.date||"").localeCompare(String(a.date||"")));
+    st.items.forEach(x=>{x.sum=words80(mode==="social"?x.snippet:x.summary)});
   }catch(e){console.error(e);st.err="تعذّر البحث الآن. حاول بعد قليل."}
   finally{st.loading=false;render()}
 }
-function words60(t){const w=String(t||"").replace(/\s+/g," ").trim().split(" ").filter(Boolean);return w.length>60?w.slice(0,60).join(" ")+"…":w.join(" ")}
+function M_all(on){const M=monPeriod();M.topics=on?MTOPICS.map(t=>t.k):[];render()}
+function words80(t){const w=String(t||"").replace(/\s+/g," ").trim().split(" ").filter(Boolean);return w.length>80?w.slice(0,80).join(" ")+"…":w.join(" ")}
 function scanAdded(x,mode){const t=String(x.title||"").trim();if(mode==="social")return (S.social||[]).some(m=>m.link&&m.link===x.link);return S.monitor.some(m=>(m.link&&m.link===x.link)||String(m.headline||"").trim()===t)}
+const SCAN_VIEWS=[{k:"date",n:"التاريخ"},{k:"bh",n:"البحرين"},{k:"out",n:"خارج البحرين"}];
+function scanVisible(st){const v=st.view||"date";const rank={high:0,med:1,low:2};
+  return st.items.map((x,i)=>[x,i]).filter(([x])=>v==="date"||x.region===v).sort(([a],[b])=>String(b.date).localeCompare(String(a.date))||rank[a.level]-rank[b.level])}
 function scanPanel(mode){
   const st=scanState(mode);const M=monPeriod();const sm=mode==="social";
   if(!sm&&!SCAN_ON())return "";
   if(st.loading)return `<div class="card scanp"><div class="scan-h">${ic("spin","spin")}<b>جارٍ الرصد…</b></div></div>`;
   if(st.err&&!st.items)return `<div class="card scanp"><div class="err-msg">${esc(st.err)}</div></div>`;
   if(!st.items)return "";
+  st.sel=st.sel||new Set();
   const stale=st.key!==M.from+"_"+M.to;
   const close=`<button class="btn icon small" type="button" data-act="scan-clear" data-v="${mode}" title="إخفاء" aria-label="إخفاء">${ic("close")}</button>`;
   if(sm&&st.needKey)return `<div class="card scanp"><div class="scan-h"><b>إرصد الآن</b><span class="small muted">${ic("key")} عرض نتائج المنصات داخل المنصة يحتاج تفعيل مفتاح البحث — افتح النتائج مباشرة:</span>${close}</div>${smLaunch(M)}</div>`;
-  const row=(x,i)=>{const added=scanAdded(x,mode);
+  const vis=scanVisible(st);const cnt=k=>k==="date"?st.items.length:st.items.filter(x=>x.region===k).length;
+  const selN=[...st.sel].filter(i=>!scanAdded(st.items[i],mode)).length;
+  const row=([x,i])=>{const added=scanAdded(x,mode);
     const src=sm?`<div class="acc">${pfIc(x.platform)}<div>${x.account?`<div style="font-weight:700">${esc(smAcc(x.account).n)}</div>`:""}${x.handle?`<div class="small muted" dir="ltr">@${esc(x.handle)}</div>`:`<div class="small muted">${esc(smPf(x.platform).n)}</div>`}</div></div>`
       :`<div style="font-weight:700">${esc(x.source||outletOf(x.outlet).n)}</div>`;
     const lab=sm?(x.label?"«"+x.label+"»":""):(mtopic(x.label)||{}).n;
-    return `<tr><td class="dt">${esc(x.date?fmtShort(x.date):"—")}</td><td>${src}</td>
-      <td><a href="${esc(x.link)}" data-noedit="1" class="scan-t" dir="auto">${esc(x.title)}</a>${x.sum?`<p class="scan-sum" dir="auto">${esc(x.sum)}</p>`:""}${lab?`<div class="small muted">${esc(lab)}</div>`:""}</td>
-      <td>${lvlBadge(x.level)}</td>
-      <td style="white-space:nowrap">${added?`<span class="tone" style="--tc:var(--ok)">مضاف</span>`:`<button class="btn icon small write-only" type="button" data-act="scan-add" data-v="${mode}:${i}" title="إضافة للرصد" aria-label="إضافة للرصد">${ic("plus")}</button>`}</td></tr>`};
-  const main=st.items.map((x,i)=>[x,i]);
-  const thead=`<thead><tr><th>التاريخ</th><th>${sm?"الحساب":"المصدر"}</th><th>${sm?"المنشور":"العنوان"}</th><th>المستوى</th><th></th></tr></thead>`;
-  const rows=main.map(([x,i])=>row(x,i)).join("");
+    return `<tr class="${st.sel.has(i)&&!added?"sel":""}"><td class="ck">${added?"":`<input type="checkbox" class="write-only" data-act="scan-tg" data-v="${mode}:${i}" ${st.sel.has(i)?"checked":""} aria-label="تحديد">`}</td>
+      <td class="dt">${esc(fmtShort(x.date))}</td><td>${src}</td>
+      <td class="ttl"><a href="${esc(x.link)}" data-noedit="1" class="scan-t" dir="auto">${esc(x.title)}</a>${lab?`<div class="small muted">${esc(lab)}</div>`:""}<div style="margin-top:6px">${lvlBadge(x.level)}</div></td>
+      <td class="smry">${x.sum?`<p class="scan-sum" dir="auto">${esc(x.sum)}</p>`:`<span class="small muted">لا يتوفر نص للملخص — افتح الرابط</span>`}</td>
+      <td style="white-space:nowrap">${added?`<span class="added" title="مضاف للتقرير" aria-label="مضاف للتقرير">${ic("check")}</span>`:`<button class="btn icon small write-only" type="button" data-act="scan-add" data-v="${mode}:${i}" title="إضافة للتقرير" aria-label="إضافة للتقرير">${ic("plus")}</button>`}</td></tr>`};
   return `<div class="card scanp"><div class="scan-h"><b>النتائج <span class="num muted">(${st.items.length})</span></b>
-    <span class="small muted">${stale?"⚠ لفترة سابقة — أعد الرصد":`${ic("cal")} ${esc(fmt(M.from))}${M.to!==M.from?" – "+esc(fmt(M.to)):""} فقط · مرتبة حسب المستوى`}</span>${close}</div>
-    ${main.length?`<div class="tbl-wrap"><table class="scant">${thead}<tbody>${rows}</tbody></table></div>`:`<div class="empty-note">لا توجد نتائج مؤكدة التاريخ ضمن هذه الفترة.</div>`}
-
+    <span class="small muted">${stale?"⚠ لفترة سابقة — أعد الرصد":`${ic("cal")} ${esc(fmt(M.from))}${M.to!==M.from?" – "+esc(fmt(M.to)):""} فقط`}</span>${close}</div>
+    <div class="scan-tools"><div class="seg" role="group" aria-label="تصنيف النتائج">${SCAN_VIEWS.map(v=>`<button type="button" data-act="scan-view" data-v="${mode}:${v.k}" aria-pressed="${(st.view||"date")===v.k}">${v.n} <span class="num muted">${cnt(v.k)}</span></button>`).join("")}</div>
+      <span class="grow"></span>
+      <button class="btn small write-only" type="button" data-act="scan-selall" data-v="${mode}">${ic("all")}تحديد الكل</button>
+      <button class="btn small write-only" type="button" data-act="scan-selnone" data-v="${mode}" ${st.sel.size?"":"disabled"}>${ic("none")}إلغاء التحديد</button>
+      <button class="btn primary small write-only" type="button" data-act="scan-addsel" data-v="${mode}" ${selN?"":"disabled"}>${ic("report")}إضافة المحدد للتقرير${selN?` <span class="num">(${selN})</span>`:""}</button></div>
+    ${st.msg?`<div class="small" style="color:var(--ok)">${esc(st.msg)}</div>`:""}
+    ${vis.length?`<div class="tbl-wrap"><table class="scant"><colgroup><col style="width:34px"><col style="width:84px"><col style="width:150px"><col style="width:30%"><col><col style="width:56px"></colgroup><thead><tr><th></th><th>التاريخ</th><th>${sm?"الحساب":"المصدر"}</th><th>${sm?"المنشور":"العنوان"}</th><th>الملخص</th><th></th></tr></thead><tbody>${vis.map(row).join("")}</tbody></table></div>`:`<div class="empty-note">لا توجد نتائج في هذا التصنيف ضمن الفترة.</div>`}
     ${sm?`<details class="kwocc"><summary>فتح البحث في المنصات مباشرة</summary>${smLaunch(M)}</details>`:""}</div>`}
+function scanToItem(mode,x){const now=new Date().toISOString();
+  if(mode==="social"){const acc=x.account?smAcc(x.account):null;const topic=guessTopic([x.title,x.snippet,x.label].join(" "));
+    const d={date:x.date,platform:x.platform||"x",account:acc?acc.k:"",accountName:acc?"":(x.handle||smPf(x.platform).n),handle:acc?"":(x.handle||""),keyword:x.label||"",
+      cat:acc?smDefCat(acc.k):(x.region==="out"?"intl":"related"),text:[x.title,x.snippet].filter(Boolean).join("\n"),link:x.link,engagement:"",topic,tone:"neu",summary:x.sum||"",risk:"",verified:true,why:"",createdAt:now,updatedAt:now};
+    d.level=smLvlAuto(d);d.levelAuto=true;if(S.me)d.by=S.me;return d}
+  const o=outletOf(x.outlet);const topic=mtopic(x.label)?x.label:guessTopic(x.title);
+  const d={date:x.date,outlet:o.k,region:o.r,headline:x.title,link:x.link,topic,cat:x.region==="out"?"intl":(LVL_LMRA.test(x.title)&&o.k==="bna"?"issued":"related"),summary:x.sum||"",risk:"",verified:true,why:"",createdAt:now,updatedAt:now};
+  if(o.k==="other"&&x.source)d.outletName=x.source;
+  d.level=newsLvlAuto(d);d.levelAuto=true;if(S.me)d.by=S.me;return d}
+async function scanQuickAdd(mode,idxs){const st=scanState(mode);let ok=0,fail=0;
+  for(const i of idxs){const x=st.items[i];if(!x||scanAdded(x,mode))continue;
+    try{await save(mode==="social"?"social":"monitor",uid(mode==="social"?"s":"m"),scanToItem(mode,x));ok++;st.sel.delete(i)}catch(err){fail++;banner(errText(err),true);break}}
+  st.msg=ok?`أُضيف ${ok} ${mode==="social"?"منشور":"خبر"} إلى التقرير ✓ — اضغط أي عنصر في الجدول أدناه لتعديله أو إرفاق صورة.`:"";render();
+  setTimeout(()=>{st.msg="";render()},6000)}
 function scanAddOpen(mode,i){const x=(scanState(mode).items||[])[i];if(!x)return;
   if(mode==="social"){openSm(null);
     if(x.account){$("s-acc").value=x.account}else{$("s-acc").value="__other";$("s-ohandle").value=x.handle||"";$("s-oname").value=x.handle||""}
@@ -1749,7 +1785,14 @@ document.addEventListener("click",async e=>{
     case "sm-scan":S.smScan=true;render();break;
     case "sm-scan-close":S.smScan=false;render();break;
     case "scan-clear":{const st=scanState(v);st.items=null;st.err="";render();break}
-    case "scan-add":{const [m,i]=v.split(":");scanAddOpen(m,+i);break}
+    case "scan-add":{const [m,i]=v.split(":");scanQuickAdd(m,[+i]);break}
+    case "scan-tg":{const [m,i]=v.split(":");const st=scanState(m);st.sel=st.sel||new Set();if(a.checked)st.sel.add(+i);else st.sel.delete(+i);render();break}
+    case "scan-view":{const [m,k]=v.split(":");scanState(m).view=k;render();break}
+    case "scan-selall":{const st=scanState(v);st.sel=new Set(scanVisible(st).filter(([x])=>!scanAdded(x,v)).map(([,i])=>i));render();break}
+    case "scan-selnone":{scanState(v).sel=new Set();render();break}
+    case "scan-addsel":{const st=scanState(v);scanQuickAdd(v,[...(st.sel||[])].sort((a,b)=>a-b));break}
+    case "mt-all":M_all(true);break;
+    case "mt-none":M_all(false);break;
     case "smkw-all":e.preventDefault();S.smSel=new Set([...SM_KW.core,...SM_KW.occ]);render();break;
     case "smkw-none":e.preventDefault();S.smSel=new Set();render();break;
     case "dl-pdf":runDl("pdf",a);break;

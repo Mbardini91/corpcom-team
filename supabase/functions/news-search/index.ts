@@ -47,16 +47,18 @@ function dateFromUrl(u: string): string {
   } catch { /* */ }
   return "";
 }
-// ملخص لا يتجاوز 60 كلمة من نص الخبر/المنشور (فقرة الافتتاح)
-function sum60(raw: string, fallback = ""): string {
+// ملخص وافٍ لا يتجاوز 80 كلمة: جمل كاملة من مقدمة الخبر/المنشور (الهرم المقلوب)
+function sum80(raw: string, fallback = ""): string {
   const clean = (s: string) => s.replace(/!\[[^\]]*\]\([^)]*\)/g, " ").replace(/\[([^\]]*)\]\([^)]*\)/g, "$1").replace(/https?:\/\/\S+/g, " ")
     .replace(/[#*_>|`]+/g, " ").replace(/\s+/g, " ").trim();
-  let src = "";
-  if (raw) { const paras = raw.split(/\n\s*\n|\n/).map(clean).filter((x) => x.split(" ").length >= 12 && !/cookie|subscribe|اشترك|حقوق النشر|copyright/i.test(x));
-    src = paras.slice(0, 3).join(" "); }
-  if (!src) src = clean(fallback);
-  const w = src.split(" ").filter(Boolean);
-  return w.length > 60 ? w.slice(0, 60).join(" ") + "…" : w.join(" ");
+  const junk = /cookie|subscribe|اشترك|حقوق النشر|copyright|اقرأ أيضا|اقرأ أيضًا|read more|تابعونا|follow us|log in|sign up|تسجيل الدخول/i;
+  let paras: string[] = [];
+  if (raw) paras = raw.split(/\n+/).map(clean).filter((x) => x.split(" ").length >= 10 && !junk.test(x));
+  if (!paras.length && fallback) paras = [clean(fallback)];
+  const sents = paras.join(" ").split(/(?<=[.!?؟。])\s+/).map((x) => x.trim()).filter(Boolean);
+  const out: string[] = []; let n = 0;
+  for (const s of sents) { const w = s.split(" ").length; if (n + w > 80) { if (!out.length) { out.push(s.split(" ").slice(0, 80).join(" ") + "…"); } break; } out.push(s); n += w; if (n >= 65) break; }
+  return out.join(" ");
 }
 const bhDay = (iso: string) => new Date(new Date(iso).getTime() + 3 * 3600e3).toISOString().slice(0, 10);
 async function socialSearch(kws: { kw: string; ctx: boolean }[], from: string, to: string) {
@@ -72,7 +74,7 @@ async function socialSearch(kws: { kw: string; ctx: boolean }[], from: string, t
           body: JSON.stringify({ query: b.q, search_depth: "basic", max_results: 20, include_domains: SM_DOMAINS, start_date: from, end_date: addDay(to), include_raw_content: true }) });
         if (!r.ok) return;
         const j = await r.json();
-        rows = (j.results || []).map((x: any) => ({ title: x.title || "", link: x.url || "", snippet: sum60(x.raw_content || "", x.content || ""), date: x.published_date || "" }));
+        rows = (j.results || []).map((x: any) => ({ title: x.title || "", link: x.url || "", snippet: sum80(x.raw_content || "", x.content || ""), date: x.published_date || "" }));
       } else {
         const r = await fetch("https://google.serper.dev/search", { method: "POST", headers: { "Content-Type": "application/json", "X-API-KEY": ser! },
           body: JSON.stringify({ q: `(${b.q}) (site:x.com OR site:instagram.com OR site:facebook.com)`, gl: "bh", num: 20, tbs: `cdr:1,cd_min:${gd(from)},cd_max:${gd(to)}` }) });
@@ -88,7 +90,7 @@ async function socialSearch(kws: { kw: string; ctx: boolean }[], from: string, t
         if (!pub) { try { if (x.date) { const d = new Date(x.date); if (!isNaN(+d)) pub = d.toISOString(); } } catch { /* */ } }
         if (!pub) continue; // بدون تاريخ مؤكد لا يُعرض
         { const day = bhDay(pub); if (day < from || day > to) continue; }
-        items.push({ title: x.title.replace(/\s*[|·-]\s*(Instagram|Facebook|X)\s*$/i, ""), link: x.link, snippet: sum60("", x.snippet), pubDate: pub, platform, kw: pick(x.title, x.snippet, b.kws) });
+        items.push({ title: x.title.replace(/\s*[|·-]\s*(Instagram|Facebook|X)\s*$/i, ""), link: x.link, snippet: sum80("", x.snippet), pubDate: pub, platform, kw: pick(x.title, x.snippet, b.kws) });
       }
     } catch { /* تجاهل */ }
   }));
@@ -157,7 +159,7 @@ Deno.serve(async (req) => {
           const key = title.replace(/\s+/g, " ").toLowerCase();
           if (!title || !x.url) continue;
           const old = items.find((i) => i.title.replace(/\s+/g, " ").toLowerCase() === key);
-          const summary = sum60(x.raw_content || "", x.content || "");
+          const summary = sum80(x.raw_content || "", x.content || "");
           if (old) { if (!old.summary) old.summary = summary; continue; }
           if (seen.has(key)) continue;
           seen.add(key);
