@@ -718,6 +718,8 @@ html{-webkit-text-size-adjust:100%}
 .dp.v2 .v2-card h3{font-size:19pt;line-height:1.35}
 .dp.v2 .v2-lk a{font-size:13pt}.dp.v2 .v2-qr{font-size:9.5pt}
 .dp.v2 .v2-ft{font-size:11pt}
+
+.dp.v2 .v2-t,.dp.v2 .v2-st,.dp.v2 .v2-dt,.dp.v2 .v2-ih,.dp.v2 .v2-h,.dp.v2 .v2-card h3,.dp.v2 table.v2-tb tr.h td,.dp.v2 .v2-kpi b,.dp.v2 .v2-date{font-weight:700}
 </style>
 </head>
 <body>
@@ -1773,7 +1775,7 @@ function dlErr(err){const c=err&&err.code;return c==="declined"?"تم إلغاء
 async function runDl(kind,btn){
   if(S.dailyOpen)refreshDaily();const D=S.daily;if(!D)return;btns(true);const stEl=$("dl-st");if(stEl)stEl.dataset.busy="1";
   try{dlStatus("جارٍ تجهيز الملف…");let blob,ext;
-    if(kind==="pdf"){blob=await makePdf(D);ext="pdf"}else if(kind==="pptx"){blob=await makePptx(buildDaily({classic:true}));ext="pptx"}else{blob=await makeDocx(buildDaily({classic:true}));ext="docx"}
+    if(kind==="pdf"){blob=await makePdf(D);ext="pdf"}else if(kind==="pptx"){blob=D.v2?await makePptxV2():await makePptx(D);ext="pptx"}else{blob=D.v2?await makeDocxV2():await makeDocx(D);ext="docx"}
     dlStatus("بانتظار تأكيد التحميل…");await offerFile(dailyFileName(D.M,ext),blob);dlStatus("تم التحميل ✓")}
   catch(err){console.error(err);dlStatus(dlErr(err))}finally{btns(false);const s2=$("dl-st");if(s2)delete s2.dataset.busy}
   function btns(d){document.querySelectorAll('#rpt [data-act^="dl-"]').forEach(b=>b.disabled=d)}}
@@ -1795,6 +1797,33 @@ async function makePdf(D){
   }finally{wrap.style.setProperty("--k",k0||"1");wrap.classList.remove("capturing")}
   return doc.output("blob")}
 
+/* ---------- v2: PowerPoint/Word من صفحات التقرير نفسها (مطابقة للمعاينة وPDF) ---------- */
+async function capturePages(label){
+  await loadLib("lib/html2canvas.min.js");try{await document.fonts.load('16px "LMRA Sakkal"');await document.fonts.ready}catch(_){}
+  const wrap=$("dp-wrap");const k0=wrap.style.getPropertyValue("--k");wrap.style.setProperty("--k","1");wrap.classList.add("capturing");const out=[];
+  try{const els=[...document.querySelectorAll("#dp-wrap .dp")];
+    for(let i=0;i<els.length;i++){dlStatus(label+" صفحة "+(i+1)+" من "+els.length);const el=els[i];
+      const cv=await html2canvas(el,{scale:2,backgroundColor:"#ffffff",useCORS:true,logging:false});
+      const r0=el.getBoundingClientRect(),k=7.5/r0.width;const links=[];
+      el.querySelectorAll("a[href]").forEach(a=>{const r=a.getBoundingClientRect();const b={x:(r.left-r0.left)*k,y:(r.top-r0.top)*k,w:r.width*k,h:r.height*k};
+        if(a.dataset.pg)links.push({...b,page:+a.dataset.pg});else if(/^https?:/.test(a.href))links.push({...b,url:a.href})});
+      out.push({data:cv.toDataURL("image/jpeg",.9),links})}}
+  finally{wrap.style.setProperty("--k",k0||"1");wrap.classList.remove("capturing")}
+  return out}
+async function makePptxV2(){
+  await loadLib("lib/pptxgen.bundle.js");const P=await capturePages("جارٍ إنشاء PowerPoint…");
+  const pp=new PptxGenJS();pp.defineLayout({name:"LMRA",width:7.5,height:10.833});pp.layout="LMRA";pp.title="تقرير الرصد اليومي";pp.company="هيئة تنظيم سوق العمل";
+  for(const pg of P){const s=pp.addSlide();s.addImage({data:pg.data,x:0,y:0,w:7.5,h:10.833});
+    for(const l of pg.links)s.addText(" ",{x:l.x,y:l.y,w:Math.max(l.w,.2),h:Math.max(l.h,.15),fontSize:6,color:"FFFFFF",transparency:100,hyperlink:l.page?{slide:l.page}:{url:l.url}})}
+  return await pp.write({outputType:"blob"})}
+async function makeDocxV2(){
+  await loadLib("lib/docx.iife.js");const P=await capturePages("جارٍ إنشاء Word…");const d=window.docx;
+  const W=Math.round(7.5*1440),H=Math.round(10.833*1440);
+  const sections=P.map(pg=>({properties:{page:{size:{width:W,height:H},margin:{top:0,right:0,bottom:0,left:0,header:0,footer:0}}},
+    children:[new d.Paragraph({spacing:{before:0,after:0,line:240},children:[new d.ImageRun({type:"jpg",data:b64buf(pg.data),transformation:{width:720,height:1040},
+      floating:{horizontalPosition:{relative:d.HorizontalPositionRelativeFrom.PAGE,offset:0},verticalPosition:{relative:d.VerticalPositionRelativeFrom.PAGE,offset:0},behindDocument:true,wrap:{type:d.TextWrappingType.NONE}}})]})]}));
+  const doc=new d.Document({creator:"إدارة الاتصال",title:"تقرير الرصد اليومي",sections});
+  return await d.Packer.toBlob(doc)}
 /* ---------- PowerPoint ---------- */
 async function makePptx(D){
   await loadLib("lib/pptxgen.bundle.js");dlStatus("جارٍ إنشاء PowerPoint…");const A=await dailyAssets(D);
