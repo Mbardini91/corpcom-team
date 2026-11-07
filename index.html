@@ -284,7 +284,6 @@ td a{color:var(--accent)}
 .flag{display:block;margin-top:4px;font-size:12px;color:var(--hold);font-weight:700}
 .ai-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .ro .write-only{display:none!important}
-@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 .mtbl tr.hlrow td{max-width:none;border-bottom:0;padding-bottom:6px;padding-top:16px;font-weight:700;font-size:18px;line-height:1.6;color:var(--ink)}.mtbl tr.hlrow td .hlk{display:inline-block;font-size:12px;font-weight:500;color:var(--mute);margin-inline-end:10px;padding:2px 8px;border:1px solid var(--line);border-radius:999px;vertical-align:middle}.mtbl tr.mrow td{padding-top:6px}.mtbl tr.hlrow:hover+tr.mrow td,.mtbl tr.hlrow:has(+tr.mrow:hover) td{background:var(--surface-2)}
 .mtbl tr.mrow td{vertical-align:middle}.mtbl tr.mrow td:not(.sum){text-align:center}.mtbl thead th{text-align:center}
 
@@ -401,7 +400,7 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
 /* monitoring v3 — icons, compact controls, level */
 .ic{width:16px;height:16px;flex:none}
 .ic.lbl{width:18px;height:18px;color:var(--mute);margin-top:4px}
-.ic.spin{animation:icspin 1s linear infinite}@keyframes icspin{to{transform:rotate(360deg)}}
+.ic.spin{animation:icspin .7s linear infinite}@keyframes icspin{to{transform:rotate(360deg)}}
 .msw button{display:inline-flex;align-items:center;gap:7px}
 .period{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .mctl{padding:14px 16px;display:grid;gap:12px}
@@ -459,7 +458,7 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
 .htiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
 @media (max-width:900px){.htiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .htile{appearance:none;cursor:pointer;text-align:start;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px 20px;display:grid;gap:10px;align-content:start;min-height:170px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease;color:var(--ink);font:inherit}
-.htile:hover{transform:translateY(-3px);box-shadow:0 10px 24px rgba(23,50,90,.10);border-color:var(--accent)}
+
 .htile:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .hic{width:52px;height:52px;border-radius:14px;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent)}
 .hic .ic{width:26px;height:26px}
@@ -482,7 +481,6 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
 .tab .ic{width:17px;height:17px;opacity:.85}
 .bnav{display:none}
 html{-webkit-text-size-adjust:100%}
-:root[data-theme="light"] .htile:hover,:root:not([data-theme]) .htile:hover{box-shadow:0 10px 24px rgba(23,50,90,.10)}
 
 /* ===== tablet ===== */
 @media (max-width:1100px){
@@ -597,8 +595,6 @@ html{-webkit-text-size-adjust:100%}
   dialog{width:100%;max-width:100%;margin:auto 0 0;border-radius:20px 20px 0 0;max-height:94vh;display:flex;flex-direction:column}
   dialog:not([open]){display:none}
   dialog form{display:flex;flex-direction:column;min-height:0;max-height:94vh}
-  dialog[open]{animation:sheetUp .28s cubic-bezier(.2,.8,.2,1)}
-  @keyframes sheetUp{from{transform:translateY(40px);opacity:.4}to{transform:none;opacity:1}}
   .dlg-h{position:relative;padding:18px 18px 12px}
   .dlg-h::before{content:"";position:absolute;top:7px;left:50%;width:38px;height:4px;border-radius:4px;background:var(--line-2);transform:translateX(-50%)}
   .dlg-b{max-height:none;flex:1;overflow:auto;padding:14px 18px;-webkit-overflow-scrolling:touch}
@@ -720,6 +716,58 @@ html{-webkit-text-size-adjust:100%}
 .dp.v2 .v2-ft{font-size:11pt}
 
 .dp.v2 .v2-t,.dp.v2 .v2-st,.dp.v2 .v2-dt,.dp.v2 .v2-ih,.dp.v2 .v2-h,.dp.v2 .v2-card h3,.dp.v2 table.v2-tb tr.h td,.dp.v2 .v2-kpi b,.dp.v2 .v2-date{font-weight:700}
+
+/* ===== motion & touch layer ===== */
+:root{--ease-out:cubic-bezier(.23,1,.32,1);--ease-in-out:cubic-bezier(.77,0,.175,1);--ease-drawer:cubic-bezier(.32,.72,0,1)}
+button,a,.btn,.chips label,.htile,.bnav button{-webkit-tap-highlight-color:transparent}
+/* press feedback */
+.btn,.seg button,.ghost-btn,.tab,.bnav button,.htile,.chips label,.oc .qc a{transition:transform 160ms var(--ease-out),background-color 160ms ease,border-color 160ms ease,color 160ms ease}
+.btn:active:not(:disabled),.seg button:active,.ghost-btn:active,.bnav button:active,.chips label:active{transform:scale(.97)}
+.htile:active{transform:scale(.98)}
+/* home tiles: lift + shadow via opacity (no box-shadow repaint) */
+.htile{position:relative;transition:transform 200ms var(--ease-out),border-color 200ms ease}
+.htile::after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:0 12px 28px rgba(23,50,90,.12);opacity:0;transition:opacity 200ms var(--ease-out);pointer-events:none}
+:root[data-theme="dark"] .htile::after{box-shadow:0 12px 28px rgba(0,0,0,.35)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .htile::after{box-shadow:0 12px 28px rgba(0,0,0,.35)}}
+@media (hover:hover) and (pointer:fine){
+  .htile:hover{transform:translateY(-3px);border-color:var(--accent)}
+  .htile:hover::after{opacity:1}
+}
+/* touch: neutralise sticky hover states */
+@media (hover:none){
+  .btn.primary:hover{filter:none}
+  .btn:hover{border-color:var(--line-2)}
+  tbody tr:hover td,.mtbl tr.hlrow:hover+tr.mrow td,.mtbl tr.hlrow:has(+tr.mrow:hover) td{background:inherit}
+  .bnav button:hover{color:inherit}
+}
+/* desktop dialogs: scale+fade in, faster fade out */
+dialog{transition:opacity 200ms var(--ease-out),transform 200ms var(--ease-out),overlay 200ms allow-discrete,display 200ms allow-discrete}
+dialog[open]{opacity:1;transform:none}
+@starting-style{dialog[open]{opacity:0;transform:scale(.96)}}
+dialog[data-closing]{opacity:0;transform:scale(.98);transition-duration:150ms}
+dialog::backdrop{transition:opacity 200ms ease}
+@starting-style{dialog[open]::backdrop{opacity:0}}
+dialog[data-closing]::backdrop{opacity:0}
+/* phone: real bottom sheet from off-screen */
+@media (max-width:760px){
+  dialog{transition:transform 320ms var(--ease-drawer),opacity 200ms ease}
+  dialog[open]{transform:translateY(0);opacity:1}
+  @starting-style{dialog[open]{transform:translateY(100%);opacity:1}}
+  dialog[data-closing]{transform:translateY(100%);opacity:1;transition:transform 200ms var(--ease-out)}
+}
+/* banner: soft entry instead of a jump */
+.banner.show{transition:opacity 200ms var(--ease-out),transform 200ms var(--ease-out)}
+@starting-style{.banner.show{opacity:0;transform:translateY(-4px)}}
+/* icon swap crossfade (copy ✓) */
+.btn .ic{transition:filter 120ms ease,opacity 120ms ease}
+.swapping .ic{filter:blur(2px);opacity:.3}
+/* reduced motion: keep fades, drop movement */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{transition-property:opacity,background-color,border-color,color,filter!important;scroll-behavior:auto!important}
+  .ic.spin{animation-duration:1.4s}
+  .btn:active,.seg button:active,.ghost-btn:active,.bnav button:active,.chips label:active,.htile:active,.htile:hover{transform:none!important}
+  dialog,dialog[open],dialog[data-closing]{transform:none!important}
+}
 </style>
 </head>
 <body>
@@ -1191,6 +1239,16 @@ function renderTasks(){
 }
 
 
+
+/* ---------- dialog motion: animated exit, interruptible re-open ---------- */
+(function(){const P=HTMLDialogElement.prototype,close0=P.close,show0=P.showModal;
+  const reduce=matchMedia("(prefers-reduced-motion: reduce)");
+  P.close=function(v){if(!this.open||this.dataset.closing){return close0.call(this,v)}
+    if(reduce.matches){return close0.call(this,v)}
+    this.dataset.closing="1";clearTimeout(this._ct);
+    this._ct=setTimeout(()=>{delete this.dataset.closing;close0.call(this,v)},innerWidth<760?200:150)};
+  P.showModal=function(){if(this.dataset.closing){clearTimeout(this._ct);delete this.dataset.closing;close0.call(this)}return show0.call(this)};
+  document.addEventListener("cancel",e=>{const d=e.target;if(d instanceof HTMLDialogElement){e.preventDefault();d.close()}},true)})();
 /* ---------- home ---------- */
 const QUOTES=["كل خبر نرصده بدقة يحمي صورة الهيئة — شكرًا لعينكم الساهرة.","العمل الجماعي يجعل المستحيل ممكنًا، وأنتم الدليل.","التفاصيل الصغيرة هي ما يصنع التواصل العظيم.",
  "ما تنجزونه اليوم يصنع ثقة الجمهور غدًا.","الإبداع ليس صدفة، بل عادة يومية — وأنتم تمارسونها كل يوم.","فريق واحد، رسالة واحدة، أثر كبير.",
@@ -1282,7 +1340,8 @@ function renderStats(){
   h+=`</div>`;
   el.innerHTML=h;
 }
-document.addEventListener("mouseover",e=>{const t=e.target.closest("[data-tip]"),tip=$("tip");if(!t){tip.hidden=true;return}tip.textContent=t.dataset.tip;tip.hidden=false});
+const FINE=matchMedia("(hover:hover) and (pointer:fine)");
+document.addEventListener("mouseover",e=>{if(!FINE.matches)return;const t=e.target.closest("[data-tip]"),tip=$("tip");if(!t){tip.hidden=true;return}tip.textContent=t.dataset.tip;tip.hidden=false});
 document.addEventListener("mousemove",e=>{const tip=$("tip");if(tip.hidden)return;const w=tip.offsetWidth,h=tip.offsetHeight;let x=e.clientX-w-14,y=e.clientY-h-12;if(x<8)x=e.clientX+14;if(y<8)y=e.clientY+16;tip.style.left=x+"px";tip.style.top=y+"px"});
 
 
@@ -1931,7 +1990,8 @@ function lvlOf(x,sm){return LVL.some(l=>l.k===x.level)?x.level:(sm?smLvlAuto(x):
 function lvlName(k){return (LVL.find(l=>l.k===k)||LVL[1]).n}
 function lvlBadge(k){return `<span class="lvl lvl-${k}" title="مستوى الخبر: ${lvlName(k)}"><span class="bars"><i></i><i></i><i></i></span>${lvlName(k)}</span>`}
 function lvlOpts(sel){return LVL.map(l=>`<option value="${l.k}" ${l.k===sel?"selected":""}>${l.n}</option>`).join("")}
-function copyFlash(a,ok){a.innerHTML=ic(ok?"check":"close");a.title=ok?"تم النسخ":"تعذّر النسخ";setTimeout(()=>{a.innerHTML=ic("copy");a.title="نسخ التقرير"},1800)}
+function copyFlash(a,ok){swapIcon(a,ic(ok?"check":"close"));a.title=ok?"تم النسخ":"تعذّر النسخ";setTimeout(()=>{swapIcon(a,ic("copy"));a.title="نسخ التقرير"},1800)}
+function swapIcon(a,html){a.classList.add("swapping");setTimeout(()=>{a.innerHTML=html;a.classList.remove("swapping")},110)}
 
 /* ===== «ارصد الآن» — بحث آلي في الأخبار ===== */
 const SCAN_ON=()=>typeof window.lmraSearch==="function";
