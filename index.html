@@ -614,6 +614,8 @@ html{-webkit-text-size-adjust:100%}
 .dp-fit{width:calc(7.5in * var(--k));height:calc(10.833in * var(--k));position:relative;margin:0 auto}
 .dp-fit>.dp{position:absolute;top:0;right:0;transform:scale(var(--k));transform-origin:top right}
 .dp-wrap.capturing .dp-fit>.dp{transform:none}
+.dp-wrap.notext .dp *{color:transparent!important;-webkit-text-fill-color:transparent!important;text-shadow:none!important;text-decoration:none!important}
+
 @media print{.dp-fit{width:auto;height:auto}.dp-fit>.dp{position:relative;transform:none}}
 @media (max-width:760px){
   #rpt{padding:0 12px 40px}
@@ -1949,7 +1951,7 @@ function dlErr(err){const c=err&&err.code;return c==="declined"?"تم إلغاء
 async function runDl(kind,btn){
   const isSt=S.statsOpen;if(!isSt&&S.dailyOpen)refreshDaily();const D=isSt?S.sreport:S.daily;if(!D)return;btns(true);const stEl=$("dl-st");if(stEl)stEl.dataset.busy="1";
   try{dlStatus("جارٍ تجهيز الملف…");let blob,ext;
-    if(kind==="pdf"){blob=await makePdf(D);ext="pdf"}else if(kind==="pptx"){blob=D.v2?await makePptxV2(D.title):await makePptx(D);ext="pptx"}else{blob=D.v2?await makeDocxV2():await makeDocx(D);ext="docx"}
+    if(kind==="pdf"){blob=await makePdf(D);ext="pdf"}else if(kind==="pptx"){blob=D.v2?await makePptxEditable(D.title):await makePptx(D);ext="pptx"}else{blob=D.v2?await makeDocxV2():await makeDocx(D);ext="docx"}
     dlStatus("بانتظار تأكيد التحميل…");await offerFile(isSt?"LMRA - Statistics Report "+(D.sy==="all"?"All Years":D.sy)+"."+ext:dailyFileName(D.M,ext),blob);dlStatus("تم التحميل ✓")}
   catch(err){console.error(err);dlStatus(dlErr(err))}finally{btns(false);const s2=$("dl-st");if(s2)delete s2.dataset.busy}
   function btns(d){document.querySelectorAll('#rpt [data-act^="dl-"]').forEach(b=>b.disabled=d)}}
@@ -1989,6 +1991,66 @@ async function makePptxV2(title){
   const pp=new PptxGenJS();pp.defineLayout({name:"LMRA",width:7.5,height:10.833});pp.layout="LMRA";pp.title=title||"تقرير الرصد اليومي";pp.company="هيئة تنظيم سوق العمل";
   for(const pg of P){const s=pp.addSlide();s.addImage({data:pg.data,x:0,y:0,w:7.5,h:10.833});
     for(const l of pg.links)s.addText(" ",{x:l.x,y:l.y,w:Math.max(l.w,.2),h:Math.max(l.h,.15),fontSize:6,color:"FFFFFF",transparency:100,hyperlink:l.page?{slide:l.page}:{url:l.url}})}
+  return await pp.write({outputType:"blob"})}
+/* ---------- PowerPoint قابل للتعديل: خلفية الصفحة كصورة + نصوص حقيقية فوقها ---------- */
+function _rgbHex(c){const m=String(c).match(/rgba?\(([^)]+)\)/);if(!m)return null;const p=m[1].split(",").map(x=>parseFloat(x));if(p.length>3&&p[3]===0)return null;return p.slice(0,3).map(v=>Math.round(v).toString(16).padStart(2,"0")).join("").toUpperCase()}
+function _ffName(ff){if(/Sakkal|Majalla/i.test(ff))return "Sakkal Majalla";const f=String(ff).split(",")[0].replace(/["']/g,"").trim();return /system-ui|sans-serif|serif/i.test(f)||!f?"Calibri":f}
+function _isInline(el){const d=getComputedStyle(el).display;return d==="inline"}
+function _extractTexts(pageEl){
+  const r0=pageEl.getBoundingClientRect(),K=7.5/r0.width,out=[],links=[];
+  const hasBlockDesc=el=>{for(const c of el.querySelectorAll("*")){if(/^(SVG|IMG|BR|CANVAS|PATH|G|CIRCLE|RECT|LINE|POLYLINE|POLYGON|USE|DEFS|STYLE)$/i.test(c.tagName)||c.closest("svg"))continue;if(!_isInline(c)&&c.textContent.trim())return true}return false};
+  const runsOf=(node,acc)=>{node.childNodes.forEach(n=>{if(n.nodeType===3){const t=n.textContent.replace(/\s+/g," ");if(t){const cs=getComputedStyle(n.parentElement);const col=_rgbHex(cs.color);acc.push({text:t,options:{fontFace:_ffName(cs.fontFamily),fontSize:Math.round(parseFloat(cs.fontSize)*75)/100,color:col||"000000",bold:parseInt(cs.fontWeight)>=600}})}}
+    else if(n.nodeType===1){if(n.tagName==="BR"){if(acc.length)acc[acc.length-1].options.breakLine=true}else if(!/^(SVG|IMG|CANVAS|STYLE|SCRIPT)$/i.test(n.tagName)&&getComputedStyle(n).display!=="none")runsOf(n,acc)}})};
+  const emit=(host,nodes)=>{ // host: العنصر الذي تؤخذ منه الخصائص
+    const cs=getComputedStyle(host);if(cs.visibility==="hidden"||cs.display==="none")return;
+    const rg=document.createRange();const rects=[];
+    const tns=[];nodes.forEach(n=>{if(n.nodeType===3)tns.push(n);else{const tw=document.createTreeWalker(n,NodeFilter.SHOW_TEXT);let t;while(t=tw.nextNode())if(t.textContent.trim()&&!t.parentElement.closest("svg"))tns.push(t)}});
+    tns.forEach(t=>{rg.selectNodeContents(t);[...rg.getClientRects()].forEach(r=>{if(r.width>0.5&&r.height>0.5)rects.push(r)})});
+    if(!rects.length)return;
+    const acc=[];nodes.forEach(n=>n.nodeType===3?runsOf({childNodes:[n]},acc):runsOf(n,acc));
+    if(!acc.length)return;acc[0].text=acc[0].text.replace(/^\s+/,"");acc[acc.length-1].text=acc[acc.length-1].text.replace(/\s+$/,"");
+    if(!acc.some(r=>r.text.trim()))return;
+    const fs0=parseFloat(cs.fontSize),lh0=cs.lineHeight==="normal"?fs0*1.25:parseFloat(cs.lineHeight);
+    const cy=rects.map(r=>(r.top+r.bottom)/2).sort((a,b)=>a-b);let nl=1;for(let i=1;i<cy.length;i++)if(cy[i]-cy[i-1]>lh0*.6)nl++;
+    const top=cy[0]-lh0/2,bot=cy[cy.length-1]+lh0/2,rl=Math.min(...rects.map(r=>r.left)),rr=Math.max(...rects.map(r=>r.right));
+    const fs=parseFloat(cs.fontSize),lh=cs.lineHeight==="normal"?fs*1.25:parseFloat(cs.lineHeight);
+    const lines=nl;
+    const isEl=nodes.length===1&&nodes[0].nodeType===1&&cs.display!=="inline";
+    let L=rl,R=rr;
+    if(isEl&&lines>1){const b=host.getBoundingClientRect();L=b.left+parseFloat(cs.paddingLeft)+parseFloat(cs.borderLeftWidth);R=b.right-parseFloat(cs.paddingRight)-parseFloat(cs.borderRightWidth)}
+    const rtl=cs.direction==="rtl";let al=cs.textAlign;
+    al=al==="start"?(rtl?"right":"left"):al==="end"?(rtl?"left":"right"):/center/.test(al)?"center":al==="justify"?"justify":al==="right"?"right":"left";
+    if(isEl&&lines===1){const b=host.getBoundingClientRect();if(al==="right"){R=Math.max(R,rr)}}
+    let x=L,w=R-L;
+    if(lines===1){const e=w*.1+6;if(al==="right")x-=e;else if(al==="center")x-=e/2;w+=e}
+    else{const e=w*.03;if(al==="right")x-=e;w+=e}
+    const h=(bot-top)+(lines>1?lh*.3:lh*.15);
+    out.push({x:(x-r0.left)*K,y:(top-r0.top)*K,w:w*K,h:h*K,runs:acc,opt:{align:al,valign:"top",margin:0,lineSpacing:Math.round(lh*75)/100,rtlMode:rtl,lang:"ar-BH",wrap:lines>1,paraSpaceAfter:0,paraSpaceBefore:0}});
+  };
+  const walk=el=>{
+    if(/^(SVG|IMG|CANVAS|STYLE|SCRIPT|FIGURE_)$/i.test(el.tagName))return;
+    const cs=getComputedStyle(el);if(cs.display==="none"||cs.visibility==="hidden")return;
+    if(el.textContent.trim()&&!hasBlockDesc(el)&&cs.display!=="inline"){emit(el,[el]);return}
+    const pend=[];const flush=()=>{if(pend.length){const host=pend[0].parentElement,ns=pend.splice(0);if(ns.some(n=>n.textContent.trim()))emit(host,ns)}};
+    el.childNodes.forEach(n=>{if(n.nodeType===3)pend.push(n);else if(n.nodeType===1){if(_isInline(n)&&!hasBlockDesc(n)&&!/^(IMG|SVG|BR)$/i.test(n.tagName)&&cs.display!=="flex"&&cs.display!=="grid")pend.push(n);else{flush();walk(n)}}});
+    flush()};
+  walk(pageEl);
+  pageEl.querySelectorAll("a[href]").forEach(a=>{const r=a.getBoundingClientRect();const b={x:(r.left-r0.left)*K,y:(r.top-r0.top)*K,w:r.width*K,h:r.height*K};
+    if(a.dataset.pg)links.push({...b,page:+a.dataset.pg});else if(/^https?:/.test(a.href))links.push({...b,url:a.href})});
+  return {texts:out,links}}
+async function makePptxEditable(title){
+  await loadLib("lib/pptxgen.bundle.js");await loadLib("lib/html2canvas.min.js");try{await document.fonts.load('16px "LMRA Sakkal"');await document.fonts.ready}catch(_){}
+  const wrap=$("dp-wrap");const k0=wrap.style.getPropertyValue("--k");wrap.style.setProperty("--k","1");wrap.classList.add("capturing");const P=[];
+  try{const els=[...document.querySelectorAll("#dp-wrap .dp")];
+    for(let i=0;i<els.length;i++){dlStatus("جارٍ إنشاء PowerPoint قابل للتعديل… صفحة "+(i+1)+" من "+els.length);const el=els[i];
+      const ex=_extractTexts(el);wrap.classList.add("notext");
+      let cv;try{cv=await html2canvas(el,{scale:2,backgroundColor:"#ffffff",useCORS:true,logging:false})}finally{wrap.classList.remove("notext")}
+      P.push({data:cv.toDataURL("image/jpeg",.9),...ex})}}
+  finally{wrap.style.setProperty("--k",k0||"1");wrap.classList.remove("capturing")}
+  const pp=new PptxGenJS();pp.defineLayout({name:"LMRA",width:7.5,height:10.833});pp.layout="LMRA";pp.rtlMode=true;pp.title=title||"تقرير الرصد اليومي";pp.company="هيئة تنظيم سوق العمل";
+  for(const pg of P){const s=pp.addSlide();s.addImage({data:pg.data,x:0,y:0,w:7.5,h:10.833});
+    for(const l of pg.links)s.addText(" ",{x:l.x,y:l.y,w:Math.max(l.w,.2),h:Math.max(l.h,.15),fontSize:6,color:"FFFFFF",transparency:100,hyperlink:l.page?{slide:l.page}:{url:l.url}});
+    for(const t of pg.texts)s.addText(t.runs,{x:t.x,y:t.y,w:t.w,h:t.h,...t.opt})}
   return await pp.write({outputType:"blob"})}
 async function makeDocxV2(){
   await loadLib("lib/docx.iife.js");const P=await capturePages("جارٍ إنشاء Word…");const d=window.docx;
