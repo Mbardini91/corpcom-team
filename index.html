@@ -2018,8 +2018,9 @@ function _extractTexts(pageEl){
     const isEl=nodes.length===1&&nodes[0].nodeType===1&&cs.display!=="inline";
     let L=rl,R=rr;
     if(isEl&&lines>1){const b=host.getBoundingClientRect();L=b.left+parseFloat(cs.paddingLeft)+parseFloat(cs.borderLeftWidth);R=b.right-parseFloat(cs.paddingRight)-parseFloat(cs.borderRightWidth)}
-    const rtl=cs.direction==="rtl";let al=cs.textAlign;
+    const rtl=acc.some(q=>/[\u0590-\u08FF]/.test(q.text))||cs.direction==="rtl"&&!acc.some(q=>/[A-Za-z]/.test(q.text));let al=cs.textAlign;
     al=al==="start"?(rtl?"right":"left"):al==="end"?(rtl?"left":"right"):/center/.test(al)?"center":al==="justify"?"justify":al==="right"?"right":"left";
+    acc.forEach(q=>q.options.rtlMode=rtl);
     if(isEl&&lines===1){const b=host.getBoundingClientRect();if(al==="right"){R=Math.max(R,rr)}}
     let x=L,w=R-L;
     if(lines===1){const e=w*.1+6;if(al==="right")x-=e;else if(al==="center")x-=e/2;w+=e}
@@ -2043,15 +2044,19 @@ async function makePptxEditable(title){
   const wrap=$("dp-wrap");const k0=wrap.style.getPropertyValue("--k");wrap.style.setProperty("--k","1");wrap.classList.add("capturing");const P=[];
   try{const els=[...document.querySelectorAll("#dp-wrap .dp")];
     for(let i=0;i<els.length;i++){dlStatus("جارٍ إنشاء PowerPoint قابل للتعديل… صفحة "+(i+1)+" من "+els.length);const el=els[i];
-      const ex=_extractTexts(el);wrap.classList.add("notext");
+      const ex=_extractTexts(el);const svgs=[];el.querySelectorAll("svg, svg *").forEach(n=>{svgs.push([n,n.style.getPropertyValue("color"),n.style.getPropertyPriority("color")]);n.style.setProperty("color",getComputedStyle(n).color,"important")});wrap.classList.add("notext");
       let cv;try{cv=await html2canvas(el,{scale:2,backgroundColor:"#ffffff",useCORS:true,logging:false})}finally{wrap.classList.remove("notext")}
+      svgs.forEach(([n,v,pr])=>{if(v)n.style.setProperty("color",v,pr);else n.style.removeProperty("color")});
       P.push({data:cv.toDataURL("image/jpeg",.9),...ex})}}
   finally{wrap.style.setProperty("--k",k0||"1");wrap.classList.remove("capturing")}
   const pp=new PptxGenJS();pp.defineLayout({name:"LMRA",width:7.5,height:10.833});pp.layout="LMRA";pp.rtlMode=true;pp.title=title||"تقرير الرصد اليومي";pp.company="هيئة تنظيم سوق العمل";
   for(const pg of P){const s=pp.addSlide();s.addImage({data:pg.data,x:0,y:0,w:7.5,h:10.833});
     for(const l of pg.links)s.addText(" ",{x:l.x,y:l.y,w:Math.max(l.w,.2),h:Math.max(l.h,.15),fontSize:6,color:"FFFFFF",transparency:100,hyperlink:l.page?{slide:l.page}:{url:l.url}});
     for(const t of pg.texts)s.addText(t.runs,{x:t.x,y:t.y,w:t.w,h:t.h,...t.opt})}
-  return await pp.write({outputType:"blob"})}
+  // pptxgenjs يسجّل خط النص المعقّد بترميز صيني (‎-120)، فيُعرض العربي بحروف مشوّهة في بعض أجهزة PowerPoint. نصحّحه إلى الترميز العربي.
+  const z=await JSZip.loadAsync(await pp.write({outputType:"arraybuffer"}));
+  for(const n of Object.keys(z.files)){if(/^ppt\/(slides|slideLayouts|slideMasters)\/[^/]+\.xml$/.test(n)){const x=await z.file(n).async("string");z.file(n,x.replace(/charset="-120"/g,'charset="178"'))}}
+  return await z.generateAsync({type:"blob",mimeType:"application/vnd.openxmlformats-officedocument.presentationml.presentation",compression:"DEFLATE"})}
 async function makeDocxV2(){
   await loadLib("lib/docx.iife.js");const P=await capturePages("جارٍ إنشاء Word…");const d=window.docx;
   const W=Math.round(7.5*1440),H=Math.round(10.833*1440);
