@@ -696,6 +696,42 @@ html{-webkit-text-size-adjust:100%}
 .v2-dic svg{width:1.05in;height:1.05in}
 .v2-dt{font-size:32pt;font-weight:700;color:var(--nv);line-height:1.3}
 .v2-dt::after{content:"";display:block;width:.9in;height:3px;background:var(--rd);margin:.18in auto 0}
+/* ---- تقرير الإحصائيات ---- */
+.sr-hd{position:absolute;right:.62in;left:.62in;top:1.36in;display:flex;align-items:baseline;gap:.14in;border-bottom:1px solid var(--sd);padding-bottom:8px}
+.sr-hd .no{font-size:26pt;font-weight:700;color:var(--sd);line-height:1;direction:ltr}
+.sr-hd h2{margin:0;font-size:22pt;font-weight:700;color:var(--nv);line-height:1.2}
+.sr-hd h2::after{content:"";display:block;width:.7in;height:3px;background:var(--rd);margin-top:5px}
+.sr-hd em{margin-inline-start:auto;font-style:normal;font-size:12pt;font-weight:700;color:var(--gr)}
+.sr-body{position:absolute;right:.62in;left:.62in;top:2.2in;bottom:.78in;display:flex;flex-direction:column;gap:.17in;overflow:hidden}
+.sr-kp{display:grid;grid-template-columns:repeat(5,1fr);gap:.09in}
+.sr-kp>div{background:#faf8f4;border:1px solid var(--sd);border-top:3px solid var(--nv);border-radius:.07in;padding:.09in .08in;text-align:center;display:flex;flex-direction:column;gap:2px}
+.sr-kp>div:nth-child(4){border-top-color:var(--rd)}
+.sr-kp .k{font-size:9pt;color:#555;line-height:1.25}
+.sr-kp b{font-size:20pt;color:var(--nv);line-height:1.15;direction:ltr;font-weight:700}
+.sr-kp small{font-size:7.5pt;color:var(--gr);line-height:1.3}
+.sr-gd{display:grid;grid-template-columns:1fr 1fr;gap:.17in .22in}
+.sr-pn{border-top:2px solid var(--nv);padding-top:.08in;min-width:0}
+.sr-pn h3{margin:0;font-size:12pt;color:var(--nv);font-weight:700}
+.sr-pn .cap{font-size:8pt;color:var(--gr);margin:1px 0 .08in}
+.sr-hb{display:grid;gap:5px}
+.sr-hb .r{display:grid;grid-template-columns:1.1in 1fr .28in .34in;gap:6px;align-items:center;font-size:9.5pt}
+.sr-hb .n{color:#222;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sr-hb .tr{height:8px;background:#efe9df;border-radius:4px;overflow:hidden;direction:rtl}
+.sr-hb .tr i{display:block;height:100%;border-radius:4px}
+.sr-hb b{color:var(--nv);text-align:center;direction:ltr;font-weight:700}
+.sr-hb em{font-style:normal;color:var(--gr);font-size:8pt;direction:ltr;text-align:left}
+.sr-no{font-size:9.5pt;color:var(--gr);padding:.1in 0}
+.sr-lg{display:flex;gap:.18in;font-size:9pt;color:#333;margin-bottom:.07in}
+.sr-lg i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-inline-end:5px}
+.sr-mch{position:relative;height:1.55in;margin-top:.14in;margin-inline-start:.28in;border-bottom:1px solid var(--sd)}
+.sr-mch .gl{position:absolute;left:0;right:0;border-top:1px dashed #e7e1d6;height:0}
+.sr-mch .gl span{position:absolute;right:100%;margin-right:5px;transform:translateY(-50%);font-size:7.5pt;color:var(--gr);direction:ltr}
+.sr-mch .cols{position:absolute;inset:0;display:grid;grid-template-columns:repeat(12,1fr)}
+.sr-mch .mc{display:flex;align-items:flex-end;justify-content:center;gap:3px;height:100%}
+.sr-mch .b{position:relative;width:10px;border-radius:2px 2px 0 0;min-height:0}
+.sr-mch .b u{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);font-size:7pt;color:#333;text-decoration:none;padding-bottom:1px}
+.sr-ml{display:grid;grid-template-columns:repeat(12,1fr);margin-inline-start:.28in;margin-top:3px;font-size:8pt;color:var(--gr);text-align:center}
+@media (max-width:760px){.rbar.two{grid-template-columns:1fr 1fr}}
 
 /* Sakkal Majalla runs ~20% smaller than Frutiger — rescale the report type */
 .dp.v2 .v2-kick{font-size:14pt}.dp.v2 .v2-t{font-size:42pt}.dp.v2 .v2-date{font-size:19pt}
@@ -1294,7 +1330,7 @@ function renderStats(){
   const SECS=[{k:"all",n:"نظرة عامة"},{k:"tasks",n:"المهام"},{k:"photo",n:"التصوير"},{k:"news",n:"الأخبار والرصد"}];
   let h=`<div class="toolbar"><div class="grp"><h2 style="font-size:22px;font-weight:800">الإحصائيات</h2></div>
     <div class="grp"><div class="seg" role="group" aria-label="السنة">${years.map(y=>`<button type="button" data-act="sy" data-v="${y}" aria-pressed="${S.sy===y}">${y}</button>`).join("")}<button type="button" data-act="sy" data-v="all" aria-pressed="${S.sy==="all"}">الكل</button></div>
-    <button class="btn write-only" type="button" data-act="photo-new">${ic("plus")}تغطية</button></div></div>
+    <button class="btn" type="button" data-act="stats-report">${ic("report")}تصدير التقرير</button><button class="btn write-only" type="button" data-act="photo-new">${ic("plus")}تغطية</button></div></div>
     <div class="seg msw" role="tablist" aria-label="القسم">${SECS.map(s=>`<button type="button" data-act="ss" data-v="${s.k}" aria-pressed="${sec===s.k}">${s.n}</button>`).join("")}</div>`;
   if(!S.ready.tasks&&S.db){el.innerHTML=h+`<div class="empty-note">جارٍ تحميل البيانات…</div>`;return}
   const hbars=(rows,lim,unit,tot)=>{rows=rows.filter(x=>x[1]);if(!rows.length)return `<div class="empty-note">لا توجد بيانات.</div>`;let r=rows;if(rows.length>lim){const rest=rows.slice(lim-1).reduce((a,x)=>a+x[1],0);r=rows.slice(0,lim-1).concat([["أخرى",rest]])}
@@ -1474,7 +1510,7 @@ function monPrintHTML(){
     <footer class="rf">صور الأخبار لقطات من المصادر المذكورة لأغراض الرصد الداخلي · أُعدّ عبر منصة فريق إدارة الاتصال</footer>
   </div>`}
 function openReport(){const r=$("rpt");r.innerHTML=monPrintHTML();r.hidden=false;document.body.classList.add("rpt-open");window.scrollTo(0,0)}
-function closeReport(){S.dailyOpen=false;const r=$("rpt");r.hidden=true;r.innerHTML="";document.body.classList.remove("rpt-open")}
+function closeReport(){S.dailyOpen=false;S.statsOpen=false;const r=$("rpt");r.hidden=true;r.innerHTML="";document.body.classList.remove("rpt-open")}
 
 /* ===== social media monitoring ===== */
 const SM_GROUPS=[
@@ -1805,7 +1841,7 @@ function dailyHTML(D){if(D.v2)return dailyHTMLv2(D);
 }
 // ملاءمة صفحات التقرير لعرض الشاشة (الجوال والتابلت) دون تغيير مقاس الصفحة الأصلي
 function fitDaily(){const w=$("dp-wrap");if(!w)return;const avail=($("rpt").clientWidth||innerWidth)-(innerWidth<760?24:32);w.style.setProperty("--k",Math.min(1,avail/720).toFixed(4))}
-addEventListener("resize",()=>{if(S.dailyOpen)fitDaily()});
+addEventListener("resize",()=>{if(S.dailyOpen||S.statsOpen)fitDaily()});
 function refreshDaily(){if(!S.dailyOpen)return;const D=buildDaily();S.daily=D;const w=$("dp-wrap");if(w){w.innerHTML=dailyHTML(D);fitDaily()}const st=$("dl-st");if(st&&!st.dataset.busy)st.textContent=D.pages.length+" صفحة · "+D.counts.news+" خبر · "+D.counts.posts+" منشور"}
 function openDaily(){
   if(typeof qrcode!=="function")loadLib("lib/qrcode.min.js").then(()=>{if(S.dailyOpen)refreshDaily()}).catch(()=>{});
@@ -1813,6 +1849,83 @@ function openDaily(){
   r.innerHTML=`<div class="rbar no-print"><button class="btn primary" type="button" data-act="dl-pdf">تحميل PDF</button><button class="btn" type="button" data-act="dl-pptx">تحميل PowerPoint</button><button class="btn" type="button" data-act="dl-docx">تحميل Word</button><button class="btn" type="button" data-act="rpt-close">إغلاق</button>
     <span class="small muted" id="dl-st">${D.pages.length} صفحة · ${D.counts.news} خبر · ${D.counts.posts} منشور</span></div>
     <div class="dp-wrap" id="dp-wrap">${dailyHTML(D)}</div>`;
+  r.hidden=false;document.body.classList.add("rpt-open");r.scrollTop=0;fitDaily();
+}
+/* ---------- تقرير الإحصائيات (PDF / PowerPoint) بهوية التقرير الصحفي ---------- */
+const SR_ST_C={"لم يبدأ":"#7d8184","قيد التنفيذ":"#2f5d9a","بانتظار المراجعة":"#b7832a","معلق":"#c0632b","مكتمل":"#2e7d4f","متوقف":"#a8211f"};
+const SR_T_C={design:"#2f5d9a",video:"#7d5aa0",photo:"#2b8577",news:"#b7832a",form:"#b4466a",other:"#7d8184"};
+const SR_LV_C={high:"#DE2724",med:"#b7832a",low:"#8D9091"},SR_TONE_C={neu:"#8D9091",pos:"#2e7d4f",neg:"#a8211f"};
+function buildStats(){
+  const yOf=d=>validDate(d)?d.slice(0,4):"";
+  const years=[...new Set([...S.tasks.map(t=>yOf(t.received)),...(S.monitor||[]).map(x=>yOf(x.date)),...(S.social||[]).map(x=>yOf(x.date))].filter(Boolean))].sort();
+  let sy=S.sy;if(!sy||(sy!=="all"&&!years.includes(sy)))sy=years.includes(String(now.getFullYear()))?String(now.getFullYear()):(years[years.length-1]||"all");
+  const inY=d=>sy==="all"||String(d||"").startsWith(sy);
+  const tasks=S.tasks.filter(t=>validDate(t.received)&&inY(t.received));
+  const photos=S.tasks.filter(t=>t.type==="photo"&&validDate(t.received)),sel=photos.filter(t=>inY(t.received));
+  const news=(S.monitor||[]).filter(x=>x.verified!==false&&inY(x.date)),posts=(S.social||[]).filter(x=>x.verified!==false&&inY(x.date));
+  const ylabel=sy==="all"?"كل السنوات":sy;
+  const doneT=tasks.filter(t=>t.status==="مكتمل").length,openT=tasks.filter(t=>CURRENT.has(t.status||"لم يبدأ")).length;
+  const delP=sel.filter(t=>validDate(t.delivered)&&t.delivered>=t.received);const avg=delP.length?delP.reduce((a,t)=>a+daysBetween(t.received,t.delivered),0)/delP.length:0;
+  const same=delP.filter(t=>t.delivered===t.received).length,ext=sel.filter(t=>(t.channels||[]).includes("نشر خارجي")).length;
+  const issued=news.filter(x=>newsCat(x)==="issued").length+posts.filter(x=>smCat(x)==="issued").length;
+  const high=news.filter(x=>lvlOf(x,false)==="high").length+posts.filter(x=>lvlOf(x,true)==="high").length;
+  const pct=(x,d)=>d?Math.round(x/d*100):0;
+  const cnt=(arr,fn)=>{const c=new Map();arr.forEach(t=>fn(t).forEach(k=>{if(k)c.set(k,(c.get(k)||0)+1)}));return [...c.entries()].sort((a,b)=>b[1]-a[1])};
+  const hb=(rows,lim,tot)=>{rows=rows.filter(x=>x[1]);if(!rows.length)return `<div class="sr-no">لا توجد بيانات</div>`;let r=rows;if(rows.length>lim){const rest=rows.slice(lim-1).reduce((a,x)=>a+x[1],0);r=rows.slice(0,lim-1).concat([["أخرى",rest]])}
+    const m=Math.max(...r.map(x=>x[1])),T=tot||rows.reduce((a,x)=>a+x[1],0);
+    return `<div class="sr-hb">`+r.map(([k,v,c])=>`<div class="r"><span class="n" dir="auto">${esc(k)}</span><div class="tr"><i style="width:${v/m*100}%;background:${c||"#17325a"}"></i></div><b>${v}</b><em>${pct(v,T)}%</em></div>`).join("")+`</div>`};
+  const panel=(t,cap,body,wide)=>`<section class="sr-pn${wide?" wide":""}"><h3>${t}</h3><div class="cap">${cap||""}</div>${body}</section>`;
+  const monthly=(title,cap,arr,dateFn,unit)=>{const cy=years.slice(-2).filter(y=>arr.some(t=>yOf(dateFn(t))===y));if(!cy.length)return panel(title,cap,`<div class="sr-no">لا توجد بيانات</div>`,true);const cols=["#2f5d9a","#a8741c"],ci=cy.length===2?[1,0]:[0];
+    const serie=cy.map(y=>{const a=Array(12).fill(0);arr.forEach(t=>{const d=dateFn(t);if(validDate(d)&&d.startsWith(y))a[+d.slice(5,7)-1]++});return a});
+    const mx=Math.max(1,...serie.flat());const step=mx<=5?1:mx<=10?2:mx<=25?5:mx<=60?10:20;const top=Math.ceil(mx/step)*step;
+    let g="";for(let v=0;v<=top;v+=step)g+=`<div class="gl" style="bottom:${v/top*100}%"><span>${v}</span></div>`;
+    let c="";for(let m=0;m<12;m++)c+=`<div class="mc">`+cy.map((y,i)=>`<div class="b" style="height:${serie[i][m]/top*100}%;background:${cols[ci[i]]}">${serie[i][m]?`<u>${serie[i][m]}</u>`:""}</div>`).join("")+`</div>`;
+    const lg=`<div class="sr-lg">${cy.map((y,i)=>`<span><i style="background:${cols[ci[i]]}"></i>${y} · ${serie[i].reduce((a,b)=>a+b,0)} ${unit}</span>`).join("")}</div>`;
+    return panel(title,cap,lg+`<div class="sr-mch">${g}<div class="cols">${c}</div></div><div class="sr-ml">${MONTHS.map(x=>`<span>${x.slice(0,3)}</span>`).join("")}</div>`,true)};
+  const K=(k,v,sub)=>`<div><span class="k">${k}</span><b>${v}</b><small>${sub||"&nbsp;"}</small></div>`;
+  const kp=a=>`<div class="sr-kp">${a.join("")}</div>`;
+  const typeRows=TYPES.map(t=>[t.n,tasks.filter(x=>typeOf(x.type).k===t.k).length,SR_T_C[t.k]]);
+  const stRows=STATUS.map(s=>[s.k,tasks.filter(x=>(x.status||"لم يبدأ")===s.k).length,SR_ST_C[s.k]]);
+  const catRows=RCAT.map(c=>[c.n,news.filter(x=>newsCat(x)===c.k).length+posts.filter(x=>smCat(x)===c.k).length]);
+  const lvRows=LVL.map(l=>[l.n,news.filter(x=>lvlOf(x,false)===l.k).length+posts.filter(x=>lvlOf(x,true)===l.k).length,SR_LV_C[l.k]]);
+  const pages=[];
+  pages.push({kind:"cover",ylabel,k:[[tasks.length,"مهمة"],[pct(doneT,tasks.length)+"%","نسبة الإنجاز"],[sel.length,"تغطية تصوير"],[news.length+posts.length,"خبر ومنشور مرصود"]]});
+  pages.push({kind:"sec",n:"01",title:"نظرة عامة",body:kp([K("المهام",tasks.length,`${doneT} مكتملة · ${openT} جارية`),K("نسبة الإنجاز",pct(doneT,tasks.length)+"%",esc(ylabel)),K("تغطيات التصوير",sel.length,`متوسط التسليم ${avg.toFixed(1)} يوم`),K("صادرة عن الهيئة",issued,`من ${news.length+posts.length} مرصود`),K("مستوى عالٍ",high,"صحف وسوشيال")])
+    +monthly("المهام حسب الشهر","بحسب تاريخ الاستلام · آخر سنتين",S.tasks,t=>t.received,"مهمة")
+    +`<div class="sr-gd">`+panel("المهام حسب النوع",esc(ylabel),hb(typeRows,8,tasks.length))+panel("المهام حسب الحالة",esc(ylabel),hb(stRows,8,tasks.length))
+    +panel("الأخبار حسب الفئة","صحف وسوشيال",hb(catRows,3))+panel("الأخبار حسب المستوى","صحف وسوشيال",hb(lvRows,3))+`</div>`});
+  pages.push({kind:"sec",n:"02",title:"المهام",body:kp([K("إجمالي المهام",tasks.length,esc(ylabel)),K("مكتملة",doneT,pct(doneT,tasks.length)+"%"),K("جارية",openT,"لم تبدأ · قيد التنفيذ · مراجعة · معلقة"),K("متوقفة",tasks.filter(t=>t.status==="متوقف").length),K("أنواع المهام",new Set(tasks.map(t=>t.type)).size)])
+    +monthly("المهام حسب الشهر","بحسب تاريخ الاستلام · آخر سنتين",S.tasks,t=>t.received,"مهمة")
+    +`<div class="sr-gd">`+panel("المهام حسب الموظف","قد يشترك أكثر من موظف في المهمة",hb(cnt(tasks,t=>(t.owners||[]).map(shortName)),8,tasks.length))+panel("حسب الجهة الطالبة","أكثر الجهات طلبًا",hb(cnt(tasks,t=>[t.dept||"غير محددة"]),8,tasks.length))+`</div>`});
+  pages.push({kind:"sec",n:"03",title:"التصوير",body:kp([K("عدد التغطيات",sel.length,esc(ylabel)),K("متوسط مدة التسليم",avg.toFixed(1)+" يوم","من الفعالية حتى التسليم"),K("تسليم في نفس اليوم",pct(same,delP.length)+"%",`${same} من ${delP.length}`),K("للنشر الخارجي",pct(ext,sel.length)+"%",`${ext} تغطية`),K("جهات طالبة",new Set(sel.map(t=>t.dept).filter(Boolean)).size)])
+    +monthly("التغطيات حسب الشهر","مقارنة آخر سنتين · بحسب تاريخ الفعالية",photos,t=>t.received,"تغطية")
+    +`<div class="sr-gd">`+panel("حسب الجهة الطالبة","أكثر الجهات طلبًا للتصوير",hb(cnt(sel,t=>[t.dept||"غير محددة"]),8,sel.length))
+    +panel("استخدام الصور","قد تُستخدم التغطية لأكثر من غرض",hb(CHANNELS.map(c=>[c,sel.filter(t=>(t.channels||[]).includes(c)).length]).concat([["غير محدد",sel.filter(t=>!(t.channels||[]).length).length]]),6,sel.length))+`</div>`});
+  pages.push({kind:"sec",n:"04",title:"الأخبار والرصد",body:kp([K("أخبار الصحف",news.length,esc(ylabel)),K("منشورات السوشيال",posts.length),K("صادرة عن الهيئة",issued),K("مستوى عالٍ",high),K("سلبية النبرة",posts.filter(x=>x.tone==="neg").length,"منشورات سوشيال")])
+    +monthly("الأخبار المرصودة حسب الشهر","صحف وسوشيال · بحسب تاريخ النشر",[...(S.monitor||[]),...(S.social||[])].filter(x=>x.verified!==false),x=>x.date,"خبر")
+    +`<div class="sr-gd">`+panel("الأخبار حسب الفئة","صحف وسوشيال",hb(catRows,3))+panel("الأخبار حسب المستوى","صحف وسوشيال",hb(lvRows,3))
+    +panel("حسب الوسيلة الإعلامية","الصحف ووكالات الأنباء",hb(cnt(news,x=>[x.outletName||outletOf(x.outlet).n]),6))
+    +panel("السوشيال حسب المنصة والنبرة","منشورات مرصودة",hb(SM_PF.map(p=>[p.n,posts.filter(x=>x.platform===p.k).length]).concat(SM_TONE.map(t=>["نبرة "+t.n,posts.filter(x=>(x.tone||"neu")===t.k).length,SR_TONE_C[t.k]])),6,posts.length))+`</div>`});
+  pages.forEach((p,i)=>p.no=i+1);
+  return {kind:"stats",v2:true,sy,ylabel,pages,title:"تقرير الإحصائيات"};
+}
+function statsHTML(D){
+  const L=`<img class="dp-logo" src="${RA}logo.png" alt="">`;
+  const foot=p=>`<div class="v2-ft"><span>تقرير الإحصائيات · ${esc(D.ylabel)}</span><span class="v2-pg">صفحة ${p.no} من ${D.pages.length}</span></div>`;
+  return D.pages.map(p=>{let s;
+    if(p.kind==="cover")s=`<div class="dp v2 cover"><img class="v2-bg" src="${RA}bg.png" alt="">${L}
+      <div class="v2-cv"><div class="v2-kick">هيئة تنظيم سوق العمل · إدارة الاتصال</div><div class="v2-t">تقرير الإحصائيات</div><div class="v2-rule"></div>
+        <div class="v2-date">${p.ylabel==="كل السنوات"?"جميع السنوات":"إحصائيات عام "+esc(p.ylabel)}</div><div class="v2-kick" style="margin-top:6px">أُعدّ بتاريخ ${esc(longDate(bhNow().date))}</div></div>
+      <div class="v2-kpi">${p.k.map((x,i)=>`<div${i===3?' class="hi"':""}><b>${x[0]}</b><span>${x[1]}</span></div>`).join("")}</div>
+      <img class="dp-hand" src="${RA}handles.png" alt=""><img class="dp-team" src="${RA}teambh.png" alt=""></div>`;
+    else s=`<div class="dp v2">${L}<div class="sr-hd"><span class="no">${p.n}</span><h2>${esc(p.title)}</h2><em>${esc(D.ylabel)}</em></div><div class="sr-body">${p.body}</div>${foot(p)}</div>`;
+    return `<div class="dp-fit" id="pg-${p.no}">${s}</div>`}).join("")}
+function openStatsReport(){
+  if(!S.ready.tasks&&S.db)return;
+  const D=buildStats();S.sreport=D;S.statsOpen=true;S.dailyOpen=false;const r=$("rpt");
+  r.innerHTML=`<div class="rbar no-print two"><button class="btn primary" type="button" data-act="dl-pdf">تحميل PDF</button><button class="btn" type="button" data-act="dl-pptx">تحميل PowerPoint</button><button class="btn" type="button" data-act="rpt-close">إغلاق</button>
+    <span class="small muted" id="dl-st">${D.pages.length} صفحات · ${esc(D.ylabel)}</span></div>
+    <div class="dp-wrap" id="dp-wrap">${statsHTML(D)}</div>`;
   r.hidden=false;document.body.classList.add("rpt-open");r.scrollTop=0;fitDaily();
 }
 /* ---------- helpers ---------- */
@@ -1832,10 +1945,10 @@ async function offerFile(name,blob){
 function dlStatus(t){const e=$("dl-st");if(e)e.textContent=t}
 function dlErr(err){const c=err&&err.code;return c==="declined"?"تم إلغاء التحميل.":c==="unavailable"||c==="not_granted"?"التحميل غير متاح حاليًا.":c==="rate_limited"?"هناك نافذة تحميل مفتوحة، انتظر قليلًا.":c==="lib"||(err&&err.message==="lib")?"تعذّر تحميل أداة التصدير. تحقق من الاتصال وحاول مجددًا.":"تعذّر إنشاء الملف."}
 async function runDl(kind,btn){
-  if(S.dailyOpen)refreshDaily();const D=S.daily;if(!D)return;btns(true);const stEl=$("dl-st");if(stEl)stEl.dataset.busy="1";
+  const isSt=S.statsOpen;if(!isSt&&S.dailyOpen)refreshDaily();const D=isSt?S.sreport:S.daily;if(!D)return;btns(true);const stEl=$("dl-st");if(stEl)stEl.dataset.busy="1";
   try{dlStatus("جارٍ تجهيز الملف…");let blob,ext;
-    if(kind==="pdf"){blob=await makePdf(D);ext="pdf"}else if(kind==="pptx"){blob=D.v2?await makePptxV2():await makePptx(D);ext="pptx"}else{blob=D.v2?await makeDocxV2():await makeDocx(D);ext="docx"}
-    dlStatus("بانتظار تأكيد التحميل…");await offerFile(dailyFileName(D.M,ext),blob);dlStatus("تم التحميل ✓")}
+    if(kind==="pdf"){blob=await makePdf(D);ext="pdf"}else if(kind==="pptx"){blob=D.v2?await makePptxV2(D.title):await makePptx(D);ext="pptx"}else{blob=D.v2?await makeDocxV2():await makeDocx(D);ext="docx"}
+    dlStatus("بانتظار تأكيد التحميل…");await offerFile(isSt?"LMRA - Statistics Report "+(D.sy==="all"?"All Years":D.sy)+"."+ext:dailyFileName(D.M,ext),blob);dlStatus("تم التحميل ✓")}
   catch(err){console.error(err);dlStatus(dlErr(err))}finally{btns(false);const s2=$("dl-st");if(s2)delete s2.dataset.busy}
   function btns(d){document.querySelectorAll('#rpt [data-act^="dl-"]').forEach(b=>b.disabled=d)}}
 
@@ -1869,9 +1982,9 @@ async function capturePages(label){
       out.push({data:cv.toDataURL("image/jpeg",.9),links})}}
   finally{wrap.style.setProperty("--k",k0||"1");wrap.classList.remove("capturing")}
   return out}
-async function makePptxV2(){
+async function makePptxV2(title){
   await loadLib("lib/pptxgen.bundle.js");const P=await capturePages("جارٍ إنشاء PowerPoint…");
-  const pp=new PptxGenJS();pp.defineLayout({name:"LMRA",width:7.5,height:10.833});pp.layout="LMRA";pp.title="تقرير الرصد اليومي";pp.company="هيئة تنظيم سوق العمل";
+  const pp=new PptxGenJS();pp.defineLayout({name:"LMRA",width:7.5,height:10.833});pp.layout="LMRA";pp.title=title||"تقرير الرصد اليومي";pp.company="هيئة تنظيم سوق العمل";
   for(const pg of P){const s=pp.addSlide();s.addImage({data:pg.data,x:0,y:0,w:7.5,h:10.833});
     for(const l of pg.links)s.addText(" ",{x:l.x,y:l.y,w:Math.max(l.w,.2),h:Math.max(l.h,.15),fontSize:6,color:"FFFFFF",transparency:100,hyperlink:l.page?{slide:l.page}:{url:l.url}})}
   return await pp.write({outputType:"blob"})}
@@ -2330,6 +2443,7 @@ document.addEventListener("click",async e=>{
     case "mt-none":M_all(false);break;
     case "smkw-all":e.preventDefault();S.smSel=new Set([...SM_KW.core,...SM_KW.occ]);render();break;
     case "smkw-none":e.preventDefault();S.smSel=new Set();render();break;
+    case "stats-report":openStatsReport();break;
     case "dl-pdf":runDl("pdf",a);break;
     case "dl-pptx":runDl("pptx",a);break;
     case "dl-docx":runDl("docx",a);break;
