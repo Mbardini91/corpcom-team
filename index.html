@@ -184,6 +184,7 @@ td.dt{white-space:nowrap;font-variant-numeric:tabular-nums}
 .st{display:inline-block;font-size:12px;font-weight:700;padding:3px 9px;border-radius:999px;white-space:nowrap;color:var(--c);background:color-mix(in srgb,var(--c) 13%,transparent);border:1px solid color-mix(in srgb,var(--c) 30%,transparent)}
 .ppl{display:flex;flex-wrap:wrap;gap:4px}
 .ppl span{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:999px;padding:1px 8px;white-space:nowrap}
+.lastedit{margin-top:4px;font-size:11px;font-weight:500;color:var(--mute);line-height:1.4}
 .chs{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px}
 .chs span{font-size:11px;color:var(--mute);border:1px dashed var(--line-2);border-radius:4px;padding:0 5px;font-weight:500}
 .tfoot{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:10px;font-size:13px;color:var(--mute)}
@@ -1044,6 +1045,7 @@ const hijriDay=(()=>{try{return new Intl.DateTimeFormat("ar-SA-u-ca-islamic-umal
 function hj(s,full){const f=full?hijriFmt:hijriDay;if(!f)return "";try{return f.format(new Date(toUTC(s)))}catch(e){return ""}}
 function memberNames(){return (S.settings.members||[]).map(m=>typeof m==="string"?m:m.name).filter(Boolean)}
 function pcolor(name){const i=memberNames().indexOf(name);if(i>=0)return PCOL[i%PCOL.length];let h=0;for(const ch of String(name))h=(h*31+ch.charCodeAt(0))>>>0;return PCOL[h%PCOL.length]}
+function editStamp(iso){const d=new Date(iso);if(isNaN(d))return "";const b=new Date(d.getTime()+3*36e5),p=n=>String(n).padStart(2,"0");return b.getUTCDate()+" "+MONTHS[b.getUTCMonth()]+" "+b.getUTCFullYear()+" · "+p(b.getUTCHours())+":"+p(b.getUTCMinutes())}
 function shortName(n){const w=String(n||"").split("(")[0].trim().split(/\s+/);return w.length>2?w[0]+" "+w[w.length-1]:n}
 function typeOf(k){return TYPES.find(t=>t.k===k)||TYPES.find(t=>t.k==="other")}
 function statusOf(k){return STATUS.find(s=>s.k===k)||STATUS[0]}
@@ -1260,7 +1262,7 @@ function renderTasks(){
   for(const t of rows.slice(0,S.limit||300)){const ty=typeOf(t.type),st=statusOf(t.status);
     h+=`<tr data-act="task-edit" data-v="${esc(t.id)}" tabindex="0">
       <td><span class="tbadge" style="--c:${ty.c}"><i></i>${ty.n}</span></td>
-      <td class="title">${esc(t.title)}${(t.channels&&t.channels.length)?`<div class="chs">${t.channels.map(c=>`<span>${esc(c)}</span>`).join("")}</div>`:""}</td>
+      <td class="title">${esc(t.title)}${(t.channels&&t.channels.length)?`<div class="chs">${t.channels.map(c=>`<span>${esc(c)}</span>`).join("")}</div>`:""}${t.updatedBy&&t.updatedAt?`<div class="lastedit">آخر تعديل: ${esc(editStamp(t.updatedAt))} · ${esc(shortName(t.updatedBy))}</div>`:""}</td>
       <td>${esc(t.dept||"—")}</td>
       <td><div class="ppl">${(t.owners||[]).map(o=>`<span>${esc(shortName(o))}</span>`).join("")||"—"}</div></td>
       <td class="dt">${esc(fmt(t.received))}</td>
@@ -2501,7 +2503,7 @@ $("f-task").addEventListener("submit",async e=>{
     type,title,dept:$("t-dept").value.trim(),owners,received:rec,delivered:del,status:$("t-status").value,
     duration:$("t-duration").value,channels:type==="photo"?[...document.querySelectorAll('input[name="tch"]:checked')].map(x=>x.value):[],
     notes:$("t-notes").value.trim(),updatedAt:new Date().toISOString()});
-  if(!t){data.createdAt=new Date().toISOString();if(S.me)data.by=S.me}
+  if(!t){data.createdAt=new Date().toISOString();if(S.me)data.by=S.me}else if(S.meName){data.updatedBy=S.meName}
   try{await save("tasks",t?t.id:uid("t"),data);if(owners.length===1)remember(owners[0]);$("dlg-task").close()}catch(err){$("t-err").textContent=errText(err)}
 });
 $("t-del").addEventListener("click",async()=>{const t=S.editTask;if(!t)return;const b=$("t-del");
@@ -2541,7 +2543,7 @@ initChrome();routeFromHash();render();
   if(user){
     try{const c=await user.can("data.write");if(c===false)S.canWrite=false}catch(e){}
     try{S.me=await user.id()}catch(e){}
-    try{const me=await user.me();if(me&&me.name)$("who").textContent="مرحبًا، "+me.name.split(" ")[0]}catch(e){}
+    try{const me=await user.me();if(me&&me.name)S.meName=me.name;if(me&&me.name)$("who").textContent="مرحبًا، "+me.name.split(" ")[0]}catch(e){}
   }
   if(!db){banner("غير متصل بقاعدة البيانات، ولن يُحفظ أي تعديل. تحقق من الإنترنت وأعد تحميل الصفحة.",true);render();return}
   S.db=db;S.live=true;
