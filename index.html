@@ -807,6 +807,49 @@ dialog[data-closing]::backdrop{opacity:0}
   .btn:active,.seg button:active,.ghost-btn:active,.bnav button:active,.chips label:active,.htile:active,.htile:hover{transform:none!important}
   dialog,dialog[open],dialog[data-closing]{transform:none!important}
 }
+
+/* ---- bento layer (يطبَّق على كل البطاقات) ---- */
+:root{--card-shadow:0 0 0 1px rgba(0,0,0,.03),0 2px 4px rgba(0,0,0,.05),0 12px 24px rgba(0,0,0,.05);--card-r:16px}
+:root[data-theme="dark"]{--card-shadow:0 -20px 80px -20px rgba(255,255,255,.07) inset}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--card-shadow:0 -20px 80px -20px rgba(255,255,255,.07) inset}}
+.panel,.kpi,.hquote,.bento{border-radius:var(--card-r);box-shadow:var(--card-shadow)}
+.bento-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:11.5rem;gap:16px}
+.b-cal{grid-column:1;grid-row:1/span 2}.b-tasks{grid-column:2;grid-row:1}.b-news{grid-column:3;grid-row:1/span 2}.b-stats{grid-column:2;grid-row:2}
+.bento{appearance:none;font:inherit;color:var(--ink);text-align:start;cursor:pointer;position:relative;overflow:hidden;background:var(--surface);border:1px solid var(--line);padding:0;display:flex;flex-direction:column;justify-content:flex-end;isolation:isolate}
+.bento:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.b-bg{position:absolute;inset:0;padding:18px 20px;opacity:.9;z-index:-1;pointer-events:none;-webkit-mask-image:linear-gradient(to bottom,#000 30%,transparent 78%);mask-image:linear-gradient(to bottom,#000 30%,transparent 78%)}
+.b-body{display:grid;gap:6px;padding:20px;transition:transform 300ms var(--ease-out)}
+.b-body .hic{width:44px;height:44px;border-radius:12px;transform-origin:right center;transition:transform 300ms var(--ease-out)}
+.b-body .hic .ic{width:22px;height:22px}
+.b-cta{position:absolute;bottom:0;inset-inline:0;padding:0 20px 16px;display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--accent);opacity:0;transform:translateY(10px);transition:opacity 220ms ease,transform 300ms var(--ease-out);pointer-events:none}
+.b-cta .ic{width:16px;height:16px}
+.bento::before{content:"";position:absolute;inset:0;background:var(--ink);opacity:0;transition:opacity 300ms ease;pointer-events:none;z-index:1}
+.bg-list{display:flex;flex-wrap:wrap;gap:8px;align-content:flex-start}
+.pill{font-size:12.5px;padding:6px 10px;border-radius:999px;background:var(--surface-2,rgba(127,127,127,.08));border:1px solid var(--line);color:var(--mute)}
+.pill.on{background:var(--accent-soft);color:var(--accent);border-color:transparent;font-weight:700}
+.bg-bars{display:grid;gap:9px}.bg-bars div{display:grid;grid-template-columns:96px 1fr 22px;gap:8px;align-items:center;font-size:12px;color:var(--mute)}
+.bg-bars i{height:6px;border-radius:3px;background:var(--line);overflow:hidden;display:block}.bg-bars b{display:block;height:100%;border-radius:3px}.bg-bars em{font-style:normal;text-align:center;color:var(--ink);font-weight:700}
+.bg-heads{display:grid;gap:10px}.bg-heads p{margin:0;font-size:13px;line-height:1.6;color:var(--mute);padding-inline-start:10px;border-inline-start:2px solid var(--accent-soft);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.bg-spark{display:flex;align-items:flex-end;gap:5px;height:58px}.bg-spark i{flex:1;background:var(--accent-soft);border-radius:3px 3px 0 0}.bg-spark i.cur{background:var(--accent)}
+.b-tasks .b-bg,.b-stats .b-bg{left:0;right:auto;width:54%;display:flex;align-items:center;-webkit-mask-image:linear-gradient(to right,#000 55%,transparent);mask-image:linear-gradient(to right,#000 55%,transparent)}
+.b-tasks .b-body,.b-stats .b-body{max-width:50%}
+.b-tasks .bg-bars{width:100%;gap:7px}.b-tasks .bg-bars div{grid-template-columns:max-content 1fr 20px;font-size:11.5px;white-space:nowrap}
+.b-stats .bg-spark{width:100%;height:96px}
+@media (hover:hover) and (pointer:fine){
+  .bento:hover .b-body{transform:translateY(-26px)}
+  .bento:hover .b-body .hic{transform:scale(.8)}
+  .bento:hover .b-cta{opacity:1;transform:none}
+  .bento:hover::before{opacity:.03}
+}
+.bento:active{transform:scale(.985);transition:transform 160ms var(--ease-out)}
+@media (hover:none){.b-cta{opacity:1;transform:none;position:static;padding-top:0}.b-body{padding-bottom:8px}}
+@media (max-width:900px){.bento-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.b-cal,.b-news{grid-row:span 2}.b-cal{grid-column:1}.b-news{grid-column:2;grid-row:1/span 2}.b-tasks{grid-column:1;grid-row:3}.b-stats{grid-column:2;grid-row:3}}
+@media (max-width:560px){.bento-grid{grid-template-columns:1fr;grid-auto-rows:auto;gap:12px}.bento{grid-column:1!important;grid-row:auto!important;justify-content:flex-start}
+  .bento .b-bg{position:static;width:auto;display:block;padding:16px 16px 0;-webkit-mask-image:none;mask-image:none;opacity:1;z-index:0}
+  .bento .b-body{max-width:none;padding:14px 16px 6px;transform:none!important}
+  .bento .b-cta{position:static;opacity:1;transform:none;padding:0 16px 14px}
+  .bg-heads p:nth-child(n+3){display:none}.b-stats .bg-spark{height:52px}.bento::before{display:none}}
+@media (prefers-reduced-motion:reduce){.bento:hover .b-body,.bento:hover .b-body .hic,.b-cta{transform:none!important}}
 </style>
 </head>
 <body>
@@ -1300,19 +1343,32 @@ const QUOTES=["كل خبر نرصده بدقة يحمي صورة الهيئة �
 function pickQuote(){let i;do{i=Math.floor(Math.random()*QUOTES.length)}while(QUOTES.length>1&&i===S.qi);S.qi=i}
 function renderHome(){
   const el=$("view-home");const bh=bhNow();const td=bh.date;
-  const onLeave=S.leaves.filter(l=>validDate(l.from)&&l.from<=td&&(validDate(l.to)?l.to:l.from)>=td).length;
-  const open=S.tasks.filter(t=>CURRENT.has(t.status||"لم يبدأ")).length;
-  const newsToday=(S.monitor||[]).filter(x=>x.date===td).length+(S.social||[]).filter(x=>x.date===td).length;
+  const leavesToday=S.leaves.filter(l=>validDate(l.from)&&l.from<=td&&(validDate(l.to)?l.to:l.from)>=td);
+  const upcoming=S.leaves.filter(l=>validDate(l.from)&&l.from>td).sort((a,b)=>a.from.localeCompare(b.from)).slice(0,4);
+  const onLeave=new Set(leavesToday.map(l=>l.name)).size;
+  const open=S.tasks.filter(t=>CURRENT.has(t.status||"لم يبدأ"));
+  const todayNews=[...(S.monitor||[]).filter(x=>x.date===td).map(x=>x.headline),...(S.social||[]).filter(x=>x.date===td).map(x=>x.summary||x.text)].filter(Boolean);
   const yr=String(now.getFullYear());const done=S.tasks.filter(t=>t.status==="مكتمل"&&String(t.received||"").startsWith(yr)).length;
   if(S.qi===undefined)pickQuote();
-  const tile=(v,icon,title,sub)=>`<button class="htile" type="button" data-act="tab" data-v="${v}"><span class="hic">${ic(icon)}</span><span class="ht">${title}</span><span class="hs">${sub}</span></button>`;
+  /* خلفيات البطاقات: معاينة حيّة خفيفة من البيانات */
+  const names=[...new Set(leavesToday.map(l=>l.name))];
+  const bgCal=`<div class="bg-list">${names.length?names.slice(0,5).map(n=>`<span class="pill on">${esc(shortName(n))}</span>`).join(""):`<span class="pill">لا أحد في إجازة اليوم</span>`}${upcoming.map(l=>`<span class="pill">${esc(shortName(l.name))} · ${esc(l.from.slice(8))}/${esc(l.from.slice(5,7))}</span>`).join("")}</div>`;
+  const stc=STATUS.filter(x=>CURRENT.has(x.k)).map(x=>[x.k,open.filter(t=>(t.status||"لم يبدأ")===x.k).length,x.c]);const stm=Math.max(1,...stc.map(x=>x[1]));
+  const bgTasks=`<div class="bg-bars">${stc.map(([k,v,c])=>`<div><span>${esc(k)}</span><i><b style="width:${v/stm*100}%;background:${c}"></b></i><em>${v}</em></div>`).join("")}</div>`;
+  const bgNews=`<div class="bg-heads">${todayNews.length?todayNews.slice(0,3).map(h=>`<p>${esc(String(h).slice(0,90))}</p>`).join(""):`<p>لا أخبار مرصودة اليوم بعد</p>`}</div>`;
+  const mo=Array(12).fill(0);S.tasks.forEach(t=>{if(t.status==="مكتمل"&&String(t.received||"").startsWith(yr))mo[+t.received.slice(5,7)-1]++});const mm=Math.max(1,...mo);
+  const bgStats=`<div class="bg-spark">${mo.map((v,i)=>`<i style="height:${Math.max(4,v/mm*100)}%"${i===now.getMonth()?' class="cur"':""}></i>`).join("")}</div>`;
+  const card=(v,cls,icon,title,sub,bg)=>`<button class="bento ${cls}" type="button" data-act="tab" data-v="${v}">
+      <span class="b-bg" aria-hidden="true">${bg}</span>
+      <span class="b-body"><span class="hic">${ic(icon)}</span><span class="ht">${title}</span><span class="hs">${sub}</span></span>
+      <span class="b-cta">افتح ${ic("arrow")}</span></button>`;
   el.innerHTML=`<div class="home">
     <div class="home-h"><h2>أهلًا بك</h2><div class="period">${ic("cal")} ${esc(longDate(td))}</div></div>
-    <div class="htiles">
-      ${tile("calendar","cal","التقويم السنوي",`<b class="num">${onLeave}</b> في إجازة اليوم`)}
-      ${tile("tasks","list","المهام",`<b class="num">${open}</b> مهمة جارية`)}
-      ${tile("monitor","news","الرصد الإعلامي",`<b class="num">${newsToday}</b> مرصود اليوم`)}
-      ${tile("stats","chart","الإحصائيات",`<b class="num">${done}</b> مهمة مكتملة في ${yr}`)}
+    <div class="bento-grid">
+      ${card("calendar","b-cal","cal","التقويم السنوي",`<b class="num">${onLeave}</b> في إجازة اليوم`,bgCal)}
+      ${card("tasks","b-tasks","list","المهام",`<b class="num">${open.length}</b> مهمة جارية`,bgTasks)}
+      ${card("monitor","b-news","news","الرصد الإعلامي",`<b class="num">${todayNews.length}</b> مرصود اليوم`,bgNews)}
+      ${card("stats","b-stats","chart","الإحصائيات",`<b class="num">${done}</b> مهمة مكتملة في ${yr}`,bgStats)}
     </div>
     <blockquote class="hquote"><span class="qm">”</span><p>${esc(QUOTES[S.qi])}</p><cite>فريق إدارة الاتصال</cite></blockquote>
   </div>`}
@@ -2146,7 +2202,7 @@ async function makeDocx(D){
 
 
 /* ===== أيقونات ومستوى الخبر ===== */
-const IC={search:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',report:'<path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/>',
+const IC={arrow:'<path d="M19 12H5"/><path d="m12 19-7-7 7-7"/>',search:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',report:'<path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/>',
  copy:'<rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/>',plus:'<path d="M12 5v14M5 12h14"/>',
  ext:'<path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>',close:'<path d="M18 6 6 18M6 6l12 12"/>',check:'<path d="m5 12 5 5L20 7"/>',
  news:'<path d="M4 5h13v14H6a2 2 0 0 1-2-2zM17 9h3v8a2 2 0 0 1-2 2"/><path d="M8 9h5M8 13h5"/>',social:'<path d="M4 9h16M4 15h16M10 3 8 21M16 3l-2 18"/>',
