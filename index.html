@@ -1028,7 +1028,7 @@ const I18N_DICT={
 "التفاصيل الصغيرة هي ما يصنع التواصل العظيم.":"Small details are what make great communication.",
 "لا تقس يومك بما حصدت، بل بما زرعت.":"Don't judge each day by the harvest you reap, but by the seeds you plant.",
 "التواصل الجيد يبدأ بالإصغاء الجيد.":"Good communication starts with good listening.",
-"كل مهمة مكتملة هي إضافة لقصة نجاحنا.":"Every completed task adds to our success story.",
+"التحدي اليوم هو خبرة الغد.":"Today's challenge is tomorrow's experience.","كل مهمة مكتملة هي إضافة لقصة نجاحنا.":"Every completed task adds to our success story.",
 "أنتم صوت الهيئة ووجهها — فخورون بكم.":"You are the voice and face of the Authority — we're proud of you.",
 "الدقة والسرعة والإبداع — ثلاثية فريقنا.":"Accuracy, speed and creativity — our team's trio.",
 "ما تنجزونه اليوم يصنع ثقة الجمهور غدًا.":"What you achieve today builds public trust tomorrow.",
@@ -1116,8 +1116,13 @@ const I18N_ON=(()=>{try{return localStorage.getItem("lmra-lang")==="en"}catch(_)
     if(I18N_EXACT[k])return t.replace(k,I18N_EXACT[k]);if(I18N_DICT[k])return t.replace(k,I18N_DICT[k]);
     let o=t.replace(RX,m=>I18N_DICT[m]);if(AR.test(o))return t;PUNCT.forEach(([a,b])=>o=o.replace(a,b));return o}
   window.__tr=tr;
-  const SKIP="#rpt,[data-noi18n],script,style,textarea,.ppl,td.title,td.notes,.bg-heads,.tk-t b";
-  const FLIP=new WeakSet();function doNode(n){if(n.nodeType===3){const p=n.parentElement;if(!p||p.closest(SKIP))return;if(p.dataset&&p.dataset.en!==undefined){if(n.nodeValue!==p.dataset.en)n.nodeValue=p.dataset.en;return}const v=n.nodeValue;const k0=v.trim();if((k0==="→"||k0==="←")&&!FLIP.has(n)){FLIP.add(n);n.nodeValue=v.replace(k0,k0==="→"?"←":"→");return}const o=tr(v);if(o!==v){if(p.tagName==="OPTION"&&!p.hasAttribute("value"))p.setAttribute("value",v.trim());n.nodeValue=o}return}
+  const SKIP="#rpt,[data-noi18n],script,style,textarea,.ppl,.ttx,.ntx,.bg-heads,.tk-t b";
+  const CSKIP="#rpt,[data-noi18n],script,style,textarea";const NB=t=>String(t).replace(/[\u200b-\u200f\u202a-\u202e\ufeff]/g,"").replace(/\s+/g," ").trim();
+  let CIDX=null,CPHR=[];window.__trMap={};window.__setTr=(d)=>{const m=(d&&d.map)||{};CIDX=new Map();for(const k in m)CIDX.set(NB(k),m[k]);CPHR=Object.entries((d&&d.phr)||{}).sort((a,b)=>b[0].length-a[0].length);window.__trAll&&__trAll()};
+  function ctr(v){if(!CIDX||!AR.test(v))return null;const k=NB(v);if(!k)return null;let o=CIDX.get(k);if(o===undefined&&k.endsWith("…")&&k.length>12){const pre=k.slice(0,-1).trim();for(const [kk,vv] of CIDX)if(kk.startsWith(pre)){o=vv.length>pre.length+20?vv.slice(0,Math.round(vv.length*pre.length/kk.length)).trim()+"…":vv;break}}
+    if(o!==undefined){const lead=v.match(/^\s*/)[0],trail=v.match(/\s*$/)[0];return lead+o+trail}return null}
+  function cphr(v){if(!CPHR.length||!AR.test(v))return v;let o=v;for(const [a,b] of CPHR)if(o.includes(a))o=o.split(a).join(b);return o}
+  const FLIP=new WeakSet();function doNode(n){if(n.nodeType===3){const p=n.parentElement;if(!p||p.closest(CSKIP))return;{const c=ctr(n.nodeValue);if(c!==null){if(p.tagName==="OPTION"&&!p.hasAttribute("value"))p.setAttribute("value",n.nodeValue.trim());n.nodeValue=c;return}}if(p.closest(SKIP)){const o=cphr(n.nodeValue);if(o!==n.nodeValue)n.nodeValue=o;return}if(p.dataset&&p.dataset.en!==undefined){if(n.nodeValue!==p.dataset.en)n.nodeValue=p.dataset.en;return}const v=n.nodeValue;const k0=v.trim();if((k0==="→"||k0==="←")&&!FLIP.has(n)){FLIP.add(n);n.nodeValue=v.replace(k0,k0==="→"?"←":"→");return}let o=tr(v);if(CIDX&&AR.test(o))o=o.replace(/[\u0600-\u06FF][\u0600-\u06FF ]*[\u0600-\u06FF]|[\u0600-\u06FF]+/g,w=>{const r=CIDX.get(NB(w));return r===undefined?w:r});if(o!==v){if(p.tagName==="OPTION"&&!p.hasAttribute("value"))p.setAttribute("value",v.trim());n.nodeValue=o}return}
     if(n.nodeType!==1||n.closest&&n.closest(SKIP))return;
     for(const a of ["placeholder","title","aria-label"]){const v=n.getAttribute&&n.getAttribute(a);if(v&&AR.test(v)){const o=tr(v);if(o!==v)n.setAttribute(a,o)}}
     if(n.tagName==="INPUT"&&(n.type==="button"||n.type==="submit")&&AR.test(n.value))n.value=tr(n.value);
@@ -1635,11 +1640,11 @@ function renderTasks(){
   else if(!rows.length)h+=`<tr><td colspan="${ncol}" class="muted">لا توجد مهام تطابق هذا الفلتر.</td></tr>`;
   for(const t of page){const ty=typeOf(t.type),st=statusOf(t.status),on=S.tsel.has(t.id);
     const cell={type:`<td class="ty"><span class="tbadge" style="--c:${ty.c}"><i></i>${ty.n}</span></td>`,
-      title:`<td class="title">${esc(t.title)}${(t.channels&&t.channels.length)?`<div class="chs">${t.channels.map(c=>`<span>${esc(c)}</span>`).join("")}</div>`:""}${(t.type==="news"&&t.pub&&t.pub.length)?`<div class="chs pub">${t.pub.map(c=>`<span>${esc(c)}</span>`).join("")}</div>`:""}${t.type==="news"?`<div class="covw">${covBadge(t)}</div>`:""}${t.updatedBy&&t.updatedAt?`<div class="lastedit">آخر تعديل: ${esc(editStamp(t.updatedAt))} · ${esc(shortName(t.updatedBy))}</div>`:""}</td>`,
+      title:`<td class="title"><span class="ttx">${esc(t.title)}</span>${(t.channels&&t.channels.length)?`<div class="chs">${t.channels.map(c=>`<span>${esc(c)}</span>`).join("")}</div>`:""}${(t.type==="news"&&t.pub&&t.pub.length)?`<div class="chs pub">${t.pub.map(c=>`<span>${esc(c)}</span>`).join("")}</div>`:""}${t.type==="news"?`<div class="covw">${covBadge(t)}</div>`:""}${t.updatedBy&&t.updatedAt?`<div class="lastedit">آخر تعديل: ${esc(editStamp(t.updatedAt))} · ${esc(shortName(t.updatedBy))}</div>`:""}</td>`,
       dept:`<td>${esc(t.dept||"—")}</td>`,owners:`<td><div class="ppl">${(t.owners||[]).map(o=>`<span>${esc(shortName(o))}</span>`).join("")||"—"}</div></td>`,
       received:`<td class="dt">${esc(fmt(t.received))}</td>`,delivered:`<td class="dt">${esc(fmt(t.delivered))}</td>`,
       status:`<td><span class="st" style="--c:${st.c}" title="${esc(st.d)}">${esc(t.status||"لم يبدأ")}</span></td>`,
-      notes:`<td class="notes">${esc(t.notes||"")}${t.duration?`<div class="small">المدة المتوقعة: ${esc(t.duration)}</div>`:""}</td>`};
+      notes:`<td class="notes"><span class="ntx">${esc(t.notes||"")}</span>${t.duration?`<div class="small">المدة المتوقعة: ${esc(t.duration)}</div>`:""}</td>`};
     h+=`<tr data-act="task-edit" data-v="${esc(t.id)}" tabindex="0"${on?' class="selected"':""}><td class="sel write-only"><button type="button" class="cbx${on?" on":""}" data-act="t-sel" data-v="${esc(t.id)}" role="checkbox" aria-checked="${on}" aria-label="تحديد المهمة">${on?ic("check"):""}</button></td>${vis.map(c=>cell[c.k]).join("")}
       <td class="act"><div class="popw"><button type="button" class="ghost-btn rowmore" data-act="pop" data-v="row:${esc(t.id)}" aria-label="إجراءات المهمة">${ic("more")}</button>${S.pop==="row:"+t.id?`<div class="pop pop-end" role="menu"><button type="button" class="pop-i" data-act="task-edit" data-v="${esc(t.id)}" role="menuitem">${ic("edit")}${S.canWrite?"تعديل":"عرض التفاصيل"}</button>${S.canWrite?`<button type="button" class="pop-i" data-act="t-dup" data-v="${esc(t.id)}" role="menuitem">${ic("dup")}نسخ كمهمة جديدة</button><div class="pop-sep"></div><button type="button" class="pop-i danger" data-act="t-delone" data-v="${esc(t.id)}" role="menuitem">${ic("trash")}حذف</button>`:""}</div>`:""}</div></td></tr>`}
   const from=rows.length?pg*ps+1:0,to=Math.min(rows.length,pg*ps+ps);
@@ -1679,7 +1684,7 @@ function renderHome(){
   const upcoming=S.leaves.filter(l=>validDate(l.from)&&l.from>td).sort((a,b)=>a.from.localeCompare(b.from)).slice(0,4);
   const onLeave=new Set(leavesToday.map(l=>l.name)).size;
   const open=S.tasks.filter(t=>CURRENT.has(t.status||"لم يبدأ"));
-  const todayNews=[...(S.monitor||[]).filter(x=>x.date===td).map(x=>x.headline),...(S.social||[]).filter(x=>x.date===td).map(x=>x.summary||x.text)].filter(Boolean);
+  const todayNews=[...(S.monitor||[]).filter(x=>x.date===td).map(x=>L(x,"headline")),...(S.social||[]).filter(x=>x.date===td).map(x=>L(x,"summary")||L(x,"text"))].filter(Boolean);
   const yr=String(now.getFullYear());const done=S.tasks.filter(t=>t.status==="مكتمل"&&String(t.received||"").startsWith(yr)).length;
   if(S.qi===undefined)pickQuote();
   /* خلفيات البطاقات: معاينة حيّة خفيفة من البيانات */
@@ -1836,7 +1841,7 @@ function renderMonitor(){
   // results tables
   const tbl=(rows)=>{if(!rows.length)return `<div class="empty-note">لا توجد أخبار مسجلة لهذه الفترة.</div>`;
     return `<div class="tbl-wrap"><table class="mtbl" style="min-width:860px"><thead><tr><th>التاريخ</th><th>الوسيلة</th><th>الموضوع</th><th>الملخص</th><th>المستوى</th><th></th></tr></thead><tbody>${rows.map(x=>{const o=outletOf(x.outlet),t=mtopic(x.topic);
-      return `<tr class="hlrow" data-act="mon-edit" data-v="${esc(x.id)}" tabindex="0"><td colspan="6" class="hl" dir="auto">${esc(x.headline)}</td></tr><tr class="mrow" data-act="mon-edit" data-v="${esc(x.id)}"><td class="dt">${esc(fmtShort(x.date))}</td><td>${esc(x.outletName||o.n)}</td><td>${esc(t?t.n:(x.topic||""))}</td><td class="sum"><div class="sumw">${monThumb(x,o,t)}<div class="tx" dir="auto">${esc(x.summary||"")}${x.risk?`<span class="flag">مؤشر مخاطر: ${esc(x.risk)}</span>`:""}${x.verified===false?`<span class="flag">غير مؤكد: ${esc(x.why||"")}</span>`:""}</div></div></td><td>${lvlBadge(lv(x))}</td><td>${/^https?:\/\//.test(x.link||"")?`<a class="btn icon small" href="${esc(x.link)}" data-noedit="1" title="فتح الخبر" aria-label="فتح الخبر">${ic("ext")}</a>`:"—"}</td></tr>`}).join("")}</tbody></table></div>`};
+      return `<tr class="hlrow" data-act="mon-edit" data-v="${esc(x.id)}" tabindex="0"><td colspan="6" class="hl" dir="auto">${esc(L(x,"headline"))}</td></tr><tr class="mrow" data-act="mon-edit" data-v="${esc(x.id)}"><td class="dt">${esc(fmtShort(x.date))}</td><td>${esc(x.outletName||o.n)}</td><td>${esc(t?t.n:(x.topic||""))}</td><td class="sum"><div class="sumw">${monThumb(x,o,t)}<div class="tx" dir="auto">${esc(L(x,"summary")||"")}${x.risk?`<span class="flag">مؤشر مخاطر: ${esc(x.risk)}</span>`:""}${x.verified===false?`<span class="flag">غير مؤكد: ${esc(x.why||"")}</span>`:""}</div></div></td><td>${lvlBadge(lv(x))}</td><td>${/^https?:\/\//.test(x.link||"")?`<a class="btn icon small" href="${esc(x.link)}" data-noedit="1" title="فتح الخبر" aria-label="فتح الخبر">${ic("ext")}</a>`:"—"}</td></tr>`}).join("")}</tbody></table></div>`};
   if(!ver.length&&!unv.length)h+=`<div class="empty-note" style="margin-top:18px">لا توجد أخبار مسجلة لهذه الفترة.</div>`;
   if(bhN.length)h+=`<div class="mon-sec"><h3>البحرين <span class="num muted small">(${bhN.length})</span></h3></div>${tbl(bhN)}`;
   if(gN.length)h+=`<div class="mon-sec"><h3>الخليج <span class="num muted small">(${gN.length})</span></h3></div>${tbl(gN)}`;
@@ -1980,7 +1985,7 @@ function renderSocial(){
   <div class="mstat"><span>${ic("social")}<b class="num">${ver.length}</b> منشور</span>${SM_TONE.map(t=>`<span><i class="dot" style="--tc:${t.c}"></i>${t.n} <b class="num">${tc(t.k)}</b></span>`).join("")}<span>${lvlBadge("high")} <b class="num">${ver.filter(x=>lv(x)==="high").length}</b></span></div>`;
   const tbl=rows=>{if(!rows.length)return `<div class="empty-note">لا توجد منشورات مسجلة لهذه الفترة.</div>`;
     return `<div class="tbl-wrap"><table class="mtbl" style="min-width:900px"><thead><tr><th>التاريخ</th><th>الحساب</th><th>الموضوع</th><th>الملخص</th><th>النبرة</th><th>المستوى</th><th></th></tr></thead><tbody>${rows.map(x=>{const t=mtopic(x.topic),tn=smTone(x.tone);
-      return `<tr class="hlrow" data-act="sm-edit" data-v="${esc(x.id)}" tabindex="0"><td colspan="7" class="hl" dir="auto">${esc(clip(x.text,220))}</td></tr><tr class="mrow" data-act="sm-edit" data-v="${esc(x.id)}"><td class="dt">${esc(fmtShort(x.date))}</td><td><div class="acc">${pfIc(x.platform)}<div><div style="font-weight:700">${esc(smAccName(x))}</div>${smHandle(x)?`<div class="small muted" dir="ltr">@${esc(smHandle(x))}</div>`:""}</div></div>${x.keyword?`<div class="small muted">«${esc(x.keyword)}»</div>`:""}</td><td>${esc(t?t.n:(x.topic||""))}</td><td class="sum"><div class="sumw">${smThumb(x)}<div class="tx" dir="auto">${esc(x.summary||"")}${x.engagement?`<span class="small muted" style="display:block;margin-top:4px">التفاعل: ${esc(x.engagement)}</span>`:""}${x.risk?`<span class="flag">مؤشر مخاطر: ${esc(x.risk)}</span>`:""}${x.verified===false?`<span class="flag">غير مؤكد: ${esc(x.why||"")}</span>`:""}</div></div></td><td><span class="tone" style="--tc:${tn.c}">${tn.n}</span></td><td>${lvlBadge(lv(x))}</td><td>${/^https?:\/\//.test(x.link||"")?`<a class="btn icon small" href="${esc(x.link)}" data-noedit="1" title="فتح المنشور" aria-label="فتح المنشور">${ic("ext")}</a>`:"—"}</td></tr>`}).join("")}</tbody></table></div>`};
+      return `<tr class="hlrow" data-act="sm-edit" data-v="${esc(x.id)}" tabindex="0"><td colspan="7" class="hl" dir="auto">${esc(clip(L(x,"text"),220))}</td></tr><tr class="mrow" data-act="sm-edit" data-v="${esc(x.id)}"><td class="dt">${esc(fmtShort(x.date))}</td><td><div class="acc">${pfIc(x.platform)}<div><div style="font-weight:700">${esc(smAccName(x))}</div>${smHandle(x)?`<div class="small muted" dir="ltr">@${esc(smHandle(x))}</div>`:""}</div></div>${x.keyword?`<div class="small muted">«${esc(x.keyword)}»</div>`:""}</td><td>${esc(t?t.n:(x.topic||""))}</td><td class="sum"><div class="sumw">${smThumb(x)}<div class="tx" dir="auto">${esc(L(x,"summary")||"")}${x.engagement?`<span class="small muted" style="display:block;margin-top:4px">التفاعل: ${esc(x.engagement)}</span>`:""}${x.risk?`<span class="flag">مؤشر مخاطر: ${esc(x.risk)}</span>`:""}${x.verified===false?`<span class="flag">غير مؤكد: ${esc(x.why||"")}</span>`:""}</div></div></td><td><span class="tone" style="--tc:${tn.c}">${tn.n}</span></td><td>${lvlBadge(lv(x))}</td><td>${/^https?:\/\//.test(x.link||"")?`<a class="btn icon small" href="${esc(x.link)}" data-noedit="1" title="فتح المنشور" aria-label="فتح المنشور">${ic("ext")}</a>`:"—"}</td></tr>`}).join("")}</tbody></table></div>`};
   if(!ver.length&&!unv.length)h+=`<div class="empty-note" style="margin-top:18px">لا توجد منشورات مسجلة لهذه الفترة.</div>`;
   for(const sec of SM_SECS){const rows=ver.filter(x=>smSec(x)===sec.k);if(!rows.length)continue;
     h+=`<div class="mon-sec"><h3>${sec.n} <span class="num muted small">(${rows.length})</span></h3></div>${tbl(rows)}`}
@@ -2002,6 +2007,7 @@ function renderSocial(){
     const data={from:M.from,to:M.to,cutoff:bhNow().date+" "+bhNow().time,statuses:Object.assign({},cur.statuses,{[sel.dataset.smchk]:sel.value}),updatedAt:new Date().toISOString()};
     try{await save("socialChecks",id,data)}catch(err){banner(errText(err),true)}});
 }
+function L(x,f){return (typeof I18N_ON!=="undefined"&&I18N_ON&&x&&x.en&&x.en[f])||(x?x[f]:"")}
 function clip(t,n){t=String(t||"").replace(/\s+/g," ").trim();return t.length>n?t.slice(0,n).trim()+"…":t}
 function smReport(){
   const M=monPeriod();const bh=bhNow();const cut=M.to===bh.date?bh.time:"23:59";
@@ -3153,6 +3159,7 @@ initChrome();routeFromHash();render();
       render();
     },err=>{S.ready[key]=true;clearTimeout(timer);banner(err&&err.code==="revoked"?"انتهت صلاحية الوصول لهذه الجلسة.":"تعذّر تحميل جزء من البيانات. أعد فتح الصفحة لاحقًا.",true);render()});
   sub("tasks","tasks");sub("leaves","leaves");sub("holidays","holidays");sub("monitor","monitor");sub("monitorChecks","checks");sub("social","social");sub("socialChecks","smChecks");
+  if(typeof I18N_ON!=="undefined"&&I18N_ON)db.doc("i18n/en").onSnapshot(d=>{window.__setTr&&__setTr(d.exists?d.data():{})},()=>{});
   db.doc("settings/team").onSnapshot(d=>{if(d.exists){const v=d.data();S.settings={members:(v.members&&v.members.length)?v.members:FALLBACK_MEMBERS,departments:v.departments||[]};render()}},()=>{});
   if(!S.canWrite)banner("لديك صلاحية العرض فقط. لإضافة الإجازات والمهام تواصل مع مسؤول المنصة.");
 })();
