@@ -538,7 +538,7 @@ html{-webkit-text-size-adjust:100%}
   .mast-in{padding:12px 14px;gap:0}
   .mast-top{align-items:center;flex-wrap:wrap;gap:10px}
   .mast-top>div:first-child{flex:1;min-width:0}
-  .eyebrow{font-size:11px}
+  .eyebrow{font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .mast h1{font-size:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .mast::after{width:70%}
   .tabs{display:none}
@@ -978,17 +978,183 @@ dialog.cfm{max-width:440px;width:calc(100% - 32px);padding:22px;border-radius:16
 .xlpop .pop-i span{display:grid;gap:1px}.xlpop .pop-i small{font-size:11.5px;color:var(--mute);font-weight:400}
 .xl-toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--surface);padding:10px 18px;border-radius:999px;font-size:13.5px;font-weight:600;z-index:200;box-shadow:0 8px 24px rgba(0,0,0,.2)}
 @media (max-width:760px){.xl-toast{bottom:84px}}
+
+/* ---- العلامة + الساعة ---- */
+.brand{display:flex;align-items:center;gap:16px}
+.wclock{width:62px;height:62px;flex:none;border-radius:50%;filter:drop-shadow(0 6px 10px rgba(23,50,90,.22)) drop-shadow(0 1px 2px rgba(0,0,0,.18))}
+.wclock svg{width:100%;height:100%;display:block}
+.wc-brand{font:700 6.2px/1 "Frutiger","Segoe UI",sans-serif;letter-spacing:.18em;fill:#8a7350}
+.lang-btn{font-weight:700;gap:8px}.lang-btn .lg-a{display:inline-grid;place-items:center;min-width:24px;height:20px;padding:0 4px;border-radius:5px;background:var(--mast-ink);color:var(--mast-bg-solid,#efe9df);font-size:11px;letter-spacing:.04em}
+:root[data-theme="dark"] .lang-btn .lg-a{color:#17325a}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .lang-btn .lg-a{color:#17325a}}
+@media (max-width:760px){.wclock{width:40px;height:40px}.brand{gap:10px;min-width:0;flex:1}.brand-t{min-width:0;overflow:hidden}.lang-btn span:not(.lg-a){display:none}.lang-btn{padding:7px 8px}}
+/* ---- LTR (English) ---- */
+html[dir="ltr"] body{font-family:"Frutiger","Segoe UI",system-ui,sans-serif}
+html[dir="ltr"] .ic.flipx{transform:scaleX(-1)}
+html[dir="ltr"] .b-tasks .b-bg,html[dir="ltr"] .b-stats .b-bg{left:auto;right:0;-webkit-mask-image:linear-gradient(to left,#000 55%,transparent);mask-image:linear-gradient(to left,#000 55%,transparent)}
+html[dir="ltr"] .b-body .hic{transform-origin:left center}
+/* ---- الانترو ---- */
+.intro{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;background:radial-gradient(120% 90% at 50% 40%,#f7f2e9 0%,#ece3d3 60%,#e2d6c1 100%);overflow:hidden;cursor:pointer;transition:opacity 600ms var(--ease-out),transform 700ms var(--ease-out)}
+.intro.out{opacity:0;transform:scale(1.04);pointer-events:none}
+.in-pat{position:absolute;inset:-10%;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cpath d='M0 0h120L60 60z' fill='%2317325a' fill-opacity='.045'/%3E%3Cpath d='M120 0v120L60 60z' fill='%2317325a' fill-opacity='.07'/%3E%3Cpath d='M0 120h120L60 60z' fill='%2317325a' fill-opacity='.03'/%3E%3C/svg%3E");animation:inPat 3s var(--ease-out) both}
+@keyframes inPat{from{opacity:0;transform:scale(1.12) rotate(-2deg)}to{opacity:1;transform:none}}
+.in-c{position:relative;display:grid;justify-items:center;gap:18px;text-align:center;padding:24px}
+.in-logo{width:min(330px,70vw);height:auto;animation:inLogo 900ms var(--ease-out) 150ms both}
+@keyframes inLogo{from{opacity:0;transform:translateY(14px) scale(.96);filter:blur(8px)}to{opacity:1;transform:none;filter:none}}
+.in-rule{display:block;width:120px;height:3px;border-radius:2px;background:#DE2724;transform-origin:center;animation:inRule 600ms var(--ease-out) 650ms both}
+@keyframes inRule{from{transform:scaleX(0)}to{transform:none}}
+.in-t{margin:0;font-size:clamp(22px,4.2vw,36px);font-weight:800;color:#17325a;line-height:1.3}
+.in-t span{display:inline-block;animation:inWord 600ms var(--ease-out) both;animation-delay:calc(850ms + var(--i)*90ms)}
+@keyframes inWord{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+.in-tag{margin:0;font-size:15px;color:#8a7350;font-weight:600;animation:inFade 700ms ease 1400ms both}
+@keyframes inFade{from{opacity:0}to{opacity:1}}
+.in-skip{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);font-size:12px;color:#8a7350;opacity:.7;animation:inFade 500ms ease 1200ms both}
+body.intro-on{overflow:hidden}
+@media (prefers-reduced-motion:reduce){.intro *{animation-duration:1ms!important;animation-delay:0ms!important}}
 </style>
+<script>
+/* ---------- English translation layer ---------- */
+const I18N_EXACT={"من":"of","إلى":"to","الكل":"All","عام":"Year","حذف":"Delete","تعديل":"Edit","حفظ":"Save","إلغاء":"Cancel","إغلاق":"Close","بحث":"Search","ابحث":"Search","افتح":"Open","خبر":"stories","العدد":"Count","النسبة":"Share","الاسم":"Name","تأكيد":"Confirm","دخول":"Sign in","تغيير":"Change","عضو":"Member","مسؤول":"Admin","مشاهد":"Viewer","الرقم":"Number","ع":"AR","عرض":"View","فقط":"only","حتى":"until","صدر":"Published","رُصد:":"Covered:","مرصود":"monitored","منشور":"post","مهمة":"task","مهام":"tasks","صحف":"press","سوشيال":"social","تغطية":"coverage","يوم":"day","أيام":"days"};
+const I18N_DICT={
+/* masthead & nav */
+"هيئة تنظيم سوق العمل":"Labour Market Regulatory Authority","منصة فريق إدارة الاتصال":"Communications Team Platform","فريق إدارة الاتصال":"Communications Team","إدارة الاتصال":"Communications Department",
+"الرئيسية":"Home","التقويم السنوي":"Annual Calendar","التقويم":"Calendar","المهام":"Tasks","الإحصائيات":"Statistics","الرصد الإعلامي":"Media Monitoring","الرصد":"Monitoring",
+"إعدادات الفريق":"Team Settings","صلاحيات الدخول":"Access Control","تسجيل الخروج":"Sign out","مرحبًا،":"Welcome,","مرحبًا":"Welcome","تبديل الوضع":"Toggle theme","القائمة":"Menu",
+"الوضع الليلي":"Dark mode","الوضع العادي":"Light mode","التبديل إلى الوضع العادي":"Switch to light mode","التبديل إلى الوضع الليلي":"Switch to dark mode",
+/* home */
+"أهلًا بك":"Welcome","في إجازة اليوم":"on leave today","مهمة جارية":"active tasks","مرصود اليوم":"monitored today","مهمة مكتملة في":"tasks completed in","لا أحد في إجازة اليوم":"No one on leave today","لا أخبار مرصودة اليوم بعد":"No stories monitored yet today",
+"كل خبر نرصده بدقة يحمي صورة الهيئة — شكرًا لعينكم الساهرة.":"Every story we track carefully protects the Authority's image — thank you for your watchful eyes.",
+"العمل الجماعي يجعل المستحيل ممكنًا، وأنتم الدليل.":"Teamwork makes the impossible possible — and you are the proof.",
+"التفاصيل الصغيرة هي ما يصنع التواصل العظيم.":"Small details are what make great communication.",
+"لا تقس يومك بما حصدت، بل بما زرعت.":"Don't judge each day by the harvest you reap, but by the seeds you plant.",
+"التواصل الجيد يبدأ بالإصغاء الجيد.":"Good communication starts with good listening.",
+"كل مهمة مكتملة هي إضافة لقصة نجاحنا.":"Every completed task adds to our success story.",
+"أنتم صوت الهيئة ووجهها — فخورون بكم.":"You are the voice and face of the Authority — we're proud of you.",
+"الدقة والسرعة والإبداع — ثلاثية فريقنا.":"Accuracy, speed and creativity — our team's trio.",
+"ما تنجزونه اليوم يصنع ثقة الجمهور غدًا.":"What you achieve today builds public trust tomorrow.",
+"كل صورة تلتقطونها تحكي قصة الهيئة للعالم.":"Every photo you take tells the Authority's story to the world.",
+"خطوة صغيرة كل يوم أفضل من قفزة كبيرة مؤجلة.":"A small step every day beats a big leap postponed.",
+"النجاح مجموع جهود صغيرة تتكرر يومًا بعد يوم.":"Success is the sum of small efforts repeated day after day.",
+"الجودة ليست فعلًا، بل عادة — شكرًا لاتقانكم.":"Quality is not an act, it's a habit — thank you for your craft.",
+"استراحة قصيرة تعيد الطاقة، والطاقة تصنع الإبداع.":"A short break restores energy, and energy fuels creativity.",
+"الإبداع ليس صدفة، بل عادة يومية — وأنتم تمارسونها كل يوم.":"Creativity isn't luck, it's a daily habit — and you practise it every day.",
+"الأفكار العظيمة تولد من النقاشات الصادقة — شاركوا أفكاركم.":"Great ideas are born from honest discussion — share yours.",
+"ابدأ بما هو ضروري، ثم بما هو ممكن، وستجد نفسك تصنع المستحيل.":"Start with what's necessary, then what's possible, and you'll find yourself doing the impossible.",
+"فريق واحد، رسالة واحدة، أثر كبير.":"One team, one message, big impact.","معًا نصنع محتوى يليق بالبحرين.":"Together we create content worthy of Bahrain.",
+/* calendar */
+"السنة":"Year","الشهر":"Month","اليوم":"Today","طريقة العرض":"View","تسجيل إجازة":"Log leave","+ تسجيل إجازة":"+ Log leave","نوع الإجازة":"Leave type","سنوية":"Annual","مرضية":"Sick","طارئة":"Emergency","مهمة رسمية / تدريب":"Official duty / Training","أخرى":"Other",
+"تفاصيل الإجازة":"Leave details","تعديل الإجازة":"Edit leave","تعديل الإجازة السابقة":"Edit previous leave","حذف الإجازة":"Delete leave","الإجازات":"Leaves","الإجازات القادمة":"Upcoming leaves","الإجازات في":"Leaves in","الإجازات الرسمية":"Public holidays","العطل الرسمية":"Public holidays","العطلة":"Holiday","إجازة رسمية":"Public holiday","إجازة":"Leave",
+"لا توجد إجازات مسجلة":"No leaves recorded","اضغط «تسجيل إجازة» لإضافة إجازتك":"Press “Log leave” to add your leave","في هذا الشهر":"this month","في إجازة":"on leave","لديه إجازة مسجلة مسبقًا في هذه الأيام":"already has a leave recorded on these days","تتقاطع مع إجازة":"overlaps with a leave",
+"اختر التاريخين لحساب أيام العمل":"Pick both dates to count working days","يوم عمل (بعد استبعاد الجمعة والسبت والإجازات الرسمية)":"working days (excluding Fri, Sat and public holidays)","يوم تقويمي، منها":"calendar days, of which",
+"تاريخ النهاية قبل تاريخ البداية":"End date is before start date","تحقق من التاريخين":"Check both dates","عطلة نهاية الأسبوع (الجمعة والسبت)":"Weekend (Friday and Saturday)","النقاط الملوّنة: موظفون في إجازة":"Coloured dots: staff on leave",
+"تعديل الإجازات الرسمية":"Edit public holidays","مثال: عيد الفطر":"e.g. Eid Al-Fitr","اكتب اسم المناسبة وتاريخ البداية":"Enter the occasion and start date","تاريخ تقديري (بانتظار التعميم)":"Estimated date (pending circular)","تاريخ تقريبي":"Approximate date","تقديري":"estimated","المناسبة":"Occasion",
+"لا توجد إجازات رسمية في هذا الشهر":"No public holidays this month","لا توجد إجازات رسمية مسجلة لسنة":"No public holidays recorded for",
+"مواعيد الأعياد الهجرية تتأكد برؤية الهلال وتعميم سمو ولي العهد رئيس مجلس الوزراء. عدّلها هنا عند صدور التعميم.":"Hijri holiday dates are confirmed by moon sighting and the Crown Prince & Prime Minister's circular. Edit them here once it is issued.",
+"لم تُضف الأعياد الهجرية لهذه السنة بعد. أضفها من «تعديل» عند صدور التعميم.":"This year's Hijri holidays haven't been added yet. Add them from “Edit” once the circular is issued.",
+"رأس السنة الميلادية":"New Year's Day","عيد العمال":"Labour Day","العيد الوطني":"National Day","مثال: البديل خلال الإجازة":"e.g. cover during leave",
+"الأحد":"Sunday","الاثنين":"Monday","الثلاثاء":"Tuesday","الأربعاء":"Wednesday","الخميس":"Thursday","الجمعة":"Friday","السبت":"Saturday",
+"يناير":"January","فبراير":"February","مارس":"March","أبريل":"April","مايو":"May","يونيو":"June","يوليو":"July","أغسطس":"August","سبتمبر":"September","أكتوبر":"October","نوفمبر":"November","ديسمبر":"December",
+/* tasks */
+"تصميم":"Design","إنتاج فيديو":"Video production","تصوير":"Photography","الأخبار":"News","استمارات":"Forms",
+"لم يبدأ":"Not started","قيد التنفيذ":"In progress","بانتظار المراجعة":"Awaiting review","معلق":"On hold","مكتمل":"Completed","متوقف":"Stopped",
+"تم استلام الطلب، ولكن لم يتم العمل بعد":"Request received, work not started yet","جاري العمل على التصميم/ التطوير":"Design / development in progress","قيد المراجعة والاعتماد من قبل المسؤولين/ المعنيين":"Under review and approval by the responsible parties","متوقف أو تم تأجيله مؤقتًا بسبب عوامل":"Paused or temporarily postponed due to external factors","تم الانتهاء من الطلب والموافقة عليه وتسليمه":"Request completed, approved and delivered","متوقف نهائيًا أو تم إلغاءه بشكل غير محدد":"Permanently stopped or cancelled",
+"½ - 1 يوم عمل":"½ – 1 working day","2 - 4 أيام عمل":"2 – 4 working days","1 - 2 أسبوع عمل":"1 – 2 working weeks","3 - 4 أسابيع عمل":"3 – 4 working weeks","2 - 3 أشهر عمل":"2 – 3 working months",
+"الحالية":"Current","المنجزة":"Done","الإجمالي":"Total","حالية":"current","منجزة":"done","كل الفريق":"Whole team","كل السنوات":"All years","جميع السنوات":"All years","بحث في المهام والإدارات…":"Search tasks and departments…","مسح البحث":"Clear search",
+"الحالة":"Status","تصفية بالحالة":"Filter by status","مسح التصفية":"Clear filter","الأعمدة":"Columns","إظهار الأعمدة":"Show columns","محددة":"selected","تغيير الحالة":"Change status","إلغاء التحديد":"Clear selection","نسخ الجدول للإكسل":"Copy table for Excel","تم النسخ ✓":"Copied ✓","تعذّر النسخ":"Couldn't copy",
+"+ مهمة جديدة":"+ New task","مهمة جديدة":"New task","مهمة جديدة (نسخة)":"New task (copy)","تعديل المهمة":"Edit task","تفاصيل المهمة":"Task details","حذف المهمة":"Delete task","حذف المهمة؟":"Delete task?","حذف المهام المحددة؟":"Delete selected tasks?","نسخ كمهمة جديدة":"Duplicate as new task","عرض التفاصيل":"View details","إجراءات المهمة":"Task actions","إجراءات":"Actions","تحديد المهمة":"Select task","تحديد كل الصفحة":"Select page",
+"النوع":"Type","نوع المهمة":"Task type","اسم المهمة":"Task name","الإدارة المعنية":"Department","الاسم (الموظف المسؤول)":"Name (responsible staff)","تاريخ الاستلام":"Received","تاريخ التسليم":"Delivered","ملاحظات عامة":"Notes","ملاحظات":"Notes","ملاحظة":"Note","المدة المتوقعة":"Expected duration","مدة الإنجاز المتوقعة":"Expected duration","المدة المتوقعة:":"Expected duration:","استخدام الصور":"Photo usage","قنوات النشر":"Publishing channels","نشر داخلي":"Internal use","نشر خارجي":"External publishing","أرشفة":"Archive",
+"الإنترانت":"Intranet","السوشيال ميديا":"Social media","الصحافة":"Press","المركز الإعلامي":"News Center","التلفزيون والإذاعة":"TV & Radio",
+"عرض المهام":"View tasks","إلغاء التصفية":"Clear filter","لا مهام حالية من هذا النوع":"No current tasks of this type","لا توجد مهام تطابق هذا الفلتر.":"No tasks match this filter.","جارٍ تحميل المهام…":"Loading tasks…","عدد الصفوف":"Rows per page","الصفحة الأولى":"First page","الصفحة السابقة":"Previous page","الصفحة التالية":"Next page","الصفحة الأخيرة":"Last page",
+"آخر تعديل:":"Last edited:","آخر تعديل":"Last edited","اكتب اسم المهمة":"Enter task name","مثال: تصميم دعوة ورشة توعوية":"e.g. Design an awareness workshop invitation","تاريخ استلام الطلب":"Request received","تاريخ تسليم الطلب":"Request delivered","تاريخ التسليم قبل تاريخ الاستلام":"Delivery date is before received date","ابدأ الكتابة أو اختر من القائمة":"Start typing or pick from the list","أضف عضوًا واحدًا على الأقل":"Add at least one member","اضغط مجددًا للتأكيد":"Press again to confirm","اضغط مرة أخرى للتأكيد":"Press again to confirm",
+"قيد المتابعة · لم يُرصد بعد":"Tracking · not covered yet","لم يُرصد بعد":"Not covered yet","لم يُرصد":"Not covered","نهائيًا ولا يمكن التراجع.":"permanently and this cannot be undone.","سيتم حذف":"This will delete","مهمتين":"2 tasks","تغطيات الصحف":"Press coverage","الجهة المرسلة":"Sender",
+/* stats */
+"نظرة عامة":"Overview","الأخبار والرصد":"News & monitoring","تصدير التقرير":"Export report","تغطية":"Coverage","نسبة الإنجاز":"Completion rate","تغطيات التصوير":"Photo coverage","متوسط التسليم":"Avg. delivery","الأخبار الصادرة عن الهيئة":"News issued by the Authority","أخبار بمستوى عالٍ":"High-level news","صحف وسوشيال":"Press & social","مكتملة":"completed","جارية":"active","من":"of","مرصود":"monitored",
+"إجمالي المهام":"Total tasks","متوقفة":"Stopped","أنواع المهام":"Task types","لم تبدأ · قيد التنفيذ · مراجعة · معلقة":"Not started · In progress · Review · On hold","عدد التغطيات":"Coverages","متوسط مدة التسليم":"Avg. delivery time","من الفعالية حتى التسليم":"from event to delivery","تسليم في نفس اليوم":"Same-day delivery","للنشر الخارجي":"For external publishing","جهات طالبة":"Requesting entities",
+"أخبار الصحف":"Press stories","منشورات السوشيال":"Social posts","صادرة عن الهيئة":"Issued by LMRA","مستوى عالٍ":"High level","سلبية النبرة":"Negative tone","منشورات سوشيال":"social posts",
+"المهام حسب النوع":"Tasks by type","المهام حسب الحالة":"Tasks by status","المهام حسب الموظف":"Tasks by staff","المهام حسب الجهة الطالبة":"Tasks by requesting entity","حسب الجهة الطالبة":"By requesting entity","المهام حسب الشهر":"Tasks by month","التغطيات حسب الشهر":"Coverage by month","الأخبار المرصودة حسب الشهر":"Monitored news by month","الأخبار حسب الفئة":"News by category","الأخبار حسب المستوى":"News by level","حسب الوسيلة الإعلامية":"By media outlet","السوشيال حسب المنصة والنبرة":"Social by platform & tone","حسب الموضوع":"By topic","الأخبار الصادرة حسب قناة النشر":"Issued news by publishing channel",
+"قد يشترك أكثر من موظف في المهمة":"A task may involve more than one staff member","أكثر الجهات طلبًا":"Most frequent requesters","أكثر الجهات طلبًا للتصوير":"Most frequent photography requesters","قد تُستخدم التغطية الواحدة لأكثر من غرض":"One coverage may serve several purposes","قد تُستخدم التغطية لأكثر من غرض":"A coverage may serve several purposes","الصحف ووكالات الأنباء":"Newspapers & news agencies","منشورات مرصودة":"Monitored posts","قد يُنشر الخبر الواحد في أكثر من قناة":"One story may be published on several channels",
+"بحسب تاريخ الاستلام · آخر سنتين":"By received date · last two years","مقارنة آخر سنتين · بحسب تاريخ الفعالية":"Last two years · by event date","صحف وسوشيال · بحسب تاريخ النشر":"Press & social · by publish date","بحسب تاريخ الاستلام":"by received date","لا توجد بيانات":"No data","مهمة":"tasks","خبر":"stories","غير محددة":"Unspecified","غير محدد":"Unspecified","نبرة":"Tone",
+"تقرير الإحصائيات":"Statistics report","إحصائيات عام":"Statistics for","أُعدّ بتاريخ":"Prepared on","خبر ومنشور مرصود":"stories & posts monitored","تغطية تصوير":"photo coverages","التغطية":"coverage",
+/* monitoring */
+"الصحف والوكالات":"Press & agencies","نوع الرصد":"Monitoring type","تحميل التقرير":"Download report","نسخ التقرير":"Copy report","فترة الرصد":"Monitoring period","بتوقيت البحرين":"Bahrain time","ارصد الآن":"Monitor now","إرصد الآن":"Monitor now","جارٍ الرصد…":"Monitoring…","حدّد أولًا":"Select first","الفترة":"period","الكلمات المفتاحية":"keywords","المنصات":"platforms","قنوات البحث":"Search channels",
+"الصحف البحرينية ووكالة الأنباء":"Bahraini press & news agency","وكالات الأنباء الخليجية":"Gulf news agencies","الهيئة واللجنة الوطنية":"LMRA & National Committee","سوق العمل والتوظيف":"Labour market & employment","العمالة الوافدة والمنزلية":"Expatriate & domestic workers","الأجور وحماية الأجور":"Wages & WPS","التصاريح والتفتيش":"Permits & inspections","الحقوق والنزاعات والحماية":"Rights, disputes & protection","الاتجار بالأشخاص":"Trafficking in persons",
+"أخبار صادرة عن الهيئة":"News issued by LMRA","أخبار ذات علاقة بالهيئة":"News related to LMRA","أخبار دولية":"International news","عالي":"High","متوسط":"Medium","منخفض":"Low","مستوى الخبر":"News level","المستوى":"Level","الفئة":"Category","الموضوع":"Topic","التاريخ":"Date","الوسيلة":"Outlet","العنوان":"Headline","الملخص":"Summary","الرابط":"Link","فتح الرابط":"Open link","فتح الخبر":"Open story","فتح المنشور":"Open post","فتح الموقع":"Open site",
+"خبر":"story","البحرين":"Bahrain","الخليج":"Gulf","لم يُفحص بعد":"Not checked yet","لم يُفحص":"Not checked","تغطية ذات صلة تم التحقق منها":"Relevant coverage verified","لا توجد تغطية ذات صلة بعد الفحص الكامل":"No relevant coverage after full check","فحص غير مكتمل":"Check incomplete","بحث غير مكتمل":"Search incomplete","لا توجد تغطية ذات صلة":"No relevant coverage",
+"إضافة للتقرير":"Add to report","مضاف للتقرير":"Added to report","إضافة المحدد للتقرير":"Add selected to report","تحديد الكل":"Select all","تعديل خبر":"Edit story","حذف الخبر":"Delete story","إضافة خبر للرصد":"Add a story","تعديل منشور":"Edit post","حذف المنشور":"Delete post","إضافة منشور للرصد":"Add a post","+ خبر":"+ Story","+ منشور":"+ Post",
+"إكس":"X","إنستغرام":"Instagram","فيسبوك":"Facebook","المنصة":"Platform","الحساب":"Account","النبرة":"Tone","محايد":"Neutral","إيجابي":"Positive","سلبي":"Negative","التفاعل":"Engagement","إعجاب":"likes","تعليق":"comments","التفاعل (اختياري)":"Engagement (optional)",
+"الحسابات الإخبارية والجهات الرسمية":"News & official accounts","الحسابات الإخبارية الموثوقة والمؤثرون":"Trusted news accounts & influencers","الحسابات الدولية":"International accounts","حسابات أخرى (نتائج البحث بالكلمات المفتاحية)":"Other accounts (keyword search results)","حساب آخر":"Other account","حساب آخر (غير مدرج)…":"Other account (not listed)…","حساب غير مدرج":"Unlisted account","اسم الحساب":"Account name","أدخل اسم الحساب":"Enter account name",
+"الأخبار الصادرة للمتابعة":"Issued news to track","الأخبار الصادرة":"Issued news","كل خبر تضيفه في المهام بنوع «الأخبار» يُتابَع هنا في قنوات الرصد لمدة 7 أيام من تاريخ نشره، ويُربط تلقائيًا بما يُرصد عنه.":"Every “News” task you add is tracked here across monitoring channels for 7 days after publishing, and automatically linked to related coverage.",
+"لا توجد أخبار مسجلة لهذه الفترة":"No stories recorded for this period","لا توجد منشورات مسجلة لهذه الفترة":"No posts recorded for this period","لا توجد أخبار مؤكدة مسجلة":"No verified stories recorded","لا توجد نتائج في هذا التصنيف ضمن الفترة":"No results in this category for the period","لا توجد منشورات ذات صلة":"No related posts",
+"تقرير الرصد اليومي":"Daily monitoring report","تقرير الرصد الإعلامي":"Media monitoring report","التقرير الصحفي":"Press report","رصد الصحف":"Press monitoring","رصد السوشيال":"Social monitoring","رصد السوشيال ميديا":"Social media monitoring","رصد الصحف ووكالات الأنباء":"Press & news agency monitoring","تحميل PDF":"Download PDF","تحميل PowerPoint":"Download PowerPoint",
+"العنوان الأصلي":"Original headline","العنوان الأصلي (بلغة النشر)":"Original headline (in publishing language)","رابط الخبر":"Story link","رابط الخبر الأصلي":"Original story link","رابط المنشور":"Post link","تاريخ النشر":"Publish date","تاريخ النشر الأصلي":"Original publish date","صورة الخبر":"Story image","لقطة المنشور":"Post screenshot","إزالة الصورة":"Remove image","نص المنشور":"Post text","ملخص المنشور":"Post summary","ملخص موجز":"Brief summary",
+"الصق لقطة الشاشة هنا مباشرة":"Paste the screenshot here","أو اسحبها، أو اختر ملفًا":"or drag it, or choose a file","تم لصق الصورة":"Image pasted","ستُزال الصورة عند الحفظ.":"The image will be removed on save.","ستُرفع الصورة عند الحفظ.":"The image will be uploaded on save.","جارٍ رفع الصورة…":"Uploading image…","الملف ليس صورة":"The file is not an image","حجم الصورة كبير، الحد الأقصى 8 ميغابايت":"Image too large, maximum 8 MB",
+"مؤشر مخاطر (اختياري)":"Risk indicator (optional)","سبب عدم التحقق":"Reason not verified","اذكر سبب عدم التحقق":"State why it's not verified","خبر مؤكد":"Verified story","غير مؤكد":"Unverified","الكلمة المفتاحية (اختياري)":"Keyword (optional)",
+/* excel / misc */
+"تصدير Excel":"Export Excel","تصدير إلى Excel":"Export to Excel","هذه الصفحة":"This page","ملف كامل":"Full workbook","كل الأقسام وكل البيانات":"All sections, all data","المهام بالفلاتر الحالية":"Tasks with current filters","إجازات وعطل السنة المعروضة":"Leaves & holidays of the shown year","الرصد في الفترة المختارة":"Monitoring for the selected period","ملخص وبيانات السنة المختارة":"Summary & data for the selected year","جارٍ تجهيز ملف Excel…":"Preparing Excel file…","تم تجهيز الملف ✓":"File ready ✓","تعذّر إنشاء ملف Excel":"Couldn't create Excel file","بانتظار تأكيد التحميل…":"Waiting for download confirmation…","تعذّر إنشاء الملف.":"Couldn't create the file.","جارٍ تجهيز الملف…":"Preparing file…",
+"جارٍ تحميل البيانات…":"Loading data…","جارٍ التحميل…":"Loading…","تعذّر تحميل جزء من البيانات. أعد فتح الصفحة لاحقًا.":"Part of the data couldn't load. Reopen the page later.","تعذّر الحفظ. تحقق من الاتصال وحاول مجددًا.":"Couldn't save. Check your connection and try again.",
+"ليست لديك صلاحية التعديل على هذه المنصة. اطلب من مالكها منحك صلاحية «مساهم».":"You don't have edit rights on this platform. Ask the owner for “Contributor” access.","لديك صلاحية العرض فقط. لإضافة الإجازات والمهام اطلب من مالك المنصة صلاحية «مساهم».":"You have view-only access. Ask the platform owner for “Contributor” access to add leaves and tasks.",
+"أعضاء الفريق":"Team members","الإدارات المعنية":"Departments","حفظ القوائم":"Save lists","اسم في كل سطر، ويمكن إضافة المسمى بعد شرطة: الاسم - المسمى":"One name per line; add a title after a dash: Name - Title","تظهر كاقتراحات عند إضافة مهمة. إدارة في كل سطر":"Shown as suggestions when adding a task. One department per line",
+"الإيميل":"Email","الواتساب":"WhatsApp","الإيميل أو الرقم":"Email or number","إيميل أو رقم":"Email or number","الصلاحية":"Role","مشاهد فقط":"View only","عضو (يضيف ويعدّل)":"Member (adds & edits)","مسؤول (يدير الصلاحيات)":"Admin (manages access)","إضافة":"Add",
+"إرسال رمز الدخول":"Send sign-in code","أدخل إيميلك المسجّل في الفريق":"Enter your team email","أدخل رقم هاتفك المسجّل في الفريق":"Enter your registered phone number","رقم بحريني بدون مفتاح الدولة":"Bahraini number without country code","جارٍ التحقق…":"Verifying…","تم الدخول…":"Signed in…",
+"هذا الإيميل غير مسجّل في الفريق. تواصل مع مسؤول المنصة":"This email isn't registered with the team. Contact the platform admin","هذا الرقم غير مسجّل في الفريق. تواصل مع مسؤول المنصة":"This number isn't registered with the team. Contact the platform admin","تعذّر الدخول. حاول مجددًا":"Couldn't sign in. Try again","تعذّر إرسال الرمز. حاول مجددًا":"Couldn't send the code. Try again","الرمز غير صحيح أو انتهت صلاحيته":"The code is wrong or has expired",
+"فقط الإيميلات والأرقام المضافة هنا تستطيع الدخول للمنصة. الأرقام تُكتب مع مفتاح الدولة (مثال: 97333123456)":"Only emails and numbers added here can access the platform. Write numbers with the country code (e.g. 97333123456)","تعذّر الحفظ":"Couldn't save","تعذّر التحميل":"Couldn't load","هيئة تنظيم سوق العمل · إدارة الاتصال":"Labour Market Regulatory Authority · Communications Department",
+"تواصل مع مسؤول المنصة لإضافة إيميلك أو رقمك":"Contact the platform admin to add your email or number","هذا الحساب غير مضاف لفريق إدارة الاتصال":"This account isn't part of the Communications team","أرسلنا رمز دخول":"We sent a sign-in code","إلى إيميلك":"to your email","إلى الواتساب":"to WhatsApp","اكتب الرمز هنا، أو اضغط رابط الدخول الموجود في الإيميل":"Type the code here, or click the sign-in link in the email",
+"طلبت رمزًا قبل قليل. انتظر دقيقة، أو استخدم الرمز/الرابط الذي وصلك":"You requested a code moments ago. Wait a minute, or use the code/link you received","أو إعادة الإرسال":"or resend","تعذّر إرسال الإيميل. أبلغ مسؤول المنصة":"Couldn't send the email. Notify the platform admin",
+"نظام حماية الأجور":"Wage Protection System","وزارة العمل":"Ministry of Labour","مركز حماية العمالة الوافدة":"Expat Workers Protection Centre","جمعية رجال الأعمال البحرينية":"Bahrain Businessmen's Association","وكالة أنباء البحرين":"Bahrain News Agency","الأيام":"Al Ayam","أخبار الخليج":"Akhbar Al Khaleej","البلاد":"Al Bilad","الوطن":"Al Watan","واس":"SPA","وام":"WAM","كونا":"KUNA","العمانية":"ONA","قنا":"QNA","مصدر آخر":"Other source",
+"اللجنة الوطنية لمكافحة الاتجار بالأشخاص":"National Committee to Combat Trafficking in Persons","مجلس النواب":"Council of Representatives","مجلس الشورى":"Shura Council","وزارة الداخلية":"Ministry of Interior","النيابة العامة":"Public Prosecution","غرفة التجارة":"Chamber of Commerce","مكتب رئيس مجلس الوزراء":"Prime Minister's Office",
+"المعرّف":"ID","فئة التقرير اليومي":"Daily report category","أخبار صادرة عن الهيئة (كتبتها الهيئة ونشرتها)":"Issued by LMRA (written and published by the Authority)","أخبار ذات علاقة بالهيئة (غير صادرة عنها)":"Related to LMRA (not issued by it)","أخبار دولية (مصدرها خارج البحرين)":"International (source outside Bahrain)","نص المنشور (الصقه كما نُشر، ويمكن إضافة أبرز التعليقات)":"Post text (paste as published; top comments may be added)","صياغة الملخص والنبرة بـ Claude":"Draft summary & tone with Claude","تلقائي":"Auto","تم التحقق من التاريخ والحساب والرابط من المنشور الأصلي":"Date, account and link verified from the original post","الوسيلة الإعلامية":"Media outlet","نص الخبر (الصقه هنا ليصيغ Claude الملخص)":"Story text (paste here for Claude to draft the summary)","صياغة الملخص بـ Claude":"Draft summary with Claude","تم التحقق من تاريخ النشر والعنوان والرابط من المصدر الأصلي":"Publish date, headline and link verified from the original source","لا توجد إجازات مسجلة قادمة. اضغط «تسجيل إجازة» لإضافة إجازتك.":"No upcoming leaves. Press “Log leave” to add yours.","أيام":"days","التصوير":"Photography","حتى":"until","الفحص اليدوي للمصادر":"Manual source check","الفحص اليدوي للحسابات":"Manual account check","الحسابات التي تم فحصها":"Checked accounts","حالة فحص":"Check status","المهام والإحصائيات":"Tasks & statistics","إعداد: إدارة الاتصال":"Prepared by: Communications Department",
+"صدر":"Published","محددة":"Custom","مستوى":"Level","فئة":"Category","قناة":"channel","صحيفة":"newspaper","دقيقة":"minute","ساعة":"hour","الساعة":"time","حتى الساعة":"until","يعرض":"Showing","اضغط على أي صف لتعديله":"Click any row to edit it"
+};
+const I18N_ON=(()=>{try{return localStorage.getItem("lmra-lang")==="en"}catch(_){return false}})();
+(function(){if(!I18N_ON)return;
+  document.documentElement.lang="en";document.documentElement.dir="ltr";
+  const AR=/[؀-ۿ]/;const keys=Object.keys(I18N_DICT).filter(k=>k.length>1).sort((a,b)=>b.length-a.length);
+  const esc=k=>k.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
+  const RX=new RegExp("(?<![\\u0600-\\u06FF])(?:"+keys.map(esc).join("|")+")(?![\\u0600-\\u06FF])","g");
+  const PUNCT=[[/،/g,","],[/؛/g,";"],[/؟/g,"?"],[/«/g,"“"],[/»/g,"”"]];
+  function tr(t){if(!t||!AR.test(t))return t;const k=t.trim();if(k.startsWith("مرحبًا،"))return t.replace("مرحبًا،","Welcome,");
+    if(I18N_EXACT[k])return t.replace(k,I18N_EXACT[k]);if(I18N_DICT[k])return t.replace(k,I18N_DICT[k]);
+    let o=t.replace(RX,m=>I18N_DICT[m]);if(AR.test(o))return t;PUNCT.forEach(([a,b])=>o=o.replace(a,b));return o}
+  window.__tr=tr;
+  const SKIP="#rpt,[data-noi18n],script,style,textarea,.ppl,td.title,td.notes,.bg-heads,.tk-t b";
+  const FLIP=new WeakSet();function doNode(n){if(n.nodeType===3){const p=n.parentElement;if(!p||p.closest(SKIP))return;if(p.dataset&&p.dataset.en!==undefined){if(n.nodeValue!==p.dataset.en)n.nodeValue=p.dataset.en;return}const v=n.nodeValue;const k0=v.trim();if((k0==="→"||k0==="←")&&!FLIP.has(n)){FLIP.add(n);n.nodeValue=v.replace(k0,k0==="→"?"←":"→");return}const o=tr(v);if(o!==v){if(p.tagName==="OPTION"&&!p.hasAttribute("value"))p.setAttribute("value",v.trim());n.nodeValue=o}return}
+    if(n.nodeType!==1||n.closest&&n.closest(SKIP))return;
+    for(const a of ["placeholder","title","aria-label"]){const v=n.getAttribute&&n.getAttribute(a);if(v&&AR.test(v)){const o=tr(v);if(o!==v)n.setAttribute(a,o)}}
+    if(n.tagName==="INPUT"&&(n.type==="button"||n.type==="submit")&&AR.test(n.value))n.value=tr(n.value);
+    const w=document.createTreeWalker(n,NodeFilter.SHOW_TEXT|NodeFilter.SHOW_ELEMENT);let c;while(c=w.nextNode()){if(c.nodeType===1){if(c.matches(SKIP)){continue}for(const a of ["placeholder","title","aria-label"]){const v=c.getAttribute(a);if(v&&AR.test(v)){const o=tr(v);if(o!==v)c.setAttribute(a,o)}}}else doNode(c)}}
+  window.__trAll=()=>doNode(document.body);
+  const mo=new MutationObserver(ms=>{for(const m of ms){if(m.type==="characterData")doNode(m.target);else if(m.type==="attributes")doNode(m.target);else m.addedNodes.forEach(doNode)}});
+  const start=()=>{doNode(document.body);mo.observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:["placeholder","title","aria-label"]})};
+  if(document.body)start();else document.addEventListener("DOMContentLoaded",start);
+  const a0=window.alert;window.alert=m=>a0(tr(String(m)));
+  document.title="LMRA · Communications Team Platform";
+})();
+function setLang(l){try{localStorage.setItem("lmra-lang",l)}catch(_){}location.reload()}
+
+</script>
 </head>
 <body>
 <header class="mast">
   <div class="mast-in">
     <div class="mast-top">
-      <div>
-        <div class="eyebrow">هيئة تنظيم سوق العمل</div>
-        <h1>منصة فريق إدارة الاتصال</h1>
+      <div class="brand">
+        <div class="brand-t"><div class="eyebrow">هيئة تنظيم سوق العمل</div>
+        <h1>منصة فريق إدارة الاتصال</h1></div>
+        <div class="wclock" id="wclock" role="img" aria-label="الساعة بتوقيت البحرين"><svg viewBox="0 0 100 100" aria-hidden="true">
+          <defs><radialGradient id="wc-face" cx="50%" cy="42%" r="62%"><stop offset="0" stop-color="#fffdf8"/><stop offset=".8" stop-color="#f6f1e7"/><stop offset="1" stop-color="#e9e1d1"/></radialGradient>
+          <linearGradient id="wc-rim" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a4a78"/><stop offset=".5" stop-color="#17325a"/><stop offset="1" stop-color="#0d1f3a"/></linearGradient>
+          <linearGradient id="wc-glass" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/></linearGradient></defs>
+          <circle cx="50" cy="50" r="49" fill="url(#wc-rim)"/><circle cx="50" cy="50" r="45.5" fill="#c9a96e"/><circle cx="50" cy="50" r="44.3" fill="url(#wc-face)"/>
+          <g id="wc-ticks"></g>
+          <text x="50" y="66" text-anchor="middle" class="wc-brand">LMRA</text>
+          <g id="wc-h"><path d="M48.6 52 L49.3 27 Q50 25.5 50.7 27 L51.4 52 Z" fill="#17325a"/></g>
+          <g id="wc-m"><path d="M49.1 53 L49.6 15 Q50 13.8 50.4 15 L50.9 53 Z" fill="#17325a"/></g>
+          <g id="wc-s"><line x1="50" y1="60" x2="50" y2="12" stroke="#DE2724" stroke-width="1" stroke-linecap="round"/><circle cx="50" cy="59" r="2.2" fill="#DE2724"/></g>
+          <circle cx="50" cy="50" r="2.6" fill="#17325a"/><circle cx="50" cy="50" r="1.3" fill="#DE2724"/>
+          <ellipse cx="50" cy="32" rx="36" ry="24" fill="url(#wc-glass)"/>
+        </svg></div>
       </div>
-      <div class="mast-tools"><button class="ghost-btn icon" type="button" data-act="theme" id="theme-btn" aria-label="تبديل الوضع"></button><button class="ghost-btn icon mmenu" type="button" data-act="mmenu" aria-label="القائمة" aria-expanded="false"></button></div>
+      <div class="mast-tools"><button class="ghost-btn lang-btn" type="button" data-act="lang" data-noi18n id="lang-btn"></button><button class="ghost-btn icon" type="button" data-act="theme" id="theme-btn" aria-label="تبديل الوضع"></button><button class="ghost-btn icon mmenu" type="button" data-act="mmenu" aria-label="القائمة" aria-expanded="false"></button></div>
       <div class="mast-meta">
         <span class="who" id="who"></span>
         <button class="ghost-btn" data-act="settings" type="button">إعدادات الفريق</button>
@@ -1023,8 +1189,8 @@ dialog.cfm{max-width:440px;width:calc(100% - 32px);padding:22px;border-radius:16
       <label class="field"><span>الاسم</span><select id="l-name" required></select></label>
       <label class="field"><span>نوع الإجازة</span><select id="l-type"></select></label>
       <div class="row2">
-        <label class="field"><span>من</span><input type="date" id="l-from" required></label>
-        <label class="field"><span>إلى</span><input type="date" id="l-to" required></label>
+        <label class="field"><span data-en="From">من</span><input type="date" id="l-from" required></label>
+        <label class="field"><span data-en="To">إلى</span><input type="date" id="l-to" required></label>
       </div>
       <div class="hint" id="l-calc">اختر التاريخين لحساب أيام العمل.</div>
       <label class="field"><span>ملاحظات</span><textarea id="l-notes" placeholder="مثال: البديل خلال الإجازة"></textarea></label>
@@ -1151,8 +1317,8 @@ dialog.cfm{max-width:440px;width:calc(100% - 32px);padding:22px;border-radius:16
         <div id="s-hlist" class="list"></div>
         <div class="hol-add write-only">
           <label class="field"><span>المناسبة</span><input type="text" id="h-name" placeholder="مثال: عيد الفطر"></label>
-          <label class="field"><span>من</span><input type="date" id="h-from"></label>
-          <label class="field"><span>إلى</span><input type="date" id="h-to"></label>
+          <label class="field"><span data-en="From">من</span><input type="date" id="h-from"></label>
+          <label class="field"><span data-en="To">إلى</span><input type="date" id="h-to"></label>
           <button class="btn" type="button" data-act="hol-add">إضافة</button>
         </div>
         <label class="small write-only" style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="h-tent"> تاريخ تقديري (بانتظار التعميم)</label>
@@ -1170,6 +1336,9 @@ dialog.cfm{max-width:440px;width:calc(100% - 32px);padding:22px;border-radius:16
 const MONTHS=["يناير","فبراير","مارس","أبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"];
 const DOW=["أحد","إثنين","ثلاثاء","أربعاء","خميس","جمعة","سبت"]; // week starts Sunday; Fri/Sat weekend
 const DOW_S=["ح","ن","ث","ر","خ","ج","س"];
+const MON_EN=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+function mAbbr(m,i){return typeof I18N_ON!=="undefined"&&I18N_ON?MON_EN[i]:m.slice(0,3)}
+if(typeof I18N_ON!=="undefined"&&I18N_ON){DOW.splice(0,7,"Sun","Mon","Tue","Wed","Thu","Fri","Sat");DOW_S.splice(0,7,"S","M","T","W","T","F","S")}
 const TYPES=[
   {k:"design",n:"تصميم",c:"var(--t-design)"},{k:"video",n:"إنتاج فيديو",c:"var(--t-video)"},
   {k:"photo",n:"تصوير",c:"var(--t-photo)"},{k:"news",n:"الأخبار",c:"var(--t-news)"},{k:"form",n:"استمارات",c:"var(--t-form)"},{k:"other",n:"أخرى",c:"var(--t-other)"}];
@@ -1553,7 +1722,7 @@ function renderStats(){
   const SECS=[{k:"all",n:"نظرة عامة"},{k:"tasks",n:"المهام"},{k:"photo",n:"التصوير"},{k:"news",n:"الأخبار والرصد"}];
   let h=`<div class="toolbar"><div class="grp"><h2 style="font-size:22px;font-weight:800">الإحصائيات</h2></div>
     <div class="grp"><div class="seg" role="group" aria-label="السنة">${years.map(y=>`<button type="button" data-act="sy" data-v="${y}" aria-pressed="${S.sy===y}">${y}</button>`).join("")}<button type="button" data-act="sy" data-v="all" aria-pressed="${S.sy==="all"}">الكل</button></div>
-    ${xlBtn("stats")}<button class="btn" type="button" data-act="stats-report">${ic("report")}تصدير التقرير</button><button class="btn write-only" type="button" data-act="photo-new">${ic("plus")}تغطية</button></div></div>
+    ${xlBtn("stats")}<button class="btn" type="button" data-act="stats-report">${ic("report")}تصدير التقرير</button><button class="btn write-only" type="button" data-act="photo-new">${ic("plus")}<span data-en="Coverage">تغطية</span></button></div></div>
     <div class="seg msw" role="tablist" aria-label="القسم">${SECS.map(s=>`<button type="button" data-act="ss" data-v="${s.k}" aria-pressed="${sec===s.k}">${s.n}</button>`).join("")}</div>`;
   if(!S.ready.tasks&&S.db){el.innerHTML=h+`<div class="empty-note">جارٍ تحميل البيانات…</div>`;return}
   const hbars=(rows,lim,unit,tot)=>{rows=rows.filter(x=>x[1]);if(!rows.length)return `<div class="empty-note">لا توجد بيانات.</div>`;let r=rows;if(rows.length>lim){const rest=rows.slice(lim-1).reduce((a,x)=>a+x[1],0);r=rows.slice(0,lim-1).concat([["أخرى",rest]])}
@@ -1561,7 +1730,7 @@ function renderStats(){
   const cnt=(arr,fn)=>{const c=new Map();arr.forEach(t=>fn(t).forEach(k=>{if(k)c.set(k,(c.get(k)||0)+1)}));return [...c.entries()].sort((a,b)=>b[1]-a[1])};
   let kpiN=0;const heroArr=sec==="photo"?sel:sec==="news"?[...news,...posts]:tasks,heroDate=sec==="news"?(x=>x.date):(x=>x.received);
   const hmo=Array(12).fill(0);heroArr.forEach(x=>{const d=heroDate(x);if(validDate(d))hmo[+d.slice(5,7)-1]++});const hmm=Math.max(1,...hmo);
-  const heroBg=`<div class="kpi-bg" aria-hidden="true"><div class="bg-spark">${hmo.map((v,i)=>`<i style="height:${Math.max(4,v/hmm*100)}%"${S.sy===String(now.getFullYear())&&i===now.getMonth()?' class="cur"':""}></i>`).join("")}</div><div class="sp-ml">${MONTHS.map(m=>`<span>${m.slice(0,3)}</span>`).join("")}</div></div>`;
+  const heroBg=`<div class="kpi-bg" aria-hidden="true"><div class="bg-spark">${hmo.map((v,i)=>`<i style="height:${Math.max(4,v/hmm*100)}%"${S.sy===String(now.getFullYear())&&i===now.getMonth()?' class="cur"':""}></i>`).join("")}</div><div class="sp-ml">${MONTHS.map((m,i)=>`<span>${mAbbr(m,i)}</span>`).join("")}</div></div>`;
   const kpi=(k,v,sub)=>{const hero=kpiN++===0;return `<div class="kpi${hero?" hero":""}">${hero?heroBg:""}<span class="k">${k}</span><span class="v num">${v}</span><span class="sub">${sub}</span></div>`};
   const monthly=(title,cap,arr,dateFn,unit)=>{const cy=years.slice(-2).filter(y=>arr.some(t=>yOf(dateFn(t))===y));if(!cy.length)return "";const cols=["var(--c1)","var(--c2)"];
     const serie=cy.map(y=>{const a=Array(12).fill(0);arr.forEach(t=>{const d=dateFn(t);if(validDate(d)&&d.startsWith(y))a[+d.slice(5,7)-1]++});return a});
@@ -1569,7 +1738,7 @@ function renderStats(){
     let s=`<div class="panel wide"><h3>${title}</h3><div class="cap">${cap}</div><div class="lgd">${cy.map((y,i)=>`<span><i style="background:${cols[ci[i]]}"></i>${y} · <span class="num">${serie[i].reduce((a,b)=>a+b,0)}</span> ${unit}</span>`).join("")}</div><div class="chart">`;
     for(let v=0;v<=top;v+=step)s+=`<div class="gl" style="bottom:${v/top*100}%"><span class="num">${v}</span></div>`;
     s+=`<div class="cols">`;for(let m=0;m<12;m++){const tip=MONTHS[m]+"\n"+cy.map((y,i)=>y+": "+serie[i][m]+" "+unit).join("\n");s+=`<div class="mcol" data-tip="${esc(tip)}">`+cy.map((y,i)=>`<div class="bar" style="height:${serie[i][m]/top*100}%;background:${cols[ci[i]]}"></div>`).join("")+`</div>`}
-    return s+`</div></div><div class="mlabels">${MONTHS.map(x=>`<span>${x.slice(0,3)}</span>`).join("")}</div></div>`};
+    return s+`</div></div><div class="mlabels">${MONTHS.map((x,i)=>`<span>${mAbbr(x,i)}</span>`).join("")}</div></div>`};
   // numbers
   const doneT=tasks.filter(t=>t.status==="مكتمل").length,openT=tasks.filter(t=>CURRENT.has(t.status||"لم يبدأ")).length;
   const delP=sel.filter(t=>validDate(t.delivered)&&t.delivered>=t.received);const avg=delP.length?delP.reduce((a,t)=>a+daysBetween(t.received,t.delivered),0)/delP.length:0;
@@ -1777,7 +1946,7 @@ function igGLink(kw,from,to){return gLink('site:instagram.com "'+kw+'"'+(smNeeds
 function monSwitch(){const m=S.monMode||"news";return `<div class="seg msw" role="tablist" aria-label="نوع الرصد"><button type="button" role="tab" data-act="mon-mode" data-v="news" aria-pressed="${m==="news"}">${ic("news")}الصحف والوكالات</button><button type="button" role="tab" data-act="mon-mode" data-v="social" aria-pressed="${m==="social"}">${ic("social")}السوشيال ميديا</button></div>`}
 function monHead(title,mode,M,cut){const sm=mode==="social";return `<div class="mon-head"><div><h2 style="font-size:22px;font-weight:800">${title}</h2>
     <div class="period">${ic("cal")} <b class="num">${esc(fmt(M.from))}${M.to!==M.from?" – "+esc(fmt(M.to)):""}</b> · حتى <b class="num">${cut}</b></div></div>
-    <div class="grp" style="display:flex;gap:8px;flex-wrap:wrap">${xlBtn("monitor")}<button class="btn primary" type="button" data-act="daily">${ic("download")}تحميل التقرير</button><button class="btn icon" type="button" data-act="${sm?"sm-copy":"mon-copy"}" ${sm?"":'id="mon-copy"'} title="نسخ التقرير" aria-label="نسخ التقرير">${ic("copy")}</button><button class="btn write-only" type="button" data-act="${sm?"sm-add":"mon-add"}">${ic("plus")}${sm?"منشور":"خبر"}</button></div></div>`}
+    <div class="grp" style="display:flex;gap:8px;flex-wrap:wrap">${xlBtn("monitor")}<button class="btn primary" type="button" data-act="daily">${ic("download")}تحميل التقرير</button><button class="btn icon" type="button" data-act="${sm?"sm-copy":"mon-copy"}" ${sm?"":'id="mon-copy"'} title="نسخ التقرير" aria-label="نسخ التقرير">${ic("copy")}</button><button class="btn write-only" type="button" data-act="${sm?"sm-add":"mon-add"}">${ic("plus")}<span data-en="${sm?"Post":"Story"}">${sm?"منشور":"خبر"}</span></button></div></div>`}
 function periodCtl(M){return `<div class="mon-filters">${ic("cal","lbl")}<div class="seg" role="group" aria-label="الفترة"><button type="button" data-act="mon-preset" data-v="today" aria-pressed="${!!M.dateSet&&M.preset==="today"}">اليوم</button><button type="button" data-act="mon-preset" data-v="week" aria-pressed="${!!M.dateSet&&M.preset==="week"}">7 أيام</button><button type="button" data-act="mon-preset" data-v="custom" aria-pressed="${!!M.dateSet&&M.preset==="custom"}">محددة</button></div>
   <input type="date" id="mon-from" value="${M.from}" aria-label="من" class="${M.dateSet?"":"unset"}"><span class="muted">–</span><input type="date" id="mon-to" value="${M.to}" aria-label="إلى" class="${M.dateSet?"":"unset"}"></div>`}
 function chanCtl(kind,list,sel){return `<div class="mrow2 chans">${ic("chan","lbl")}<div class="chips">${list.map(c=>`<label><input type="checkbox" data-ch="${kind}:${c.k}" ${sel.includes(c.k)?"checked":""}>${c.i||""}${c.n}</label>`).join("")}</div></div>`}
@@ -2252,6 +2421,26 @@ async function exportXlsx(scope){
   const nm={all:"All Data",tasks:"Tasks",calendar:"Leaves "+yr,monitor:"Monitoring "+M.from+(M.to!==M.from?" to "+M.to:""),stats:"Statistics "+(sy==="all"?"All Years":sy)}[scope];
   st.textContent="بانتظار تأكيد التحميل…";await offerFile(`LMRA CCD - ${nm} - ${now0.date}.xlsx`,blob);st.textContent="تم تجهيز الملف ✓";setTimeout(()=>st.hidden=true,2200)}
   catch(e){console.error(e);st.textContent="تعذّر إنشاء ملف Excel";setTimeout(()=>st.hidden=true,3000)}}
+
+/* ---------- اللغة + الساعة + الانترو ---------- */
+(function(){const b=$("lang-btn");if(b){b.innerHTML=I18N_ON?`<span class="lg-a">ع</span><span>العربية</span>`:`<span class="lg-a">EN</span><span>English</span>`;b.title=I18N_ON?"التبديل إلى العربية":"Switch to English";b.setAttribute("aria-label",b.title)}})();
+(function(){const g=$("wc-ticks");if(!g)return;let t="";for(let i=0;i<60;i++){const a=i*6,big=i%15===0,mid=i%5===0;const r1=big?33:mid?36:39.5,r2=42;const w=big?2.4:mid?1.4:.6;
+  t+=`<line x1="50" y1="${50-r2}" x2="50" y2="${50-r1}" stroke="${big?"#17325a":mid?"#2d4467":"#9a9384"}" stroke-width="${w}" stroke-linecap="round" transform="rotate(${a} 50 50)"/>`}g.innerHTML=t;
+  const H=$("wc-h"),M=$("wc-m"),Sx=$("wc-s"),box=$("wclock");
+  function tick(){const d=new Date(Date.now()+3*36e5);const s=d.getUTCSeconds()+d.getUTCMilliseconds()/1000,m=d.getUTCMinutes()+s/60,h=(d.getUTCHours()%12)+m/60;
+    H.setAttribute("transform",`rotate(${h*30} 50 50)`);M.setAttribute("transform",`rotate(${m*6} 50 50)`);Sx.setAttribute("transform",`rotate(${s*6} 50 50)`);
+    if(box&&(!box._t||Date.now()-box._t>20000)){box._t=Date.now();const hh=String(d.getUTCHours()).padStart(2,"0"),mm=String(d.getUTCMinutes()).padStart(2,"0");box.title=(I18N_ON?"Bahrain time ":"بتوقيت البحرين ")+hh+":"+mm}
+    requestAnimationFrame(tick)}
+  requestAnimationFrame(tick)})();
+(function(){let seen=false;try{seen=sessionStorage.getItem("lmra-intro")==="1";sessionStorage.setItem("lmra-intro","1")}catch(_){}
+  if(seen||/[?&]nointro/.test(location.search))return;
+  const en=I18N_ON;const o=document.createElement("div");o.className="intro";o.setAttribute("role","presentation");
+  const title=en?"Communications Team Platform":"منصة فريق إدارة الاتصال",tag=en?"One team, one message, big impact.":"فريق واحد، رسالة واحدة، أثر كبير.";
+  o.innerHTML=`<div class="in-pat"></div><div class="in-c"><img class="in-logo" src="rpt/logo.png" alt=""><span class="in-rule"></span>
+    <h2 class="in-t">${title.split(" ").map((w,i)=>`<span style="--i:${i}">${w}</span>`).join(" ")}</h2><p class="in-tag">${tag}</p></div><span class="in-skip">${en?"Click to skip":"اضغط للتخطي"}</span>`;
+  o.setAttribute("data-noi18n","");document.body.appendChild(o);document.body.classList.add("intro-on");
+  const done=()=>{if(o.classList.contains("out"))return;o.classList.add("out");document.body.classList.remove("intro-on");setTimeout(()=>o.remove(),700)};
+  const rm=matchMedia("(prefers-reduced-motion:reduce)").matches;setTimeout(done,rm?900:2600);o.addEventListener("click",done);addEventListener("keydown",done,{once:true})})();
 /* ---------- helpers ---------- */
 const _libs={};
 function loadLib(src){if(_libs[src])return _libs[src];_libs[src]=new Promise((res,rej)=>{const s=document.createElement("script");s.src=src;s.onload=res;s.onerror=()=>{delete _libs[src];rej(new Error("lib"))};document.head.appendChild(s)});return _libs[src]}
@@ -2474,7 +2663,7 @@ const IC={chevR:'<path d="m9 18 6-6-6-6"/>',chevL:'<path d="m15 18-6-6 6-6"/>',c
  tag:'<path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"/><circle cx="7.5" cy="7.5" r="1.5"/>',
  all:'<rect x="3" y="3" width="18" height="18" rx="3"/><path d="m8 12 3 3 5-6"/>',none:'<rect x="3" y="3" width="18" height="18" rx="3"/>',
  download:'<path d="M12 4v11M7 10l5 5 5-5"/><path d="M5 20h14"/>',home:'<path d="M3 11 12 4l9 7"/><path d="M5 10v10h5v-6h4v6h5V10"/>',sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',moon:'<path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/>',menu:'<path d="M4 7h16M4 12h16M4 17h16"/>',chan:'<path d="M4.9 19.1a10 10 0 0 1 0-14.2M19.1 4.9a10 10 0 0 1 0 14.2M7.8 16.2a6 6 0 0 1 0-8.4M16.2 7.8a6 6 0 0 1 0 8.4"/><circle cx="12" cy="12" r="2"/>',info:'<circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v5h1"/>',chart:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',key:'<circle cx="8" cy="15" r="4"/><path d="m11 12 9-9M17 6l3 3M15 8l2 2"/>',spin:'<path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/>'};
-function ic(k,cls){return `<svg class="ic${cls?" "+cls:""}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[k]||""}</svg>`}
+function ic(k,cls){return `<svg class="ic${cls?" "+cls:""}${/^(arrow|chevR|chevL|chevsR|chevsL)$/.test(k)?" flipx":""}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[k]||""}</svg>`}
 function pfIc(k){return `<img class="pfi" src="rpt/${k==="x"?"x":k==="fb"?"fb":"ig"}.png" alt="${esc(smPf(k).n)}" title="${esc(smPf(k).n)}">`}
 const LVL=[{k:"high",n:"عالي"},{k:"med",n:"متوسط"},{k:"low",n:"منخفض"}];
 const LVL_LMRA=/هيئة تنظيم سوق العمل|تنظيم سوق العمل|اللجنة الوطنية لمكافحة الاتجار|\bLMRA\b|lmrabh|Labou?r Market Regulatory|NCCTIP/i;
@@ -2853,6 +3042,7 @@ document.addEventListener("click",async e=>{
     case "photo-new":openTask(null,"photo");break;
     case "f-type":S.f.type=S.f.type===v?"all":v;S.tpg=0;render();break;
     case "xl":S.pop=null;render();exportXlsx(v);break;
+    case "lang":setLang(I18N_ON?"ar":"en");break;
     case "pop":e.stopPropagation();S.pop=S.pop===v?null:v;render();break;
     case "f-st":{const a2=new Set(S.f.st||[]);a2.has(v)?a2.delete(v):a2.add(v);S.f.st=[...a2];S.tpg=0;render();break}
     case "f-st-clear":S.f.st=[];S.pop=null;render();break;
