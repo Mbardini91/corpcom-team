@@ -844,12 +844,47 @@ dialog[data-closing]::backdrop{opacity:0}
 .bento:active{transform:scale(.985);transition:transform 160ms var(--ease-out)}
 @media (hover:none){.b-cta{opacity:1;transform:none;position:static;padding-top:0}.b-body{padding-bottom:8px}}
 @media (max-width:900px){.bento-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.b-cal,.b-news{grid-row:span 2}.b-cal{grid-column:1}.b-news{grid-column:2;grid-row:1/span 2}.b-tasks{grid-column:1;grid-row:3}.b-stats{grid-column:2;grid-row:3}}
-@media (max-width:560px){.bento-grid{grid-template-columns:1fr;grid-auto-rows:auto;gap:12px}.bento{grid-column:1!important;grid-row:auto!important;justify-content:flex-start}
+@media (max-width:560px){.bento-grid{grid-template-columns:1fr;grid-auto-rows:auto;gap:12px}.bento-grid .bento{grid-column:1!important;grid-row:auto!important;justify-content:flex-start}
   .bento .b-bg{position:static;width:auto;display:block;padding:16px 16px 0;-webkit-mask-image:none;mask-image:none;opacity:1;z-index:0}
   .bento .b-body{max-width:none;padding:14px 16px 6px;transform:none!important}
   .bento .b-cta{position:static;opacity:1;transform:none;padding:0 16px 14px}
   .bg-heads p:nth-child(n+3){display:none}.b-stats .bg-spark{height:52px}.bento::before{display:none}}
 @media (prefers-reduced-motion:reduce){.bento:hover .b-body,.bento:hover .b-body .hic,.b-cta{transform:none!important}}
+
+/* ---- bento: المهام والإحصائيات ---- */
+.tbento{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));grid-auto-rows:minmax(8.6rem,auto);gap:14px;margin-bottom:18px}
+.tb-cell{justify-content:flex-start}
+.tb-cell.hero{grid-column:span 2;grid-row:span 2;justify-content:flex-end}
+.tb-cell .b-body{padding:16px 18px;gap:4px}
+.tb-cell .k{font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px}
+.tb-cell .k .dot{width:10px;height:10px;border-radius:3px;background:var(--c)}
+.tb-cell .v{font-size:30px;font-weight:800;line-height:1.1}.tb-cell.hero .v{font-size:44px}
+.tb-cell .sub{font-size:12.5px;color:var(--mute)}
+.tb-cell .prog{display:block;height:5px;border-radius:3px;background:var(--line);overflow:hidden;margin-top:8px}
+.tb-cell .prog b{display:block;height:100%;background:var(--c);border-radius:3px}
+.tb-cell[aria-pressed="true"]{border-color:var(--c);box-shadow:var(--card-shadow),inset 0 0 0 1px var(--c)}
+.tb-cell .b-cta{padding-bottom:12px}
+.tb-cell.hero .b-bg{padding:20px 22px}
+.tb-sum{cursor:default;background:var(--accent-soft);border-color:transparent}
+.tb-sum .b-body{position:relative;height:100%}
+.tb-sum .ring{position:absolute;inset-inline-end:16px;top:16px;width:54px;height:54px;border-radius:50%;background:conic-gradient(var(--accent) calc(var(--p)*1%),var(--line) 0);display:grid;place-items:center}
+.tb-sum .ring::before{content:"";position:absolute;inset:6px;border-radius:50%;background:var(--accent-soft)}
+.tb-sum .ring em{position:relative;font-style:normal;font-size:12px;font-weight:800;color:var(--accent)}
+@media (hover:hover) and (pointer:fine){.tb-cell:not(.tb-sum):hover .b-body{transform:translateY(-14px)}.tb-sum:hover .b-body{transform:none}.tb-sum:hover::before{opacity:0}}
+@media (max-width:900px){.tbento{grid-template-columns:repeat(2,minmax(0,1fr))}.tb-cell.hero{grid-row:span 1}}
+@media (max-width:560px){.tbento{gap:10px;grid-auto-rows:auto}.tb-cell.hero{grid-column:span 2}.tb-cell .v{font-size:24px}.tb-cell.hero .v{font-size:32px}.tb-cell .b-body{padding:12px 14px 4px}.tb-cell .b-cta{display:none}.tb-cell.hero .b-bg{padding:14px 14px 0}.tb-cell.hero .bg-heads p:nth-child(n+2){display:none}}
+/* إحصائيات */
+.kpis.k5{grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:minmax(7.4rem,auto);gap:14px}
+.kpi{position:relative;overflow:hidden;isolation:isolate;align-content:start;padding:16px 18px;transition:border-color 200ms ease}
+.kpi.hero{grid-column:span 2;grid-row:span 2;align-content:end;padding-top:168px}
+.kpi.hero .v{font-size:48px}
+.kpi-bg{position:absolute;inset:18px 18px auto 18px;z-index:-1;opacity:.95}
+.kpi-bg .bg-spark{height:120px}
+.sp-ml{display:flex;gap:5px;margin-top:4px}.sp-ml span{flex:1;text-align:center;font-size:10px;color:var(--mute)}
+.panel{transition:border-color 200ms ease}
+@media (hover:hover) and (pointer:fine){.kpi:hover,.panel:hover{border-color:var(--line-2)}}
+@media (max-width:900px){.kpis.k5{grid-template-columns:repeat(2,minmax(0,1fr))}.kpi.hero{grid-row:span 1;padding-top:150px}}
+@media (max-width:560px){.kpis.k5{gap:10px}.kpi.hero{padding-top:120px}.kpi.hero .v{font-size:36px}.kpi-bg .bg-spark{height:84px}}
 </style>
 </head>
 <body>
@@ -1280,9 +1315,20 @@ function renderTasks(){
   const scope=S.tasks.filter(t=>f.year==="all"||String(t.received||"").startsWith(f.year));
   const years=[...new Set(S.tasks.map(t=>String(t.received||"").slice(0,4)).filter(Boolean))].sort().reverse();
   const owners=[...new Set([...memberNames(),...S.tasks.flatMap(t=>t.owners||[])])];
-  let h=`<div class="tiles">`;
-  for(const t of TYPES){const all=scope.filter(x=>(x.type||"other")===t.k);const cur=all.filter(x=>CURRENT.has(x.status)).length;
-    h+=`<button type="button" class="tile" style="--c:${t.c}" data-act="f-type" data-v="${t.k}" aria-pressed="${f.type===t.k}"><span class="k">${t.n}</span><span class="v num">${all.length}</span><span class="sub"><span class="num">${cur}</span> حالية · <span class="num">${all.filter(x=>x.status==="مكتمل").length}</span> منجزة</span></button>`}
+  const tcounts=TYPES.map(t=>{const all=scope.filter(x=>(x.type||"other")===t.k);return {t,all,cur:all.filter(x=>CURRENT.has(x.status)),done:all.filter(x=>x.status==="مكتمل").length}}).sort((a,b)=>b.all.length-a.all.length);
+  const totCur=scope.filter(x=>CURRENT.has(x.status)).length,totDone=scope.filter(x=>x.status==="مكتمل").length;
+  let h=`<div class="tbento">`;
+  tcounts.forEach((o,i)=>{const {t,all,cur,done}=o;const hero=i===0;const pc=all.length?Math.round(done/all.length*100):0;
+    const bg=hero?`<span class="b-bg" aria-hidden="true"><span class="bg-heads">${cur.slice(0,3).map(x=>`<p>${esc(x.title||"")}</p>`).join("")||`<p>لا مهام حالية من هذا النوع</p>`}</span></span>`:"";
+    h+=`<button type="button" class="bento tb-cell${hero?" hero":""}" style="--c:${t.c}" data-act="f-type" data-v="${t.k}" aria-pressed="${f.type===t.k}">${bg}
+      <span class="b-body"><span class="k"><i class="dot"></i>${t.n}</span><span class="v num">${all.length}</span>
+      <span class="sub"><span class="num">${cur.length}</span> حالية · <span class="num">${done}</span> منجزة</span>
+      <span class="prog" title="نسبة الإنجاز ${pc}%"><b style="width:${pc}%"></b></span></span>
+      <span class="b-cta">${f.type===t.k?"إلغاء التصفية":"عرض المهام"} ${ic("arrow")}</span></button>`});
+  const pcAll=scope.length?Math.round(totDone/scope.length*100):0;
+  h+=`<div class="bento tb-cell tb-sum"><span class="b-body"><span class="k">الإجمالي</span><span class="v num">${scope.length}</span>
+    <span class="sub"><span class="num">${totCur}</span> حالية · <span class="num">${totDone}</span> منجزة</span>
+    <span class="ring" style="--p:${pcAll}"><em class="num">${pcAll}%</em></span></span></div>`;
   h+=`</div>
   <div class="toolbar">
     <div class="grp">
@@ -1396,7 +1442,10 @@ function renderStats(){
   const hbars=(rows,lim,unit,tot)=>{rows=rows.filter(x=>x[1]);if(!rows.length)return `<div class="empty-note">لا توجد بيانات.</div>`;let r=rows;if(rows.length>lim){const rest=rows.slice(lim-1).reduce((a,x)=>a+x[1],0);r=rows.slice(0,lim-1).concat([["أخرى",rest]])}
     const m=Math.max(...r.map(x=>x[1]));const T=tot||rows.reduce((a,x)=>a+x[1],0);return `<div class="hbars">`+r.map(([k,v,c])=>`<div class="hb" data-tip="${esc(k+": "+v+" "+unit+" ("+pct(v,T)+"%)")}"><div class="nm"><span>${esc(k)}</span><span class="num muted">${v}</span></div><div class="tr"><div class="fl" style="width:${v/m*100}%;${c?"background:"+c:""}"></div></div></div>`).join("")+`</div>`};
   const cnt=(arr,fn)=>{const c=new Map();arr.forEach(t=>fn(t).forEach(k=>{if(k)c.set(k,(c.get(k)||0)+1)}));return [...c.entries()].sort((a,b)=>b[1]-a[1])};
-  const kpi=(k,v,sub)=>`<div class="kpi"><span class="k">${k}</span><span class="v num">${v}</span><span class="sub">${sub}</span></div>`;
+  let kpiN=0;const heroArr=sec==="photo"?sel:sec==="news"?[...news,...posts]:tasks,heroDate=sec==="news"?(x=>x.date):(x=>x.received);
+  const hmo=Array(12).fill(0);heroArr.forEach(x=>{const d=heroDate(x);if(validDate(d))hmo[+d.slice(5,7)-1]++});const hmm=Math.max(1,...hmo);
+  const heroBg=`<div class="kpi-bg" aria-hidden="true"><div class="bg-spark">${hmo.map((v,i)=>`<i style="height:${Math.max(4,v/hmm*100)}%"${S.sy===String(now.getFullYear())&&i===now.getMonth()?' class="cur"':""}></i>`).join("")}</div><div class="sp-ml">${MONTHS.map(m=>`<span>${m.slice(0,3)}</span>`).join("")}</div></div>`;
+  const kpi=(k,v,sub)=>{const hero=kpiN++===0;return `<div class="kpi${hero?" hero":""}">${hero?heroBg:""}<span class="k">${k}</span><span class="v num">${v}</span><span class="sub">${sub}</span></div>`};
   const monthly=(title,cap,arr,dateFn,unit)=>{const cy=years.slice(-2).filter(y=>arr.some(t=>yOf(dateFn(t))===y));if(!cy.length)return "";const cols=["var(--c1)","var(--c2)"];
     const serie=cy.map(y=>{const a=Array(12).fill(0);arr.forEach(t=>{const d=dateFn(t);if(validDate(d)&&d.startsWith(y))a[+d.slice(5,7)-1]++});return a});
     const mx=Math.max(1,...serie.flat());const step=mx<=5?1:mx<=10?2:mx<=25?5:mx<=60?10:20;const top=Math.ceil(mx/step)*step;const ci=cy.length===2?[1,0]:[0];
