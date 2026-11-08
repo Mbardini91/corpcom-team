@@ -849,7 +849,16 @@ dialog[data-closing]::backdrop{opacity:0}
   .bento .b-body{max-width:none;padding:14px 16px 6px;transform:none!important}
   .bento .b-cta{position:static;opacity:1;transform:none;padding:0 16px 14px}
   .bg-heads p:nth-child(n+3){display:none}.b-stats .bg-spark{height:52px}.bento::before{display:none}
-  .b-cal{order:1}.b-tasks{order:2}.b-stats{order:3}.b-news{order:4}}
+  .b-cal{order:1}.b-tasks{order:2}.b-stats{order:3}.b-news{order:4}
+  .bento-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+  .bento-grid .b-cal{grid-column:1/-1!important}
+  .bento-grid .b-tasks,.bento-grid .b-stats,.bento-grid .b-news{grid-column:auto!important;text-align:center}
+  .b-tasks .b-bg,.b-stats .b-bg,.b-news .b-bg,.b-tasks .b-cta,.b-stats .b-cta,.b-news .b-cta{display:none}
+  .b-tasks .b-body,.b-stats .b-body,.b-news .b-body{padding:14px 8px;justify-items:center;gap:6px}
+  .b-tasks .ht,.b-stats .ht,.b-news .ht{font-size:14px}
+  .b-tasks .hs,.b-stats .hs,.b-news .hs{font-size:11px;line-height:1.5;display:grid;justify-items:center}
+  .b-tasks .hs b,.b-stats .hs b,.b-news .hs b{font-size:20px;line-height:1.2}
+  .b-tasks .hic,.b-stats .hic,.b-news .hic{width:40px;height:40px}}
 @media (prefers-reduced-motion:reduce){.bento:hover .b-body,.bento:hover .b-body .hic,.b-cta{transform:none!important}}
 
 /* ---- bento: المهام والإحصائيات ---- */
