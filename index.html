@@ -1011,6 +1011,43 @@ html[dir="ltr"] .b-body .hic{transform-origin:left center}
 .in-skip{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);font-size:12px;color:#8a7350;opacity:.7;animation:inFade 500ms ease 1200ms both}
 body.intro-on{overflow:hidden}
 @media (prefers-reduced-motion:reduce){.intro *{animation-duration:1ms!important;animation-delay:0ms!important}}
+/* ===== Glass layer ===== */
+:root{--g-bg:rgba(255,255,255,.40);--g-bg2:rgba(255,255,255,.28);--g-strong:rgba(255,255,255,.82);--g-bd:rgba(255,255,255,.75);--g-line:rgba(23,50,90,.10);
+  --g-sh:0 1px 0 rgba(255,255,255,.85) inset,0 10px 30px -8px rgba(23,50,90,.16),0 2px 6px rgba(23,50,90,.05);--g-blur:blur(20px) saturate(170%);
+  --g-page:radial-gradient(55% 50% at 90% 8%,rgba(47,93,154,.48),transparent 70%),radial-gradient(48% 46% at 4% 30%,rgba(43,133,119,.34),transparent 70%),radial-gradient(55% 50% at 68% 82%,rgba(214,150,52,.32),transparent 70%),radial-gradient(46% 42% at 16% 96%,rgba(125,90,160,.28),transparent 70%),radial-gradient(30% 28% at 45% 40%,rgba(222,40,39,.08),transparent 70%),linear-gradient(160deg,#eef1f6 0%,#f4efe7 55%,#ece8f1 100%)}
+:root[data-theme="dark"]{--g-bg:rgba(20,34,58,.36);--g-bg2:rgba(20,34,58,.24);--g-strong:rgba(18,30,52,.86);--g-bd:rgba(255,255,255,.09);--g-line:rgba(255,255,255,.08);
+  --g-sh:0 1px 0 rgba(255,255,255,.07) inset,0 18px 40px -12px rgba(0,0,0,.55);
+  --g-page:radial-gradient(55% 50% at 90% 6%,rgba(90,134,200,.55),transparent 70%),radial-gradient(48% 46% at 2% 32%,rgba(108,194,179,.30),transparent 70%),radial-gradient(55% 50% at 72% 86%,rgba(180,151,214,.36),transparent 70%),radial-gradient(42% 38% at 12% 96%,rgba(224,180,95,.20),transparent 70%),linear-gradient(160deg,#0a1322 0%,#0d1830 55%,#101529 100%)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--g-bg:rgba(20,34,58,.36);--g-bg2:rgba(20,34,58,.24);--g-strong:rgba(18,30,52,.86);--g-bd:rgba(255,255,255,.09);--g-line:rgba(255,255,255,.08);
+  --g-sh:0 1px 0 rgba(255,255,255,.07) inset,0 18px 40px -12px rgba(0,0,0,.55);
+  --g-page:radial-gradient(55% 50% at 90% 6%,rgba(90,134,200,.55),transparent 70%),radial-gradient(48% 46% at 2% 32%,rgba(108,194,179,.30),transparent 70%),radial-gradient(55% 50% at 72% 86%,rgba(180,151,214,.36),transparent 70%),radial-gradient(42% 38% at 12% 96%,rgba(224,180,95,.20),transparent 70%),linear-gradient(160deg,#0a1322 0%,#0d1830 55%,#101529 100%)}}
+body{background:var(--bg);background-image:var(--g-page);background-attachment:fixed;min-height:100vh}
+.mast{background:var(--g-bg2);-webkit-backdrop-filter:var(--g-blur);backdrop-filter:var(--g-blur);border-bottom:1px solid var(--g-bd);color:var(--ink)}
+.mast::after{opacity:.5}
+.tab[aria-selected="true"]{background:var(--g-bg);box-shadow:0 1px 0 var(--g-bd) inset;border:1px solid var(--g-bd);border-bottom:0}
+.card,.tile,.tbl-wrap,.kpi,.panel,.oc,.smstats div,.smg,.mchk,.htile,.hquote,.bento,.mstat>span{background:var(--g-bg);border-color:var(--g-bd);-webkit-backdrop-filter:var(--g-blur);backdrop-filter:var(--g-blur);box-shadow:var(--g-sh)}
+.oc{border-inline-start-color:var(--sc,var(--g-bd))}
+.panel,.kpi,.htile,.hquote,.tbl-wrap,.card{position:relative}
+.panel::before,.kpi::before,.hquote::before,.tbl-wrap::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(160deg,rgba(255,255,255,.35),transparent 38%);mix-blend-mode:soft-light}
+.mchk .smg{background:var(--g-bg2);box-shadow:none}
+th{background:var(--g-strong);-webkit-backdrop-filter:var(--g-blur);backdrop-filter:var(--g-blur)}
+td,th{border-color:var(--g-line)!important}
+tbody tr:hover td{background:var(--g-bg2)}
+.btn{background:var(--g-bg);border-color:var(--g-bd);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);box-shadow:0 1px 0 rgba(255,255,255,.5) inset,0 1px 2px rgba(23,50,90,.06)}
+.btn.primary,.btn.pri,.btn[class*="primary"]{-webkit-backdrop-filter:none;backdrop-filter:none}
+.seg{background:var(--g-bg2);border-color:var(--g-bd)}
+.seg button[aria-pressed="true"]{background:var(--g-strong)}
+input[type=text],input[type=date],input[type=search],input[type=email],select,textarea{background:var(--g-bg);border-color:var(--g-bd)}
+.ppl span,.tag,.hint,.accst,.hol-row,.smp,.qc,.qc a,.chips label{background:var(--g-bg2);border-color:var(--g-bd)}
+dialog{background:var(--g-strong);-webkit-backdrop-filter:blur(28px) saturate(170%);backdrop-filter:blur(28px) saturate(170%);border:1px solid var(--g-bd)}
+dialog::backdrop{background:rgba(10,20,40,.28);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.dlg-f{background:var(--g-bg2)}
+.pop{background:var(--g-strong);-webkit-backdrop-filter:blur(24px) saturate(170%);backdrop-filter:blur(24px) saturate(170%);border-color:var(--g-bd)}
+.month .dow{background:var(--g-bg2)}
+.hb .tr{background:var(--g-line)}
+.bnav{background:var(--g-strong)!important;border-top:1px solid var(--g-bd)}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){:root{--g-bg:rgba(255,255,255,.9);--g-strong:#fff}:root[data-theme="dark"]{--g-bg:rgba(21,34,55,.94);--g-strong:#152237}}
+@media (prefers-reduced-transparency:reduce){:root{--g-bg:var(--surface);--g-bg2:var(--surface-2);--g-strong:var(--surface)}}
 </style>
 <script>
 /* ---------- English translation layer ---------- */
