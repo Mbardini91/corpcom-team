@@ -186,6 +186,7 @@ td.dt{white-space:nowrap;font-variant-numeric:tabular-nums}
 .ppl span{font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:999px;padding:1px 8px;white-space:nowrap}
 .lastedit{margin-top:4px;font-size:11px;font-weight:500;color:var(--mute);line-height:1.4}
 .chs{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px}
+.chs.pub span{border-style:solid;border-color:transparent;background:var(--accent-soft);color:var(--accent)}
 .chs span{font-size:11px;color:var(--mute);border:1px dashed var(--line-2);border-radius:4px;padding:0 5px;font-weight:500}
 .tfoot{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:10px;font-size:13px;color:var(--mute)}
 
@@ -1035,6 +1036,7 @@ dialog.cfm{max-width:440px;width:calc(100% - 32px);padding:22px;border-radius:16
       </div>
       <div class="small muted" id="t-status-desc"></div>
       <div class="field" id="t-ch-wrap"><span>استخدام الصور</span><div class="pick" id="t-channels"></div></div>
+      <div class="field" id="t-pub-wrap"><span>قنوات النشر</span><div class="pick" id="t-pub"></div></div>
       <label class="field"><span>ملاحظات عامة</span><textarea id="t-notes"></textarea></label>
       <div class="err-msg" id="t-err"></div>
     </div>
@@ -1160,6 +1162,7 @@ const STATUS=[
 const CURRENT=new Set(["لم يبدأ","قيد التنفيذ","بانتظار المراجعة","معلق"]);
 const DURATIONS=["","½ - 1 يوم عمل","2 - 4 أيام عمل","1 - 2 أسبوع عمل","3 - 4 أسابيع عمل","2 - 3 أشهر عمل"];
 const CHANNELS=["نشر داخلي","نشر خارجي","أرشفة"];
+const PUBCH=["الإنترانت","السوشيال ميديا","الصحافة","المركز الإعلامي","التلفزيون والإذاعة"];
 const LEAVE_TYPES=["سنوية","مرضية","طارئة","مهمة رسمية / تدريب","أخرى"];
 const PCOL=["#17325a","#2b8577","#b7832a","#7d5aa0","#c0632b","#2f5d9a","#8a3b52","#4f6b2e","#5a6772","#a8211f"];
 const FALLBACK_MEMBERS=[{name:"حسين علي محمد رسول",title:"مدير إدارة الاتصال"},{name:"حسين أحمد خميس",title:"مستشار شؤون الإعلام"},{name:"صديقة جاسم كاظم",title:"رئيس علاقات عامة"},{name:"خولة نجيب بوخماس",title:"أخصائي علاقات عامة أول"},{name:"فاطمة جاسم الهاشلي",title:"أخصائي إعلام أول"},{name:"معاذ محمد البرديني",title:"أخصائي إعلام أول"},{name:"محمد عبدالكريم يوسف",title:"أخصائي علاقات عامة"},{name:"طاهرة عبدالمجيد حسين",title:"إداري محتوى إلكتروني"}];
@@ -1442,7 +1445,7 @@ function renderTasks(){
   else if(!rows.length)h+=`<tr><td colspan="${ncol}" class="muted">لا توجد مهام تطابق هذا الفلتر.</td></tr>`;
   for(const t of page){const ty=typeOf(t.type),st=statusOf(t.status),on=S.tsel.has(t.id);
     const cell={type:`<td class="ty"><span class="tbadge" style="--c:${ty.c}"><i></i>${ty.n}</span></td>`,
-      title:`<td class="title">${esc(t.title)}${(t.channels&&t.channels.length)?`<div class="chs">${t.channels.map(c=>`<span>${esc(c)}</span>`).join("")}</div>`:""}${t.updatedBy&&t.updatedAt?`<div class="lastedit">آخر تعديل: ${esc(editStamp(t.updatedAt))} · ${esc(shortName(t.updatedBy))}</div>`:""}</td>`,
+      title:`<td class="title">${esc(t.title)}${(t.channels&&t.channels.length)?`<div class="chs">${t.channels.map(c=>`<span>${esc(c)}</span>`).join("")}</div>`:""}${(t.type==="news"&&t.pub&&t.pub.length)?`<div class="chs pub">${t.pub.map(c=>`<span>${esc(c)}</span>`).join("")}</div>`:""}${t.updatedBy&&t.updatedAt?`<div class="lastedit">آخر تعديل: ${esc(editStamp(t.updatedAt))} · ${esc(shortName(t.updatedBy))}</div>`:""}</td>`,
       dept:`<td>${esc(t.dept||"—")}</td>`,owners:`<td><div class="ppl">${(t.owners||[]).map(o=>`<span>${esc(shortName(o))}</span>`).join("")||"—"}</div></td>`,
       received:`<td class="dt">${esc(fmt(t.received))}</td>`,delivered:`<td class="dt">${esc(fmt(t.delivered))}</td>`,
       status:`<td><span class="st" style="--c:${st.c}" title="${esc(st.d)}">${esc(t.status||"لم يبدأ")}</span></td>`,
@@ -1563,7 +1566,8 @@ function renderStats(){
     h+=`<div class="panel"><h3>المهام حسب النوع</h3><div class="cap">${esc(ylabel)}</div>${hbars(TYPES.map(t=>[t.n,tasks.filter(x=>typeOf(x.type).k===t.k).length,t.c]),8,"مهمة",tasks.length)}</div>`;
     h+=`<div class="panel"><h3>المهام حسب الحالة</h3><div class="cap">${esc(ylabel)}</div>${hbars(STATUS.map(s=>[s.k,tasks.filter(x=>(x.status||"لم يبدأ")===s.k).length,s.c]),8,"مهمة",tasks.length)}</div>`;
     if(sec==="tasks"){h+=`<div class="panel"><h3>المهام حسب الموظف</h3><div class="cap">قد يشترك أكثر من موظف في المهمة</div>${hbars(cnt(tasks,t=>(t.owners||[]).map(shortName)),10,"مهمة",tasks.length)}</div>`;
-      h+=`<div class="panel"><h3>حسب الجهة الطالبة</h3><div class="cap">أكثر الجهات طلبًا</div>${hbars(cnt(tasks,t=>[t.dept||"غير محددة"]),8,"مهمة",tasks.length)}</div>`}}
+      h+=`<div class="panel"><h3>حسب الجهة الطالبة</h3><div class="cap">أكثر الجهات طلبًا</div>${hbars(cnt(tasks,t=>[t.dept||"غير محددة"]),8,"مهمة",tasks.length)}</div>`
+      {const nw=tasks.filter(t=>t.type==="news");if(nw.length)h+=`<div class="panel"><h3>الأخبار الصادرة حسب قناة النشر</h3><div class="cap">قد يُنشر الخبر الواحد في أكثر من قناة · <span class="num">${nw.length}</span> خبر</div>${hbars(PUBCH.map(c=>[c,nw.filter(t=>(t.pub||[]).includes(c)).length]),5,"خبر",nw.length)}</div>`}}}
   if(sec==="all"||sec==="photo"){
     h+=monthly("التغطيات حسب الشهر","مقارنة آخر سنتين · بحسب تاريخ الفعالية",photos,t=>t.received,"تغطية");
     if(sec==="photo"){h+=`<div class="panel"><h3>حسب الجهة الطالبة</h3><div class="cap">أكثر الجهات طلبًا للتصوير</div>${hbars(cnt(sel,t=>[t.dept||"غير محددة"]),8,"تغطية",sel.length)}</div>`;
@@ -2631,6 +2635,7 @@ function openTask(t,defType){
   $("t-status").innerHTML=STATUS.map(s=>`<option ${s.k===st?"selected":""}>${s.k}</option>`).join("");
   const du=t?(t.duration||""):"";
   $("t-duration").innerHTML=[...new Set([...DURATIONS,du])].map(d=>`<option value="${esc(d)}" ${d===du?"selected":""}>${d?esc(d):"—"}</option>`).join("");
+  $("t-pub").innerHTML=PUBCH.map(c=>`<label><input type="checkbox" name="tpub" value="${c}" ${(t&&(t.pub||[]).includes(c))?"checked":""}>${c}</label>`).join("");
   $("t-channels").innerHTML=CHANNELS.map(c=>`<label><input type="checkbox" name="tch" value="${c}" ${(t&&(t.channels||[]).includes(c))?"checked":""}>${c}</label>`).join("");
   $("t-notes").value=t?t.notes||"":"";$("t-err").textContent="";
   $("task-h").textContent=t?(S.canWrite?"تعديل المهمة":"تفاصيل المهمة"):"مهمة جديدة";
@@ -2639,7 +2644,7 @@ function openTask(t,defType){
 }
 function taskDyn(){
   const ty=(document.querySelector('input[name="ttype"]:checked')||{}).value;
-  $("t-ch-wrap").style.display=ty==="photo"?"":"none";
+  $("t-ch-wrap").style.display=ty==="photo"?"":"none";$("t-pub-wrap").style.display=ty==="news"?"":"none";
   $("t-status-desc").textContent=statusOf($("t-status").value).d;
 }
 function openSettings(){
@@ -2786,7 +2791,7 @@ $("f-task").addEventListener("submit",async e=>{
   if(rec&&del&&del<rec){$("t-err").textContent="تاريخ التسليم قبل تاريخ الاستلام.";return}
   const data=Object.assign({},t?Object.fromEntries(Object.entries(t).filter(([k])=>k!=="id")):{},{
     type,title,dept:$("t-dept").value.trim(),owners,received:rec,delivered:del,status:$("t-status").value,
-    duration:$("t-duration").value,channels:type==="photo"?[...document.querySelectorAll('input[name="tch"]:checked')].map(x=>x.value):[],
+    duration:$("t-duration").value,channels:type==="photo"?[...document.querySelectorAll('input[name="tch"]:checked')].map(x=>x.value):[],pub:type==="news"?[...document.querySelectorAll('input[name="tpub"]:checked')].map(x=>x.value):[],
     notes:$("t-notes").value.trim(),updatedAt:new Date().toISOString()});
   if(!t){data.createdAt=new Date().toISOString();if(S.me)data.by=S.me}else if(S.meName){data.updatedBy=S.meName}
   try{await save("tasks",t?t.id:uid("t"),data);if(owners.length===1)remember(owners[0]);$("dlg-task").close()}catch(err){$("t-err").textContent=errText(err)}
@@ -2806,7 +2811,7 @@ $("f-set").addEventListener("submit",async e=>{
 function copyTSV(btn){
   const rows=filteredTasks();const head=["النوع","اسم المهمة","الإدارة المعنية","الاسم","تاريخ الاستلام","تاريخ التسليم","الحالة","مدة الإنجاز المتوقعة","ملاحظات عامة"];
   const clean=v=>String(v==null?"":v).replace(/[\t\r\n]+/g," ");
-  const tsv=[head.join("\t"),...rows.map(t=>[typeOf(t.type).n,t.title,t.dept,(t.owners||[]).join("، "),t.received,t.delivered,t.status,t.duration,[t.notes,(t.channels||[]).join("، ")].filter(Boolean).join(" | ")].map(clean).join("\t"))].join("\n");
+  const tsv=[head.join("\t"),...rows.map(t=>[typeOf(t.type).n,t.title,t.dept,(t.owners||[]).join("، "),t.received,t.delivered,t.status,t.duration,[t.notes,(t.channels||[]).join("، "),(t.pub||[]).join("، ")].filter(Boolean).join(" | ")].map(clean).join("\t"))].join("\n");
   const done=ok=>{btn.textContent=ok?"تم النسخ ✓":"تعذّر النسخ";setTimeout(()=>btn.textContent="نسخ الجدول للإكسل",2000)};
   try{navigator.clipboard.writeText(tsv).then(()=>done(true),()=>done(false))}catch(e){done(false)}
 }
