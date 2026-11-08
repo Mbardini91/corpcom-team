@@ -957,6 +957,20 @@ dialog.cfm{max-width:440px;width:calc(100% - 32px);padding:22px;border-radius:16
   .pop{max-width:calc(100vw - 32px)}
 }
 @media (max-width:760px){.cfm-f .btn{flex:1}}
+
+/* ---- متابعة الأخبار الصادرة ---- */
+.cov{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:600;border-radius:999px;padding:2px 9px}
+.cov.ok{background:color-mix(in srgb,var(--ok) 14%,transparent);color:var(--ok)}
+.cov.none{background:color-mix(in srgb,var(--warn) 14%,transparent);color:var(--warn)}
+.covw{margin-top:5px}
+.card.track{margin-bottom:14px;padding:16px 18px}
+.tk-h{display:flex;gap:12px;align-items:flex-start;margin-bottom:10px}.tk-h>.ic{width:22px;height:22px;color:var(--accent);margin-top:2px}
+.tk-h h3{margin:0 0 2px;font-size:15.5px}.tk-h p{margin:0}
+.tk-l{list-style:none;margin:0;padding:0;display:grid}
+.tk-l li{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--line)}
+.tk-t{display:grid;gap:2px;min-width:0}.tk-t b{font-size:14px;line-height:1.5}
+.tk-c{display:flex;align-items:center;gap:8px;flex:none}
+@media (max-width:760px){.tk-l li{flex-direction:column;align-items:stretch}.tk-c{justify-content:space-between}}
 </style>
 </head>
 <body>
@@ -1445,7 +1459,7 @@ function renderTasks(){
   else if(!rows.length)h+=`<tr><td colspan="${ncol}" class="muted">لا توجد مهام تطابق هذا الفلتر.</td></tr>`;
   for(const t of page){const ty=typeOf(t.type),st=statusOf(t.status),on=S.tsel.has(t.id);
     const cell={type:`<td class="ty"><span class="tbadge" style="--c:${ty.c}"><i></i>${ty.n}</span></td>`,
-      title:`<td class="title">${esc(t.title)}${(t.channels&&t.channels.length)?`<div class="chs">${t.channels.map(c=>`<span>${esc(c)}</span>`).join("")}</div>`:""}${(t.type==="news"&&t.pub&&t.pub.length)?`<div class="chs pub">${t.pub.map(c=>`<span>${esc(c)}</span>`).join("")}</div>`:""}${t.updatedBy&&t.updatedAt?`<div class="lastedit">آخر تعديل: ${esc(editStamp(t.updatedAt))} · ${esc(shortName(t.updatedBy))}</div>`:""}</td>`,
+      title:`<td class="title">${esc(t.title)}${(t.channels&&t.channels.length)?`<div class="chs">${t.channels.map(c=>`<span>${esc(c)}</span>`).join("")}</div>`:""}${(t.type==="news"&&t.pub&&t.pub.length)?`<div class="chs pub">${t.pub.map(c=>`<span>${esc(c)}</span>`).join("")}</div>`:""}${t.type==="news"?`<div class="covw">${covBadge(t)}</div>`:""}${t.updatedBy&&t.updatedAt?`<div class="lastedit">آخر تعديل: ${esc(editStamp(t.updatedAt))} · ${esc(shortName(t.updatedBy))}</div>`:""}</td>`,
       dept:`<td>${esc(t.dept||"—")}</td>`,owners:`<td><div class="ppl">${(t.owners||[]).map(o=>`<span>${esc(shortName(o))}</span>`).join("")||"—"}</div></td>`,
       received:`<td class="dt">${esc(fmt(t.received))}</td>`,delivered:`<td class="dt">${esc(fmt(t.delivered))}</td>`,
       status:`<td><span class="st" style="--c:${st.c}" title="${esc(st.d)}">${esc(t.status||"لم يبدأ")}</span></td>`,
@@ -1636,7 +1650,7 @@ function renderMonitor(){
     <div class="mrow2 sub"><button class="btn small" type="button" data-act="mt-all">${ic("all")}الكل</button><button class="btn small" type="button" data-act="mt-none">${ic("none")}إلغاء التحديد</button></div>
     ${chanCtl("news",NEWS_CH,M.ch||[])}
     ${SCAN_ON()?goBtn("news",!newsReady(M).length,newsReady(M),"ارصد الآن"):""}
-  </div>${scanPanel("news")}
+  </div>${trackPanel("news")}${scanPanel("news")}
   <div class="mstat"><span>${ic("news")}<b class="num">${ver.length}</b> خبر</span><span>البحرين <b class="num">${bhN.length}</b></span><span>الخليج <b class="num">${gN.length}</b></span><span class="lvl-high-c">${lvlBadge("high")} <b class="num">${hi}</b></span>${unv.length?`<span>غير مؤكد <b class="num">${unv.length}</b></span>`:""}</div>`;
   // outlet cards
   const card=o=>{const st=chk.statuses[o.k]||"";const sc=CHECK_ST.find(x=>x.k===st).c;const cnt=items.filter(x=>x.outlet===o.k).length;
@@ -1786,7 +1800,7 @@ function renderSocial(){
       <details class="kwocc"${S.smOcc?" open":""}><summary>كلمات دورية</summary><div class="chips">${SM_KW.occ.map(kwChip).join("")}</div></details></div>
     ${chanCtl("sm",SM_PF.map(p=>({k:p.k,n:p.n,i:pfIc(p.k)})),S.smCh||[])}
     ${goBtn("social",!smReady(M).length,smReady(M),"إرصد الآن")}
-  </div>${scanPanel("social")}
+  </div>${trackPanel("social")}${scanPanel("social")}
   <div class="mstat"><span>${ic("social")}<b class="num">${ver.length}</b> منشور</span>${SM_TONE.map(t=>`<span><i class="dot" style="--tc:${t.c}"></i>${t.n} <b class="num">${tc(t.k)}</b></span>`).join("")}<span>${lvlBadge("high")} <b class="num">${ver.filter(x=>lv(x)==="high").length}</b></span></div>`;
   const tbl=rows=>{if(!rows.length)return `<div class="empty-note">لا توجد منشورات مسجلة لهذه الفترة.</div>`;
     return `<div class="tbl-wrap"><table class="mtbl" style="min-width:900px"><thead><tr><th>التاريخ</th><th>الحساب</th><th>الموضوع</th><th>الملخص</th><th>النبرة</th><th>المستوى</th><th></th></tr></thead><tbody>${rows.map(x=>{const t=mtopic(x.topic),tn=smTone(x.tone);
@@ -2134,6 +2148,30 @@ function openStatsReport(){
     <div class="dp-wrap" id="dp-wrap">${statsHTML(D)}</div>`;
   r.hidden=false;document.body.classList.add("rpt-open");r.scrollTop=0;fitDaily();
 }
+/* ---------- متابعة الأخبار الصادرة: كل خبر ننشره يُتابَع في قنوات الرصد ---------- */
+const AR_STOP=new Set("في من على إلى الى عن مع هذا هذه ذلك التي الذي الذين بين خلال بعد قبل حول عبر أو او و ثم كما وقد قد لا لم لن ما هو هي تم يتم كل أي أن ان إن بها به له لها عام العام الجاري الماضي".split(" "));
+function nrm(t){return String(t||"").toLowerCase().replace(/[\u064B-\u0652\u0640]/g,"").replace(/[إأآٱ]/g,"ا").replace(/ى/g,"ي").replace(/ة/g,"ه").replace(/ؤ/g,"و").replace(/ئ/g,"ي").replace(/[^\u0621-\u064Aa-z0-9\s]/g," ")}
+function toks(t){return [...new Set(nrm(t).split(/\s+/).map(w=>w.replace(/^(وال|بال|كال|فال|لل|ال)/,"")).filter(w=>w.length>2&&!AR_STOP.has(w)))]}
+function addDays(d,n){const x=new Date(d+"T12:00:00Z");x.setUTCDate(x.getUTCDate()+n);return x.toISOString().slice(0,10)}
+function coverageOf(t){
+  if(!t||t.type!=="news"||!validDate(t.received))return {news:[],social:[]};
+  const key=t.id+"|"+t.title+"|"+(S.monitor||[]).length+"|"+(S.social||[]).length;S._cov=S._cov||{};if(S._cov[t.id]&&S._cov[t.id].k===key)return S._cov[t.id].v;
+  const tk=toks(t.title);const lo=addDays(t.received,-1),hi=addDays(t.received,7);
+  const m=x=>{if(!validDate(x.date)||x.date<lo||x.date>hi||x.verified===false)return false;const xt=new Set(toks([x.headline,x.summary,x.text].join(" ")));const sh=tk.filter(w=>xt.has(w)).length;return sh>=Math.min(3,tk.length)&&sh/Math.max(1,tk.length)>=.45};
+  const v={news:(S.monitor||[]).filter(m),social:(S.social||[]).filter(m)};S._cov[t.id]={k:key,v};return v}
+function covBadge(t){const c=coverageOf(t);const n=c.news.length,s=c.social.length;const watching=t.received>=addDays(bhNow().date,-7);
+  if(!n&&!s)return `<span class="cov none">${watching?"قيد المتابعة · لم يُرصد بعد":"لم يُرصد"}</span>`;
+  const outs=[...new Set(c.news.map(x=>x.outletName||outletOf(x.outlet).n))];
+  return `<span class="cov ok" title="${esc(outs.join("، "))}">رُصد: ${n?`<b class="num">${n}</b> صحف`:""}${n&&s?" · ":""}${s?`<b class="num">${s}</b> سوشيال`:""}</span>`}
+function trackPanel(mode){
+  const M=monPeriod();const lo=addDays(M.from,-7);
+  const list=S.tasks.filter(t=>t.type==="news"&&validDate(t.received)&&t.received>=lo&&t.received<=M.to).sort((a,b)=>b.received.localeCompare(a.received));
+  if(!list.length)return "";
+  const row=t=>{const c=coverageOf(t);const arr=mode==="social"?c.social:c.news;const q=encodeURIComponent('"'+String(t.title).split(/\s+/).slice(0,8).join(" ")+'"');
+    return `<li><div class="tk-t"><b>${esc(t.title)}</b><span class="muted small">صدر ${esc(fmt(t.received))}${(t.pub||[]).length?" · "+esc(t.pub.join("، ")):""}</span></div>
+      <div class="tk-c">${arr.length?`<span class="cov ok"><b class="num">${arr.length}</b> ${mode==="social"?"منشور":"تغطية"}</span>`:`<span class="cov none">لم يُرصد بعد</span>`}
+      <a class="btn small" href="https://news.google.com/search?q=${q}&hl=ar&gl=BH&ceid=BH:ar" title="بحث عن الخبر في Google News">${ic("search")}ابحث</a></div></li>`};
+  return `<div class="card track"><div class="tk-h">${ic("report")}<div><h3>الأخبار الصادرة للمتابعة</h3><p class="muted small">كل خبر تضيفه في المهام بنوع «الأخبار» يُتابَع هنا في قنوات الرصد لمدة 7 أيام من تاريخ نشره، ويُربط تلقائيًا بما يُرصد عنه.</p></div></div><ul class="tk-l">${list.map(row).join("")}</ul></div>`}
 /* ---------- helpers ---------- */
 const _libs={};
 function loadLib(src){if(_libs[src])return _libs[src];_libs[src]=new Promise((res,rej)=>{const s=document.createElement("script");s.src=src;s.onload=res;s.onerror=()=>{delete _libs[src];rej(new Error("lib"))};document.head.appendChild(s)});return _libs[src]}
