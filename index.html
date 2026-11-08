@@ -971,6 +971,13 @@ dialog.cfm{max-width:440px;width:calc(100% - 32px);padding:22px;border-radius:16
 .tk-t{display:grid;gap:2px;min-width:0}.tk-t b{font-size:14px;line-height:1.5}
 .tk-c{display:flex;align-items:center;gap:8px;flex:none}
 @media (max-width:760px){.tk-l li{flex-direction:column;align-items:stretch}.tk-c{justify-content:space-between}}
+
+/* ---- تصدير Excel ---- */
+.admin-only{display:none!important}body.is-admin .admin-only{display:inline-flex!important}
+.xlpop{min-width:250px}.xlpop .pop-i{align-items:flex-start;white-space:normal}.xlpop .pop-i>.ic{margin-top:3px}
+.xlpop .pop-i span{display:grid;gap:1px}.xlpop .pop-i small{font-size:11.5px;color:var(--mute);font-weight:400}
+.xl-toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--surface);padding:10px 18px;border-radius:999px;font-size:13.5px;font-weight:600;z-index:200;box-shadow:0 8px 24px rgba(0,0,0,.2)}
+@media (max-width:760px){.xl-toast{bottom:84px}}
 </style>
 </head>
 <body>
@@ -1310,7 +1317,7 @@ function renderCalendar(){
         <button type="button" data-act="cal-mode" data-v="year" aria-pressed="${isYear}">السنة</button>
         <button type="button" data-act="cal-mode" data-v="month" aria-pressed="${!isYear}">الشهر</button>
       </div>
-      <button class="btn primary write-only" data-act="leave-new" type="button">+ تسجيل إجازة</button>
+      ${xlBtn("calendar")}<button class="btn primary write-only" data-act="leave-new" type="button">+ تسجيل إجازة</button>
     </div>
   </div>
   <div class="legend"><span><i style="background:var(--hol-bg);border:1px solid var(--hol-ink)"></i>إجازة رسمية</span><span><i style="background:var(--wknd);border:1px solid var(--line-2)"></i>عطلة نهاية الأسبوع (الجمعة والسبت)</span><span><i style="border:2px solid var(--today)"></i>اليوم</span><span>النقاط الملوّنة: موظفون في إجازة</span></div>
@@ -1444,7 +1451,7 @@ function renderTasks(){
       ${S.tsel.size?`<div class="bulk write-only"><span class="num">${S.tsel.size}</span> محددة
         <div class="popw"><button type="button" class="btn" data-act="pop" data-v="bulkst">تغيير الحالة ${ic("down")}</button>${S.pop==="bulkst"?`<div class="pop" role="menu">${STATUS.map(x=>`<button type="button" class="pop-i" data-act="t-bulkst" data-v="${esc(x.k)}" role="menuitem"><i class="dot" style="background:${x.c}"></i>${esc(x.k)}</button>`).join("")}</div>`:""}</div>
         <button type="button" class="btn danger-o" data-act="t-bulkdel">${ic("trash")}حذف</button><button type="button" class="ghost-btn" data-act="t-selclear" aria-label="إلغاء التحديد">${ic("close")}</button></div>`:""}
-      <button class="btn" type="button" data-act="copy-tsv" id="copy-btn">نسخ الجدول للإكسل</button>
+      ${xlBtn("tasks")}<button class="btn" type="button" data-act="copy-tsv" id="copy-btn">نسخ الجدول للإكسل</button>
       <button class="btn primary write-only" type="button" data-act="task-new">+ مهمة جديدة</button>
     </div>
   </div>`;
@@ -1546,7 +1553,7 @@ function renderStats(){
   const SECS=[{k:"all",n:"نظرة عامة"},{k:"tasks",n:"المهام"},{k:"photo",n:"التصوير"},{k:"news",n:"الأخبار والرصد"}];
   let h=`<div class="toolbar"><div class="grp"><h2 style="font-size:22px;font-weight:800">الإحصائيات</h2></div>
     <div class="grp"><div class="seg" role="group" aria-label="السنة">${years.map(y=>`<button type="button" data-act="sy" data-v="${y}" aria-pressed="${S.sy===y}">${y}</button>`).join("")}<button type="button" data-act="sy" data-v="all" aria-pressed="${S.sy==="all"}">الكل</button></div>
-    <button class="btn" type="button" data-act="stats-report">${ic("report")}تصدير التقرير</button><button class="btn write-only" type="button" data-act="photo-new">${ic("plus")}تغطية</button></div></div>
+    ${xlBtn("stats")}<button class="btn" type="button" data-act="stats-report">${ic("report")}تصدير التقرير</button><button class="btn write-only" type="button" data-act="photo-new">${ic("plus")}تغطية</button></div></div>
     <div class="seg msw" role="tablist" aria-label="القسم">${SECS.map(s=>`<button type="button" data-act="ss" data-v="${s.k}" aria-pressed="${sec===s.k}">${s.n}</button>`).join("")}</div>`;
   if(!S.ready.tasks&&S.db){el.innerHTML=h+`<div class="empty-note">جارٍ تحميل البيانات…</div>`;return}
   const hbars=(rows,lim,unit,tot)=>{rows=rows.filter(x=>x[1]);if(!rows.length)return `<div class="empty-note">لا توجد بيانات.</div>`;let r=rows;if(rows.length>lim){const rest=rows.slice(lim-1).reduce((a,x)=>a+x[1],0);r=rows.slice(0,lim-1).concat([["أخرى",rest]])}
@@ -1770,7 +1777,7 @@ function igGLink(kw,from,to){return gLink('site:instagram.com "'+kw+'"'+(smNeeds
 function monSwitch(){const m=S.monMode||"news";return `<div class="seg msw" role="tablist" aria-label="نوع الرصد"><button type="button" role="tab" data-act="mon-mode" data-v="news" aria-pressed="${m==="news"}">${ic("news")}الصحف والوكالات</button><button type="button" role="tab" data-act="mon-mode" data-v="social" aria-pressed="${m==="social"}">${ic("social")}السوشيال ميديا</button></div>`}
 function monHead(title,mode,M,cut){const sm=mode==="social";return `<div class="mon-head"><div><h2 style="font-size:22px;font-weight:800">${title}</h2>
     <div class="period">${ic("cal")} <b class="num">${esc(fmt(M.from))}${M.to!==M.from?" – "+esc(fmt(M.to)):""}</b> · حتى <b class="num">${cut}</b></div></div>
-    <div class="grp" style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn primary" type="button" data-act="daily">${ic("download")}تحميل التقرير</button><button class="btn icon" type="button" data-act="${sm?"sm-copy":"mon-copy"}" ${sm?"":'id="mon-copy"'} title="نسخ التقرير" aria-label="نسخ التقرير">${ic("copy")}</button><button class="btn write-only" type="button" data-act="${sm?"sm-add":"mon-add"}">${ic("plus")}${sm?"منشور":"خبر"}</button></div></div>`}
+    <div class="grp" style="display:flex;gap:8px;flex-wrap:wrap">${xlBtn("monitor")}<button class="btn primary" type="button" data-act="daily">${ic("download")}تحميل التقرير</button><button class="btn icon" type="button" data-act="${sm?"sm-copy":"mon-copy"}" ${sm?"":'id="mon-copy"'} title="نسخ التقرير" aria-label="نسخ التقرير">${ic("copy")}</button><button class="btn write-only" type="button" data-act="${sm?"sm-add":"mon-add"}">${ic("plus")}${sm?"منشور":"خبر"}</button></div></div>`}
 function periodCtl(M){return `<div class="mon-filters">${ic("cal","lbl")}<div class="seg" role="group" aria-label="الفترة"><button type="button" data-act="mon-preset" data-v="today" aria-pressed="${!!M.dateSet&&M.preset==="today"}">اليوم</button><button type="button" data-act="mon-preset" data-v="week" aria-pressed="${!!M.dateSet&&M.preset==="week"}">7 أيام</button><button type="button" data-act="mon-preset" data-v="custom" aria-pressed="${!!M.dateSet&&M.preset==="custom"}">محددة</button></div>
   <input type="date" id="mon-from" value="${M.from}" aria-label="من" class="${M.dateSet?"":"unset"}"><span class="muted">–</span><input type="date" id="mon-to" value="${M.to}" aria-label="إلى" class="${M.dateSet?"":"unset"}"></div>`}
 function chanCtl(kind,list,sel){return `<div class="mrow2 chans">${ic("chan","lbl")}<div class="chips">${list.map(c=>`<label><input type="checkbox" data-ch="${kind}:${c.k}" ${sel.includes(c.k)?"checked":""}>${c.i||""}${c.n}</label>`).join("")}</div></div>`}
@@ -2172,6 +2179,79 @@ function trackPanel(mode){
       <div class="tk-c">${arr.length?`<span class="cov ok"><b class="num">${arr.length}</b> ${mode==="social"?"منشور":"تغطية"}</span>`:`<span class="cov none">لم يُرصد بعد</span>`}
       <a class="btn small" href="https://news.google.com/search?q=${q}&hl=ar&gl=BH&ceid=BH:ar" title="بحث عن الخبر في Google News">${ic("search")}ابحث</a></div></li>`};
   return `<div class="card track"><div class="tk-h">${ic("report")}<div><h3>الأخبار الصادرة للمتابعة</h3><p class="muted small">كل خبر تضيفه في المهام بنوع «الأخبار» يُتابَع هنا في قنوات الرصد لمدة 7 أيام من تاريخ نشره، ويُربط تلقائيًا بما يُرصد عنه.</p></div></div><ul class="tk-l">${list.map(row).join("")}</ul></div>`}
+/* ---------- تصدير Excel (للمشرفين) ---------- */
+function xlBtn(page){return `<div class="popw admin-only"><button type="button" class="btn" data-act="pop" data-v="xl-${page}" aria-expanded="${S.pop==="xl-"+page}">${ic("download")}تصدير Excel ${ic("down")}</button>${S.pop==="xl-"+page?`<div class="pop xlpop" role="menu"><div class="pop-h">تصدير إلى Excel</div>
+  <button type="button" class="pop-i" data-act="xl" data-v="${page}" role="menuitem">${ic("list")}<span><b>هذه الصفحة</b><small>${{tasks:"المهام بالفلاتر الحالية",calendar:"إجازات وعطل السنة المعروضة",monitor:"الرصد في الفترة المختارة",stats:"ملخص وبيانات السنة المختارة"}[page]}</small></span></button>
+  <button type="button" class="pop-i" data-act="xl" data-v="all" role="menuitem">${ic("report")}<span><b>ملف كامل</b><small>كل الأقسام وكل البيانات</small></span></button></div>`:""}</div>`}
+function xlDate(d){if(!validDate(d))return null;const [y,m,dd]=d.split("-").map(Number);return new Date(Date.UTC(y,m-1,dd))}
+function leaveDays(l){if(!validDate(l.from))return [0,0];const to=validDate(l.to)?l.to:l.from;let cal=0,work=0;const hol=new Set();S.holidays.forEach(h=>{if(!validDate(h.from))return;for(let d=h.from;d<=(validDate(h.to)?h.to:h.from);d=addDays(d,1))hol.add(d)});
+  for(let d=l.from;d<=to&&cal<400;d=addDays(d,1)){cal++;const wd=new Date(d+"T12:00:00Z").getUTCDay();if(wd!==5&&wd!==6&&!hol.has(d))work++}return [cal,work]}
+async function exportXlsx(scope){
+  if(!S.isAdmin)return;
+  const st=$("xl-st")||(()=>{const t=document.createElement("div");t.id="xl-st";t.className="xl-toast";document.body.appendChild(t);return t})();st.textContent="جارٍ تجهيز ملف Excel…";st.hidden=false;
+  try{await loadLib("lib/exceljs.min.js");
+  const wb=new ExcelJS.Workbook();wb.creator="منصة فريق إدارة الاتصال";wb.created=new Date();
+  const NAVY="FF17325A",SAND="FFF4F2EE",LINE="FFE3DED5",FONT="Arial";
+  const sheet=(name,cols,rows,opt={})=>{const ws=wb.addWorksheet(name,{views:[{rightToLeft:true,state:"frozen",ySplit:opt.title?3:1}],properties:{defaultRowHeight:20}});
+    let r0=1;if(opt.title){ws.mergeCells(1,1,1,cols.length);const c=ws.getCell(1,1);c.value=opt.title;c.font={name:FONT,size:14,bold:true,color:{argb:NAVY}};c.alignment={horizontal:"right"};ws.getRow(1).height=26;
+      ws.mergeCells(2,1,2,cols.length);const c2=ws.getCell(2,1);c2.value=opt.sub||"";c2.font={name:FONT,size:10,color:{argb:"FF7D8184"}};c2.alignment={horizontal:"right"};r0=3}
+    ws.columns=cols.map(c=>({key:c.k,width:c.w||16}));
+    const hr=ws.getRow(r0);cols.forEach((c,i)=>{const cell=hr.getCell(i+1);cell.value=c.n;cell.font={name:FONT,bold:true,color:{argb:"FFFFFFFF"},size:11};cell.fill={type:"pattern",pattern:"solid",fgColor:{argb:NAVY}};cell.alignment={horizontal:"center",vertical:"middle",wrapText:true};cell.border={bottom:{style:"thin",color:{argb:NAVY}}}});hr.height=24;
+    rows.forEach((row,ri)=>{const r=ws.getRow(r0+1+ri);cols.forEach((c,i)=>{const cell=r.getCell(i+1);let v=row[c.k];
+      if(c.t==="date"){v=xlDate(v);cell.numFmt="dd/mm/yyyy"}else if(c.t==="dt"&&v){const d=new Date(v);v=isNaN(d)?v:new Date(d.getTime()+3*36e5);cell.numFmt="dd/mm/yyyy hh:mm"}
+      else if(c.t==="link"&&v){cell.value={text:"فتح الرابط",hyperlink:String(v)};cell.font={name:FONT,color:{argb:"FF2F5D9A"},underline:true};cell.alignment={horizontal:"center",vertical:"top"};return}
+      else if(c.t==="pct"&&v!=null){cell.numFmt="0%"}
+      cell.value=v==null||v===""?null:v;cell.font={name:FONT,size:10.5};cell.alignment={horizontal:c.al||"right",vertical:"top",wrapText:!!c.wrap,readingOrder:"rtl"};
+      cell.border={bottom:{style:"hair",color:{argb:LINE}}};if(ri%2)cell.fill={type:"pattern",pattern:"solid",fgColor:{argb:"FFFAF8F4"}}})});
+    if(rows.length)ws.autoFilter={from:{row:r0,column:1},to:{row:r0+rows.length,column:cols.length}};
+    if(!rows.length){const r=ws.getRow(r0+1);r.getCell(1).value="لا توجد بيانات";r.getCell(1).font={name:FONT,italic:true,color:{argb:"FF7D8184"}}}
+    return ws};
+  const now0=bhNow();const stamp=`صُدّر في ${fmt(now0.date)} ${now0.time} بتوقيت البحرين`;
+  const all=scope==="all";
+  // ---- datasets
+  const M=monPeriod();const sy=S.sy||"all";const inSy=d=>sy==="all"||String(d||"").startsWith(sy);
+  const tasks=all?S.tasks.slice().sort(taskSorter()):scope==="tasks"?filteredTasks():scope==="stats"?S.tasks.filter(t=>inSy(t.received)):[];
+  const yr=String(S.year||now.getFullYear());
+  const leaves=all?S.leaves:scope==="calendar"?S.leaves.filter(l=>String(l.from||"").startsWith(yr)||String(l.to||"").startsWith(yr)):[];
+  const hols=all?S.holidays:scope==="calendar"?S.holidays.filter(h=>String(h.from||"").startsWith(yr)||String(h.to||"").startsWith(yr)):[];
+  const mon=(all?(S.monitor||[]):scope==="monitor"?(S.monitor||[]).filter(x=>inPeriod(x.date,M)):scope==="stats"?(S.monitor||[]).filter(x=>inSy(x.date)):[]).filter(x=>x.verified!==false);
+  const soc=(all?(S.social||[]):scope==="monitor"?(S.social||[]).filter(x=>inPeriod(x.date,M)):scope==="stats"?(S.social||[]).filter(x=>inSy(x.date)):[]).filter(x=>x.verified!==false);
+  const byDate=(a,b)=>String(b.date||"").localeCompare(String(a.date||""));
+  // ---- stats summary
+  if(all||scope==="stats"){const T=all?S.tasks:tasks,N=all?(S.monitor||[]).filter(x=>x.verified!==false):mon,P=all?(S.social||[]).filter(x=>x.verified!==false):soc;
+    const rows=[];const sec=n=>rows.push({a:n,b:null,c:null,h:1});const kv=(a,b,c)=>rows.push({a,b,c});
+    const done=T.filter(t=>t.status==="مكتمل").length;
+    sec("المهام");kv("إجمالي المهام",T.length);kv("المكتملة",done,T.length?done/T.length:0);kv("الجارية",T.filter(t=>CURRENT.has(t.status||"لم يبدأ")).length);
+    sec("المهام حسب النوع");TYPES.forEach(x=>{const n=T.filter(t=>typeOf(t.type).k===x.k).length;kv(x.n,n,T.length?n/T.length:0)});
+    sec("المهام حسب الحالة");STATUS.forEach(x=>{const n=T.filter(t=>(t.status||"لم يبدأ")===x.k).length;kv(x.k,n,T.length?n/T.length:0)});
+    sec("المهام حسب الموظف");const om=new Map();T.forEach(t=>(t.owners||[]).forEach(o=>om.set(o,(om.get(o)||0)+1)));[...om].sort((a,b)=>b[1]-a[1]).forEach(([k,n])=>kv(k,n));
+    sec("المهام حسب الجهة الطالبة");const dm=new Map();T.forEach(t=>{const k=t.dept||"غير محددة";dm.set(k,(dm.get(k)||0)+1)});[...dm].sort((a,b)=>b[1]-a[1]).forEach(([k,n])=>kv(k,n));
+    const nw=T.filter(t=>t.type==="news");if(nw.length){sec("الأخبار الصادرة حسب قناة النشر");PUBCH.forEach(c=>{const n=nw.filter(t=>(t.pub||[]).includes(c)).length;kv(c,n,n/nw.length)})}
+    sec("الرصد الإعلامي");kv("أخبار الصحف",N.length);kv("منشورات السوشيال",P.length);
+    RCAT.forEach(c=>kv("فئة: "+c.n,N.filter(x=>newsCat(x)===c.k).length+P.filter(x=>smCat(x)===c.k).length));
+    LVL.forEach(l=>kv("مستوى: "+l.n,N.filter(x=>lvlOf(x,false)===l.k).length+P.filter(x=>lvlOf(x,true)===l.k).length));
+    SM_TONE.forEach(t=>kv("نبرة السوشيال: "+t.n,P.filter(x=>(x.tone||"neu")===t.k).length));
+    const ws=sheet("ملخص الإحصائيات",[{k:"a",n:"المؤشر",w:44},{k:"b",n:"العدد",w:12,al:"center"},{k:"c",n:"النسبة",w:12,t:"pct",al:"center"}],rows,{title:"ملخص الإحصائيات — "+(all?"كل السنوات":(sy==="all"?"كل السنوات":"عام "+sy)),sub:stamp});
+    rows.forEach((r,i)=>{if(r.h){const row=ws.getRow(4+i);row.getCell(1).font={name:FONT,bold:true,color:{argb:NAVY},size:11.5};[1,2,3].forEach(k=>row.getCell(k).fill={type:"pattern",pattern:"solid",fgColor:{argb:"FFE6EBF2"}})}})}
+  if(all||scope==="tasks"||scope==="stats")sheet("المهام",[{k:"type",n:"النوع",w:12},{k:"title",n:"اسم المهمة",w:48,wrap:1},{k:"dept",n:"الإدارة المعنية",w:22,wrap:1},{k:"owners",n:"الاسم",w:26,wrap:1},{k:"received",n:"تاريخ الاستلام",w:14,t:"date",al:"center"},{k:"delivered",n:"تاريخ التسليم",w:14,t:"date",al:"center"},{k:"status",n:"الحالة",w:15,al:"center"},{k:"duration",n:"المدة المتوقعة",w:16},{k:"use",n:"استخدام الصور / قنوات النشر",w:30,wrap:1},{k:"notes",n:"ملاحظات",w:36,wrap:1},{k:"upd",n:"آخر تعديل",w:18,t:"dt",al:"center"},{k:"updBy",n:"عدّلها",w:18}],
+    tasks.map(t=>({type:typeOf(t.type).n,title:t.title,dept:t.dept,owners:(t.owners||[]).join("، "),received:t.received,delivered:t.delivered,status:t.status||"لم يبدأ",duration:t.duration,use:[...(t.channels||[]),...(t.pub||[])].join("، "),notes:t.notes,upd:t.updatedAt||t.createdAt,updBy:t.updatedBy})),{title:"المهام",sub:stamp+(scope==="tasks"?" · بحسب الفلاتر المختارة في الصفحة":"")});
+  const nws=(all||scope==="tasks"||scope==="monitor"||scope==="stats")?(all?S.tasks:scope==="tasks"?tasks:scope==="stats"?tasks:S.tasks.filter(t=>validDate(t.received)&&t.received>=addDays(M.from,-7)&&t.received<=M.to)).filter(t=>t.type==="news"):[];
+  if(nws.length||all)sheet("الأخبار الصادرة",[{k:"date",n:"تاريخ النشر",w:14,t:"date",al:"center"},{k:"title",n:"الخبر",w:56,wrap:1},{k:"dept",n:"الجهة المرسلة",w:22},{k:"pub",n:"قنوات النشر",w:34,wrap:1},{k:"cn",n:"تغطيات الصحف",w:13,al:"center"},{k:"cs",n:"منشورات السوشيال",w:14,al:"center"},{k:"outs",n:"الصحف التي نشرته",w:34,wrap:1},{k:"notes",n:"ملاحظات",w:30,wrap:1}],
+    nws.slice().sort((a,b)=>String(b.received).localeCompare(String(a.received))).map(t=>{const c=coverageOf(t);return {date:t.received,title:t.title,dept:t.dept,pub:(t.pub||[]).join("، "),cn:c.news.length,cs:c.social.length,outs:[...new Set(c.news.map(x=>x.outletName||outletOf(x.outlet).n))].join("، "),notes:t.notes}}),{title:"الأخبار الصادرة ومتابعة تغطيتها",sub:stamp});
+  if(all||scope==="monitor"||scope==="stats"){
+    sheet("رصد الصحف",[{k:"date",n:"التاريخ",w:13,t:"date",al:"center"},{k:"outlet",n:"الوسيلة",w:20},{k:"headline",n:"العنوان",w:50,wrap:1},{k:"summary",n:"الملخص",w:70,wrap:1},{k:"cat",n:"الفئة",w:22},{k:"level",n:"المستوى",w:10,al:"center"},{k:"topic",n:"الموضوع",w:24},{k:"link",n:"الرابط",w:12,t:"link"}],
+      mon.slice().sort(byDate).map(x=>({date:x.date,outlet:x.outletName||outletOf(x.outlet).n,headline:x.headline,summary:x.summary,cat:(RCAT.find(c=>c.k===newsCat(x))||{}).n,level:lvlName(lvlOf(x,false)),topic:(MTOPICS.find(t=>t.k===x.topic)||{}).n,link:x.link})),{title:"رصد الصحف ووكالات الأنباء",sub:stamp+(scope==="monitor"?` · الفترة ${fmt(M.from)} – ${fmt(M.to)}`:"")});
+    sheet("رصد السوشيال",[{k:"date",n:"التاريخ",w:13,t:"date",al:"center"},{k:"pf",n:"المنصة",w:12},{k:"acc",n:"الحساب",w:22},{k:"text",n:"الملخص",w:70,wrap:1},{k:"tone",n:"النبرة",w:10,al:"center"},{k:"eng",n:"التفاعل",w:18},{k:"cat",n:"الفئة",w:22},{k:"level",n:"المستوى",w:10,al:"center"},{k:"link",n:"الرابط",w:12,t:"link"}],
+      soc.slice().sort(byDate).map(x=>({date:x.date,pf:smPf(x.platform).n,acc:smAccName(x),text:x.summary||x.text,tone:(SM_TONE.find(t=>t.k===(x.tone||"neu"))||{}).n,eng:x.engagement,cat:(RCAT.find(c=>c.k===smCat(x))||{}).n,level:lvlName(lvlOf(x,true)),link:x.link})),{title:"رصد السوشيال ميديا",sub:stamp+(scope==="monitor"?` · الفترة ${fmt(M.from)} – ${fmt(M.to)}`:"")})}
+  if(all||scope==="calendar"){
+    sheet("الإجازات",[{k:"name",n:"الموظف",w:28},{k:"type",n:"نوع الإجازة",w:18},{k:"from",n:"من",w:14,t:"date",al:"center"},{k:"to",n:"إلى",w:14,t:"date",al:"center"},{k:"cal",n:"عدد الأيام",w:11,al:"center"},{k:"work",n:"أيام العمل",w:11,al:"center"},{k:"notes",n:"ملاحظات",w:34,wrap:1}],
+      leaves.slice().sort((a,b)=>String(a.from).localeCompare(String(b.from))).map(l=>{const [c,w]=leaveDays(l);return {name:l.name,type:l.type,from:l.from,to:validDate(l.to)?l.to:l.from,cal:c,work:w,notes:l.notes}}),{title:"الإجازات"+(all?"":" — "+yr),sub:stamp+" · أيام العمل تستثني الجمعة والسبت والعطل الرسمية"});
+    sheet("العطل الرسمية",[{k:"name",n:"العطلة",w:34},{k:"from",n:"من",w:14,t:"date",al:"center"},{k:"to",n:"إلى",w:14,t:"date",al:"center"},{k:"tent",n:"ملاحظة",w:18}],
+      hols.slice().sort((a,b)=>String(a.from).localeCompare(String(b.from))).map(h=>({name:h.name,from:h.from,to:validDate(h.to)?h.to:h.from,tent:h.tentative?"تاريخ تقريبي":""})),{title:"العطل الرسمية"+(all?"":" — "+yr),sub:stamp})}
+  const buf=await wb.xlsx.writeBuffer();const blob=new Blob([buf],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
+  const nm={all:"All Data",tasks:"Tasks",calendar:"Leaves "+yr,monitor:"Monitoring "+M.from+(M.to!==M.from?" to "+M.to:""),stats:"Statistics "+(sy==="all"?"All Years":sy)}[scope];
+  st.textContent="بانتظار تأكيد التحميل…";await offerFile(`LMRA CCD - ${nm} - ${now0.date}.xlsx`,blob);st.textContent="تم تجهيز الملف ✓";setTimeout(()=>st.hidden=true,2200)}
+  catch(e){console.error(e);st.textContent="تعذّر إنشاء ملف Excel";setTimeout(()=>st.hidden=true,3000)}}
 /* ---------- helpers ---------- */
 const _libs={};
 function loadLib(src){if(_libs[src])return _libs[src];_libs[src]=new Promise((res,rej)=>{const s=document.createElement("script");s.src=src;s.onload=res;s.onerror=()=>{delete _libs[src];rej(new Error("lib"))};document.head.appendChild(s)});return _libs[src]}
@@ -2772,6 +2852,7 @@ document.addEventListener("click",async e=>{
     case "mon-copy":{const t=monReport();const done=ok=>copyFlash(a,ok);try{navigator.clipboard.writeText(t).then(()=>done(true),()=>done(false))}catch(err){done(false)}break}
     case "photo-new":openTask(null,"photo");break;
     case "f-type":S.f.type=S.f.type===v?"all":v;S.tpg=0;render();break;
+    case "xl":S.pop=null;render();exportXlsx(v);break;
     case "pop":e.stopPropagation();S.pop=S.pop===v?null:v;render();break;
     case "f-st":{const a2=new Set(S.f.st||[]);a2.has(v)?a2.delete(v):a2.add(v);S.f.st=[...a2];S.tpg=0;render();break}
     case "f-st-clear":S.f.st=[];S.pop=null;render();break;
@@ -2871,7 +2952,7 @@ initChrome();routeFromHash();render();
   if(user){
     try{const c=await user.can("data.write");if(c===false)S.canWrite=false}catch(e){}
     try{S.me=await user.id()}catch(e){}
-    try{const me=await user.me();if(me&&me.name)S.meName=me.name;if(me&&me.name)$("who").textContent="مرحبًا، "+me.name.split(" ")[0]}catch(e){}
+    try{const me=await user.me();if(me&&me.name)S.meName=me.name;S.isAdmin=!!(me&&me.role==="admin");document.body.classList.toggle("is-admin",S.isAdmin);if(S.isAdmin)render();if(me&&me.name)$("who").textContent="مرحبًا، "+me.name.split(" ")[0]}catch(e){}
   }
   if(!db){banner("غير متصل بقاعدة البيانات، ولن يُحفظ أي تعديل. تحقق من الإنترنت وأعد تحميل الصفحة.",true);render();return}
   S.db=db;S.live=true;

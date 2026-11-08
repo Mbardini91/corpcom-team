@@ -101,7 +101,7 @@
   const user = {
     async can(what) { return what === "data.write" ? !!(member && member.role !== "viewer") : true; },
     async id() { return session ? session.user.id : null; },
-    async me() { return { name: (member && member.name) || (session && (session.user.email || session.user.phone)) || "" }; }
+    async me() { return { name: (member && member.name) || (session && (session.user.email || session.user.phone)) || "", role: (member && member.role) || "" }; }
   };
 
   /* ---------------- assets (Supabase Storage) ---------------- */
