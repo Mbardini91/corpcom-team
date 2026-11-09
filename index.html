@@ -1197,11 +1197,174 @@ html[dir=ltr] .g-time i{transform-origin:left center}
 .tb-tot .k{font-size:15px}
 .tb-tot[aria-pressed="true"]{border-color:var(--g-bd,var(--line));box-shadow:var(--g-sh,var(--card-shadow))}
 @media (max-width:560px){.tb-tot .ring{width:48px;height:48px;top:14px;inset-inline-end:14px}.tb-tot .ring::before{inset:5px}.tb-tot .ring em{font-size:11px}}
+/* ===== Stats bento ===== */
+.sb{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:16px;--sb-r:26px}
+.sb-t{position:relative;display:flex;flex-direction:column;min-width:0;overflow:hidden;border-radius:var(--sb-r);padding:20px;background:var(--g-bg,var(--surface));border:1px solid var(--g-bd,var(--line));-webkit-backdrop-filter:var(--g-blur);backdrop-filter:var(--g-blur);box-shadow:var(--g-sh,var(--card-shadow))}
+.sb-h{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
+.sb-h h3{font-size:13.5px;font-weight:700;color:var(--mute)}
+.sb-h h3 sup{font-size:10px;margin-inline-start:2px}
+.sb-k{font-size:12.5px;color:var(--mute);display:flex;align-items:center;gap:7px}
+.sb-empty{flex:1;display:grid;place-items:center;color:var(--mute);font-size:13px;min-height:90px}
+.sb-live{font-size:11.5px;color:var(--mute);font-variant-numeric:tabular-nums}
+.sb-pills{display:inline-flex;border:1px solid var(--g-bd,var(--line));border-radius:999px;padding:2px;gap:0}
+.sb-pills button{appearance:none;border:0;background:none;font:inherit;font-size:11.5px;font-weight:700;color:var(--mute);padding:4px 11px;border-radius:999px;cursor:pointer;transition:background .18s,color .18s}
+.sb-pills button[aria-checked="true"]{background:var(--ink);color:var(--bg)}
+.sb-pills button:hover{color:var(--ink)}.sb-pills button[aria-checked="true"]:hover{color:var(--bg)}
+.sb-chip{display:inline-flex;align-items:center;padding:4px 10px;border-radius:999px;font-size:11.5px;font-weight:800;white-space:nowrap}
+.sb-chip.up{background:color-mix(in srgb,var(--accent) 16%,transparent);color:var(--accent)}
+.sb-chip.dn{background:color-mix(in srgb,var(--stop) 14%,transparent);color:var(--stop)}
+.num{font-variant-numeric:tabular-nums}
+/* placement */
+.sb-hero{grid-column:1/3;grid-row:1}
+.sb-cards{grid-column:3;grid-row:1;padding-bottom:0}
+.sb-gauge{grid-column:4;grid-row:1}
+.sb-chart{grid-column:1/3;grid-row:2/4}
+.sb-alloc{grid-column:3;grid-row:2}
+.sb-acc-t{grid-column:4;grid-row:2/4}
+.sb-lead{grid-column:3;grid-row:3}
+.sb-stream{grid-column:1/3;grid-row:4}
+.sb-act{grid-column:3/5;grid-row:4}
+/* hero */
+.sb-hero-top{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:18px}
+.sb-greet{font-size:30px;font-weight:800;line-height:1.15;letter-spacing:-.01em}
+.sb-acc{color:var(--accent)}
+.sb-hsub{margin-top:4px;font-size:13.5px;color:var(--mute)}
+.sb-hv{text-align:end}
+.sb-big{font-size:42px;font-weight:800;line-height:1;margin-top:3px;letter-spacing:-.02em}
+.sb-big small,.sb-big .suf{font-size:18px;color:var(--mute);margin-inline-start:4px}
+.sb-dl{margin-top:6px;font-size:12.5px}.sb-dl .up{color:var(--accent);font-weight:800}.sb-dl .dn{color:var(--stop);font-weight:800}
+.sb-strip{margin-top:22px;flex:1;min-height:70px;display:flex;align-items:flex-end;gap:3px}
+.sb-strip i{flex:1;height:var(--h);border-radius:4px;background:var(--accent);opacity:.3;transition:opacity .2s}
+.sb-strip i.on{opacity:.75}
+.sb-strip:hover i{opacity:.2}.sb-strip i:hover{opacity:1}
+.sb-sx{display:flex;justify-content:space-between;margin-top:8px;font-size:11px;color:var(--mute)}
+/* cards stack */
+.sb-stack{position:relative;margin:0 -20px;transition:height .4s}
+.sb-card{appearance:none;border:0;padding:0;font:inherit;position:absolute;left:50%;width:calc(100% - 32px);max-width:300px;aspect-ratio:85.6/54;border-radius:13px;text-align:start;cursor:pointer;color:#fff;transform:translateX(-50%) scale(var(--s,1));transform-origin:top center;box-shadow:0 -10px 28px -14px rgba(0,0,0,.6);transition:top 650ms cubic-bezier(.34,1.35,.64,1),transform 650ms cubic-bezier(.34,1.35,.64,1)}
+.sb-card[data-front="1"]{cursor:default}
+.sb-cf{position:absolute;inset:0;border-radius:inherit;overflow:hidden;background:linear-gradient(180deg,rgba(255,255,255,.28),transparent 34%),radial-gradient(110% 90% at 100% 0%,var(--c2),transparent 60%),linear-gradient(135deg,var(--c),color-mix(in srgb,var(--c2) 70%,#0b1424));box-shadow:inset 0 1px 0 rgba(255,255,255,.45),inset 0 0 0 1px rgba(255,255,255,.14)}
+.sb-holo{position:absolute;inset:0;background-image:linear-gradient(115deg,transparent 18%,rgba(255,170,210,.5) 32%,rgba(160,210,255,.5) 42%,rgba(190,255,170,.45) 52%,rgba(255,220,150,.4) 62%,transparent 78%);background-size:260% 100%;background-position:var(--gx,var(--g,30%)) 0;mix-blend-mode:soft-light;transition:background-position .7s cubic-bezier(.22,1,.36,1)}
+.sb-ct{position:relative;display:flex;justify-content:space-between;gap:10px;padding:14px 16px 0;font-size:12px;font-weight:800}
+.sb-cl{background:rgba(255,255,255,.22);border-radius:6px;padding:2px 8px}
+.sb-cn{position:absolute;inset-inline:16px;top:44px;font-size:14.5px;font-weight:700;line-height:1.35;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;text-shadow:0 1px 2px rgba(0,0,0,.25)}
+.sb-frost{position:relative;z-index:10;margin:0 -20px;padding:14px 20px 16px;min-height:78px;background:color-mix(in srgb,var(--surface) 72%,transparent);-webkit-backdrop-filter:blur(18px) saturate(1.3);backdrop-filter:blur(18px) saturate(1.3);border-top:1px solid var(--g-line,var(--line))}
+.sb-frt{font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sb-frs{margin-top:3px;font-size:11.5px;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* gauge */
+.sb-gw{flex:1;display:grid;justify-items:center;align-content:center;gap:4px}
+.sb-g0{stroke:var(--g-line,var(--line))}
+.sb-g1{stroke:var(--accent);stroke-dashoffset:var(--off);transition:stroke-dashoffset .9s cubic-bezier(.22,1,.36,1)}
+.sb-nd{transform:rotate(var(--a));transform-origin:75px 78px;transition:transform .9s cubic-bezier(.22,1,.36,1)}
+.sb-nd line{stroke:var(--ink)}.sb-gw circle{fill:var(--ink)}
+.sb-gv{font-size:26px;font-weight:800;line-height:1}.sb-gv small{font-size:13px;color:var(--mute);font-weight:600}
+.sb-gs{font-size:11.5px;color:var(--mute);text-align:center}
+/* chart */
+.sb-cv{display:flex;flex-wrap:wrap;align-items:flex-end;gap:8px 30px}
+.sb-cvv{font-size:24px;font-weight:800;margin-top:3px}
+.sb-cv .sb-chip{margin-inline-start:auto}
+.sb-sw{display:inline-block;width:16px;height:3px;border-radius:3px;background:var(--accent)}.sb-sw.d{height:0;background:none;border-top:2px dashed var(--mute)}
+.sb-plot{position:relative;flex:1;min-height:220px;margin-top:16px;touch-action:pan-y;cursor:crosshair}
+.sb-plot svg{position:absolute;inset:0;width:100%;height:100%}
+.sb-gl{stroke:var(--g-line,var(--line));stroke-dasharray:1 5}
+.sb-st0{stop-color:var(--accent);stop-opacity:.28}.sb-st1{stop-color:var(--accent);stop-opacity:0}
+.sb-lb{fill:none;stroke:var(--mute);stroke-width:1.5;stroke-dasharray:4 5;opacity:.8}
+.sb-la{fill:none;stroke:var(--accent);stroke-width:2.6;stroke-linecap:round;stroke-dasharray:1}
+.sb-x{position:absolute;top:0;bottom:0;width:1px;background:var(--line-2);transform:translateX(-50%);opacity:0;pointer-events:none}
+.sb-da,.sb-db{position:absolute;width:14px;height:14px;border-radius:50%;background:var(--accent);border:3px solid var(--surface);transform:translate(-50%,-50%);pointer-events:none;transition:left .08s,top .08s}
+.sb-db{width:10px;height:10px;border-width:2px;background:var(--mute);opacity:0}
+.sb-xl{display:flex;justify-content:space-between;margin-top:10px;font-size:11px;color:var(--mute)}
+/* allocation */
+.sb-av{font-size:24px;font-weight:800}.sb-av small{font-size:13px;color:var(--mute);font-weight:600}
+.sb-seg{display:flex;gap:4px;height:34px;margin-top:14px}
+.sb-seg span{flex-basis:var(--w);flex-shrink:0;min-width:6px;border-radius:8px;background:var(--c);transition:opacity .2s}
+.sb-lg{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:8px 14px;margin-top:14px;padding:0}
+.sb-lg li{display:flex;justify-content:space-between;gap:6px;font-size:12px;transition:opacity .2s;min-width:0}
+.sb-lg li span{display:flex;align-items:center;gap:7px;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sb-lg li i{width:8px;height:8px;border-radius:50%;flex:none}
+.sb-lg b{font-weight:600;color:var(--mute)}
+.sb-alloc .dim{opacity:.3}
+/* accent tile */
+.sb-acc-t{background:var(--accent);color:var(--accent-ink);border-color:transparent;-webkit-backdrop-filter:none;backdrop-filter:none}
+.sb-acc-t .sb-h h3{color:inherit;opacity:.78}
+.sb-badge{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:800;padding:3px 9px;border-radius:999px;background:color-mix(in srgb,var(--accent-ink) 14%,transparent)}
+.sb-badge i{width:6px;height:6px;border-radius:50%;background:currentColor;animation:sbpulse 1.6s ease-in-out infinite}
+@keyframes sbpulse{50%{opacity:.25}}
+.sb-hugev{font-size:58px;font-weight:800;line-height:1;letter-spacing:-.03em;margin-top:6px}.sb-hugev span:last-child{font-size:24px;margin-inline-start:2px}
+.sb-acs{margin-top:6px;font-size:12.5px;font-weight:600;opacity:.75}
+.sb-pbox{margin-top:18px;padding:12px;border-radius:16px;background:color-mix(in srgb,var(--accent-ink) 10%,transparent)}
+.sb-pr{display:flex;justify-content:space-between;font-size:12px;font-weight:700}.sb-pr span:first-child{opacity:.75}
+.sb-pt{margin-top:8px;height:6px;border-radius:6px;overflow:hidden;background:color-mix(in srgb,var(--accent-ink) 16%,transparent)}
+.sb-pt b{display:block;height:100%;width:var(--p);border-radius:6px;background:var(--accent-ink)}
+.sb-dl{margin-top:12px;display:grid;gap:6px;font-size:12.5px}
+.sb-dl div{display:flex;justify-content:space-between;gap:8px}.sb-dl dt{opacity:.75}.sb-dl dd{font-weight:800}
+.sb-afoot{margin-top:auto;padding-top:18px}
+.sb-mini{display:flex;align-items:flex-end;gap:4px;height:46px}
+.sb-mini span{flex:1;height:var(--h);border-radius:4px;background:var(--accent-ink);opacity:var(--o)}
+.sb-mcap{margin-top:6px;font-size:10.5px;opacity:.65}
+.sb-cta{display:block;width:100%;margin-top:14px;padding:12px;border-radius:16px;border:0;font:inherit;font-size:14px;font-weight:800;text-align:center;text-decoration:none;cursor:pointer;background:var(--accent-ink);color:var(--accent);transition:transform .16s}
+.sb-cta:active{transform:scale(.98)}
+/* leader */
+.sb-ln{font-size:20px;font-weight:800;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.sb-ls{font-size:12px;color:var(--mute);margin-top:3px}
+.sb-rng{position:relative;height:40px;margin-top:18px}
+.sb-rl{position:absolute;inset-inline:0;top:50%;height:2px;transform:translateY(-50%);background:var(--g-line,var(--line));border-radius:2px}
+.sb-rb{position:absolute;top:0;bottom:0;inset-inline-start:0;width:var(--w);border-radius:10px;background:repeating-linear-gradient(135deg,color-mix(in srgb,var(--accent) 26%,transparent) 0 6px,color-mix(in srgb,var(--accent) 12%,transparent) 6px 12px);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--accent) 55%,transparent)}
+.sb-rm{position:absolute;top:50%;inset-inline-start:var(--x);width:3px;height:54px;border-radius:3px;background:var(--ink);transform:translate(-50%,-50%)}
+html[dir=rtl] .sb-rm{transform:translate(50%,-50%)}
+.sb-rx{display:flex;justify-content:space-between;margin-top:8px;font-size:11px;color:var(--mute)}
+/* stream */
+.sb-sh{display:flex;justify-content:space-between;align-items:flex-end;gap:12px}
+.sb-sv{font-size:24px;font-weight:800}.sb-ss{font-size:11.5px;color:var(--mute)}
+.sb-blocks{flex:1;min-height:64px;display:flex;align-items:flex-end;gap:3px;margin-top:14px}
+.sb-blocks i{flex:1;height:var(--h);border-radius:3px;background:var(--mute);opacity:var(--o);transform-origin:bottom}
+.sb-blocks i.last{background:var(--accent);opacity:1}
+.sb-blocks:hover i{opacity:.12}.sb-blocks i:hover{opacity:1}
+.sb-st3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px;padding-top:12px;border-top:1px solid var(--g-line,var(--line))}
+.sb-st3 dt{font-size:11px;color:var(--mute)}.sb-st3 dd{font-size:14px;font-weight:800;margin-top:2px}
+/* activity */
+.sb-al{list-style:none;margin:-4px -8px;padding:0}
+.sb-al li{display:flex;align-items:center;gap:12px;padding:8px;border-radius:16px;transition:background .18s}
+.sb-al li:hover{background:color-mix(in srgb,var(--ink) 5%,transparent)}
+.sb-ai{display:grid;place-items:center;width:38px;height:38px;flex:none;border-radius:12px;background:color-mix(in srgb,var(--c) 16%,transparent);color:var(--c)}
+.sb-ai .ic{width:17px;height:17px}
+.sb-at{flex:1;min-width:0}.sb-at p{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:13.5px;font-weight:600}.sb-at p.muted{font-size:11.5px;font-weight:400;margin-top:2px}
+.sb-ar{text-align:end;flex:none;max-width:40%}.sb-ar p.num{font-size:13px;font-weight:700}
+.sb-as{display:flex;align-items:center;justify-content:flex-end;gap:4px;font-size:11px;font-weight:800;margin-top:2px}
+.sb-spin{width:11px;height:11px;animation:sbspin 1s linear infinite}
+@keyframes sbspin{to{transform:rotate(360deg)}}
+/* entrance (only when the section/year changes) */
+.sb.sb-in .sb-strip i{animation:sbgrow .9s cubic-bezier(.22,1,.36,1) both;animation-delay:var(--d)}
+.sb.sb-in .sb-blocks i,.sb.sb-in .sb-mini span{animation:sbgrow .8s cubic-bezier(.22,1,.36,1) both;animation-delay:var(--d,0ms);transform-origin:bottom}
+@keyframes sbgrow{from{transform:scaleY(.06)}}
+.sb-strip i{transform-origin:bottom}
+.sb.sb-in .sb-la{animation:sbdraw 1.3s cubic-bezier(.22,1,.36,1) both}
+@keyframes sbdraw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+.sb.sb-in .sb-area{animation:sbfade .9s ease .4s both}@keyframes sbfade{from{opacity:0}}
+.sb.sb-in .sb-seg span{animation:sbseg 1s cubic-bezier(.22,1,.36,1) both;animation-delay:var(--d)}
+@keyframes sbseg{from{flex-basis:20%}}
+.sb.sb-in .sb-g1{animation:sbgauge 1.1s cubic-bezier(.22,1,.36,1) both}@keyframes sbgauge{from{stroke-dashoffset:var(--len)}}
+.sb.sb-in .sb-nd{animation:sbneedle 1.1s cubic-bezier(.22,1,.36,1) both}@keyframes sbneedle{from{transform:rotate(-90deg)}}
+.sb.sb-in .sb-al li{animation:sbrise .5s cubic-bezier(.22,1,.36,1) both;animation-delay:var(--d)}@keyframes sbrise{from{opacity:0;transform:translateY(6px)}}
+.sb.sb-in .sb-card{animation:sbcard .6s ease both}@keyframes sbcard{from{opacity:0}}
+.sb.sb-in .sb-pt b,.sb.sb-in .sb-rb{animation:sbwide 1s cubic-bezier(.22,1,.36,1) .2s both}@keyframes sbwide{from{width:0}}
+.sb-t{transition:border-color .2s}
+/* the rest of the panels look like tiles too */
+#view-stats .st-grid{gap:12px}
+#view-stats .panel{border-radius:var(--sb-r,26px);padding:20px;background:var(--g-bg,var(--surface));border:1px solid var(--g-bd,var(--line));-webkit-backdrop-filter:var(--g-blur);backdrop-filter:var(--g-blur);box-shadow:var(--g-sh,var(--card-shadow))}
+#view-stats .panel h3{font-size:13.5px;font-weight:700;color:var(--mute)}
+#view-stats .hbars:hover .hb{opacity:.45;transition:opacity .2s}#view-stats .hbars .hb:hover{opacity:1}
+#view-stats .chart .bar{transition:opacity .2s}#view-stats .chart .cols:hover .bar{opacity:.35}#view-stats .chart .mcol:hover .bar{opacity:1}
+/* responsive */
+@media (max-width:1100px){.sb{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .sb-hero{grid-column:1/-1;grid-row:auto}.sb-cards,.sb-gauge,.sb-alloc,.sb-lead{grid-column:auto;grid-row:auto}
+  .sb-chart,.sb-stream,.sb-act{grid-column:1/-1;grid-row:auto}.sb-acc-t{grid-column:auto;grid-row:span 2}}
+@media (max-width:640px){.sb{grid-template-columns:1fr}.sb-t{grid-column:1/-1!important;grid-row:auto!important}.sb-greet{font-size:24px}.sb-big{font-size:34px}.sb-hv{text-align:start}.sb-hugev{font-size:48px}.sb-plot{min-height:180px}}
+@media (prefers-reduced-motion:reduce){.sb *{animation:none!important;transition:none!important}}
 </style>
 <script>
 /* ---------- English translation layer ---------- */
 const I18N_EXACT={"من":"of","إلى":"to","الكل":"All","عام":"Year","حذف":"Delete","تعديل":"Edit","حفظ":"Save","إلغاء":"Cancel","إغلاق":"Close","بحث":"Search","ابحث":"Search","افتح":"Open","خبر":"stories","العدد":"Count","النسبة":"Share","الاسم":"Name","تأكيد":"Confirm","دخول":"Sign in","تغيير":"Change","عضو":"Member","مسؤول":"Admin","مشاهد":"Viewer","الرقم":"Number","ع":"AR","عرض":"View","فقط":"only","حتى":"until","صدر":"Published","رُصد:":"Covered:","مرصود":"monitored","منشور":"post","مهمة":"task","مهام":"tasks","صحف":"press","سوشيال":"social","تغطية":"coverage","يوم":"day","أيام":"days"};
-const I18N_DICT={"شبكة الهيئة فقط":"LMRA network only","داخل شبكة الهيئة فقط":"LMRA network only","عرض كل المهام":"Show all tasks","كل الأنواع":"All types","لا مهام حالية":"No current tasks","روابط سريعة":"Quick links","موقع الهيئة":"LMRA website","الشبكة الداخلية":"Intranet","من داخل شبكة الهيئة فقط":"LMRA network only","مجلة أضواء":"Adhwa magazine","النسخة الرقمية":"Digital edition","مكتبة الصور":"Photo library","مكتبة الملفات":"File library","SharePoint · إدارة الاتصال":"SharePoint · Communications","نتيجتك اليوم:":"Your score today:","أحسنت! سجّلت":"Well done! You scored","تحدي اليوم:":"Today's challenge:","عُد غدًا لتحدٍّ جديد وحافظ على سلسلتك 🔥":"Come back tomorrow and keep your streak 🔥","الترتيب —":"Ranking —","دقة":"Accuracy","محاولة":"attempts","من 3":"of 3","نقطة اليوم":"pts today","تحدي الصباح":"Morning Challenge","أسئلة اليوم":"Daily Quiz","رتّب العنوان":"Unscramble the Headline","اكتشف الخطأ":"Spot the Errors","جاهز لتحدي اليوم؟":"Ready for today's challenge?","محاولة واحدة فقط في اليوم":"One attempt per day","لاحقًا":"Later","ابدأ التحدي":"Start challenge","يوم":"day","أيام":"days","متتالية 🔥":"in a row 🔥","نقطة":"pts","السؤال":"Question","رتّب كلمات العنوان":"Put the headline words in order","اضغط الكلمات بالترتيب. اضغط كلمة في السطر الأعلى لإرجاعها.":"Tap the words in order. Tap a word in the top row to put it back.","مسح":"Clear","تحقق":"Check","إجابة صحيحة":"Correct!","انتهى الوقت · العنوان الصحيح":"Time's up · the correct headline","اكتشف الأخطاء الثلاثة":"Find the three errors","اضغط على الكلمة الخاطئة. الضغط الخاطئ يخصم 20 نقطة.":"Tap each wrong word. A wrong tap costs 20 points.","نتيجتك اليوم":"Your score today","صحيحة":"correct","ثانية":"sec","الترتيب اليوم":"Today's rank","لوحة اليوم":"Today's board","التحدي القادم غدًا صباحًا":"Next challenge tomorrow morning","لوحة الصدارة":"Leaderboard","لا توجد نتائج بعد. كن أول من يلعب!":"No scores yet. Be the first to play!","الموظف":"Employee","النقاط":"Points","مرات اللعب":"Played","الدقة":"Accuracy","هذا الأسبوع":"This week","هذا الشهر":"This month","منذ البداية":"All time","للمشرفين":"Admins only","شاركوا اليوم":"played today","تصدير النتائج Excel":"Export results to Excel","لعبت تحدي اليوم ✓":"You've played today ✓","العب تحدي اليوم":"Play today's challenge","أبطال الأسبوع":"This week's champions","لا توجد نتائج بعد هذا الأسبوع":"No scores yet this week","3 أسئلة عن الهيئة والبحرين: تاريخها وفنها ورياضتها ومعالمها. لكل سؤال 30 ثانية.":"3 questions about LMRA and Bahrain: history, art, sport and landmarks. 30 seconds each.","عنوان خبر حقيقي نشرته الهيئة، كلماته مبعثرة. رتّبها بالضغط على الكلمات بالترتيب الصحيح خلال 90 ثانية.":"A real LMRA news headline with its words shuffled. Tap them in the right order within 90 seconds.","فقرة خبر فيها 3 أخطاء: إملائي، ورقم أو تاريخ، ومعلومة. اضغط على الكلمات الخاطئة خلال 90 ثانية.":"A news paragraph with 3 errors: a spelling mistake, a wrong number or date, and a wrong fact. Tap the wrong words within 90 seconds.",
+const I18N_DICT={"صباح الخير":"Good morning","مساء الخير":"Good evening","آخر 30 يومًا":"last 30 days","أسبوع":"Week","شهر":"Month","سنة":"Year","30 يوم":"30 days","متصدّر":"Leader","مباشر":"Live","حسب النوع":"By type","حسب الحالة":"By status","نسبة الإنجاز":"Completion rate","المهام المستلمة":"Tasks received","أحدث المهام":"Latest tasks","المهام الجارية":"Current tasks","آخر التحديثات":"Latest updates","الرصد اليومي":"Daily monitoring","تدفّق المهام":"Task flow","أكثر جهة طالبة":"Top requesting dept","الأكثر إنجازًا في الفريق":"Top performer","سرعة تسليم التصوير":"Photo delivery speed","متوسط مدة الإنجاز":"Avg. completion time","سرعة التسليم":"Delivery speed","أحدث التغطيات":"Latest coverage","استخدام الصور":"Photo usage","تسليم في نفس اليوم":"Same-day delivery","أكثر جهة طالبة للتصوير":"Top requester","تدفّق التغطيات":"Coverage flow","آخر التغطيات":"Latest coverage","الأخبار الصادرة":"Published news","أحدث الأخبار":"Latest news","قنوات النشر لكل خبر":"Channels per story","الأخبار المنشورة":"Published news","حسب قناة النشر":"By channel","نسبة الأخبار المرصودة":"Coverage rate","أكثر وسيلة غطّت أخبارنا":"Top covering outlet","تدفّق الأخبار":"News flow","تتبّع التغطية":"Coverage tracking","المرصود":"Monitored","أبرز المرصود":"Top monitored","الأخبار عالية المستوى":"High-level news","حسب الموضوع":"By topic","صادرة عن الهيئة":"Issued by LMRA","أكثر وسيلة نشرًا":"Top outlet","آخر المرصود":"Latest monitored","أبطال اللعبة":"Game champions","متوسط النقاط":"Average score","من أين يلعبون؟":"Where they play","أعلى نتيجة":"High score","الأكثر لعبًا":"Most active","نشاط اللعب":"Play activity","آخر الجولات":"Latest runs","الأكثر قراءة":"Most read","متوسط وقت القراءة":"Avg. reading time","الأجهزة":"Devices","أكملوا العدد":"Finished the issue","أكثر مصدر للزيارات":"Top traffic source","نشاط القرّاء":"Reader activity","من وين وصلوا؟":"Where they came from","تصدير التقرير":"Export report","عرض المهام":"View tasks","فتح الرصد":"Open monitoring","فتح اللعبة":"Open game","فتح المجلة":"Open magazine","المتوسط اليومي":"Daily average","أعلى يوم":"Best day","أيام نشطة":"Active days","متوسط البقية":"Others' avg.","لا توجد عناصر بعد":"No items yet","لا يوجد نشاط بعد":"No activity yet","رُصد":"Covered","قيد المتابعة":"Tracking","لم يُرصد":"Not covered","سُلّمت":"Delivered","بانتظار التسليم":"Awaiting delivery","الوسائل التي غطّت أخبارنا":"Outlets covering our news","حالة الرصد":"Coverage status","الأخبار المنشورة حسب الشهر":"Published news by month","شبكة الهيئة فقط":"LMRA network only","داخل شبكة الهيئة فقط":"LMRA network only","عرض كل المهام":"Show all tasks","كل الأنواع":"All types","لا مهام حالية":"No current tasks","روابط سريعة":"Quick links","موقع الهيئة":"LMRA website","الشبكة الداخلية":"Intranet","من داخل شبكة الهيئة فقط":"LMRA network only","مجلة أضواء":"Adhwa magazine","النسخة الرقمية":"Digital edition","مكتبة الصور":"Photo library","مكتبة الملفات":"File library","SharePoint · إدارة الاتصال":"SharePoint · Communications","نتيجتك اليوم:":"Your score today:","أحسنت! سجّلت":"Well done! You scored","تحدي اليوم:":"Today's challenge:","عُد غدًا لتحدٍّ جديد وحافظ على سلسلتك 🔥":"Come back tomorrow and keep your streak 🔥","الترتيب —":"Ranking —","دقة":"Accuracy","محاولة":"attempts","من 3":"of 3","نقطة اليوم":"pts today","تحدي الصباح":"Morning Challenge","أسئلة اليوم":"Daily Quiz","رتّب العنوان":"Unscramble the Headline","اكتشف الخطأ":"Spot the Errors","جاهز لتحدي اليوم؟":"Ready for today's challenge?","محاولة واحدة فقط في اليوم":"One attempt per day","لاحقًا":"Later","ابدأ التحدي":"Start challenge","يوم":"day","أيام":"days","متتالية 🔥":"in a row 🔥","نقطة":"pts","السؤال":"Question","رتّب كلمات العنوان":"Put the headline words in order","اضغط الكلمات بالترتيب. اضغط كلمة في السطر الأعلى لإرجاعها.":"Tap the words in order. Tap a word in the top row to put it back.","مسح":"Clear","تحقق":"Check","إجابة صحيحة":"Correct!","انتهى الوقت · العنوان الصحيح":"Time's up · the correct headline","اكتشف الأخطاء الثلاثة":"Find the three errors","اضغط على الكلمة الخاطئة. الضغط الخاطئ يخصم 20 نقطة.":"Tap each wrong word. A wrong tap costs 20 points.","نتيجتك اليوم":"Your score today","صحيحة":"correct","ثانية":"sec","الترتيب اليوم":"Today's rank","لوحة اليوم":"Today's board","التحدي القادم غدًا صباحًا":"Next challenge tomorrow morning","لوحة الصدارة":"Leaderboard","لا توجد نتائج بعد. كن أول من يلعب!":"No scores yet. Be the first to play!","الموظف":"Employee","النقاط":"Points","مرات اللعب":"Played","الدقة":"Accuracy","هذا الأسبوع":"This week","هذا الشهر":"This month","منذ البداية":"All time","للمشرفين":"Admins only","شاركوا اليوم":"played today","تصدير النتائج Excel":"Export results to Excel","لعبت تحدي اليوم ✓":"You've played today ✓","العب تحدي اليوم":"Play today's challenge","أبطال الأسبوع":"This week's champions","لا توجد نتائج بعد هذا الأسبوع":"No scores yet this week","3 أسئلة عن الهيئة والبحرين: تاريخها وفنها ورياضتها ومعالمها. لكل سؤال 30 ثانية.":"3 questions about LMRA and Bahrain: history, art, sport and landmarks. 30 seconds each.","عنوان خبر حقيقي نشرته الهيئة، كلماته مبعثرة. رتّبها بالضغط على الكلمات بالترتيب الصحيح خلال 90 ثانية.":"A real LMRA news headline with its words shuffled. Tap them in the right order within 90 seconds.","فقرة خبر فيها 3 أخطاء: إملائي، ورقم أو تاريخ، ومعلومة. اضغط على الكلمات الخاطئة خلال 90 ثانية.":"A news paragraph with 3 errors: a spelling mistake, a wrong number or date, and a wrong fact. Tap the wrong words within 90 seconds.",
 /* masthead & nav */
 "هيئة تنظيم سوق العمل":"Labour Market Regulatory Authority","منصة فريق إدارة الاتصال":"Communications Team Platform","فريق إدارة الاتصال":"Communications Team","إدارة الاتصال":"Communications Department",
 "الرئيسية":"Home","التقويم السنوي":"Annual Calendar","التقويم":"Calendar","المهام":"Tasks","الإحصائيات":"Statistics","الرصد الإعلامي":"Media Monitoring","الرصد":"Monitoring",
@@ -1926,13 +2089,23 @@ function vgStats({kpi,hbars,monthly,inY,ylabel,pct}){
   const vals=runs.reduce((a,r)=>a+r.values_n,0),combos=runs.reduce((a,r)=>a+r.combos,0);
   const mins=Math.round(runs.reduce((a,r)=>a+r.duration_s,0)/60);
   const today=bhDate(Date.now()),todayRuns=S.vg.runs.filter(r=>r.d===today).length;
-  let h=links+`<div class="kpis k5">`
-    +kpi("الجولات",runs.length,`<span class="num">${todayRuns}</span> اليوم · ${esc(ylabel)}`)
-    +kpi("المشاركون",ids.size,`متوسط <span class="num">${(runs.length/ids.size).toFixed(1)}</span> جولة لكل لاعب`)
-    +kpi("أعلى نتيجة",best,champ?esc(champ.name):"")
-    +kpi("متوسط النقاط",avg,"لكل جولة")
-    +kpi("القيم الملتقطة",vals,`<span class="num">${combos}</span> اكتمال للقيم الخمس`)
-    +`</div><div class="st-grid">`;
+  const SRCN0={magazine:"من مجلة أضواء",app:"من النسخة المحمّلة",direct:"من الرابط المباشر"};
+  const vB=sbBase(S.vg.runs.map(r=>r.d));const pn=new Map(S.vg.players.map(p=>[p.player_id,p]));
+  const gs=sbGaugeScope(S.vg.runs,r=>r.d).filter(r=>S.sbG==="d30"||inY(r.d));const gav=gs.length?gs.reduce((a,r)=>a+r.score,0)/gs.length:0;
+  const tp=players.slice().sort((a,b)=>b.best_score-a.best_score).slice(0,3),MED=[["#c9962f","#f3d58a"],["#7d8794","#e3e8ee"],["#a8693f","#efc49f"]];
+  const pl=new Map();runs.forEach(r=>pl.set(r.player_id,(pl.get(r.player_id)||0)+1));
+  const cfg={key:"game|"+S.sy+"|"+(S.sbR||"y")+"|"+(S.sbG||"yr"),
+    hero:{label:"الجولات",value:runs.length,unit:"جولة",sub:`نتائج لعبة «رحلة القيم» في ${esc(ylabel)} · تحديث مباشر.`,days:vB.days,prev30:vB.prev30},
+    cards:{title:"أبطال اللعبة",items:tp.map((p,i)=>({t:p.name||"لاعب",tag:"#"+(i+1),meta:sbN(p.best_score),sub:`${sbN(p.plays)} جولة · أفضل نتيجة ${sbN(p.best_score)} نقطة`,c:MED[i][0],c2:MED[i][1]}))},
+    gauge:{title:"متوسط النقاط",v:gav,max:Math.max(1,best),unit:"نقطة",sub:`من أعلى نتيجة ${sbN(best)} · ${sbN(gs.length)} جولة`,pills:SB_GP,sel:S.sbG||"yr"},
+    chart:{title:"الجولات",unit:"جولة",sel:S.sbR||"y",series:vB.series},
+    alloc:{title:"من أين يلعبون؟",unit:"جولة",rows:Object.keys(SRCN0).map((k,i)=>[SRCN0[k],runs.filter(r=>r.source===k).length,SB_PAL[i]])},
+    accent:{title:"أعلى نتيجة",badge:"مباشر",v:best,suf:"",sub:champ?`حققها ${esc(champ.name)}`:"",prog:{label:"جولات اليوم",val:sbN(todayRuns),pct:Math.min(100,todayRuns*10)},
+      rows:[["المشاركون",sbN(ids.size)],["جولة لكل لاعب",(runs.length/ids.size).toFixed(1)],["اكتمال القيم الخمس",sbN(combos)]],mini:sbWeekly(vB.m,10),miniCap:"الجولات · آخر 10 أسابيع",cta:{href:VG_URL,label:"فتح اللعبة"}},
+    leader:sbLeader("الأكثر لعبًا",[...pl.entries()].sort((a,b)=>b[1]-a[1]).map(([id,n])=>[(pn.get(id)||{}).name||"لاعب",n]),"جولة"),
+    stream:sbStream("نشاط اللعب","جولة",vB.d42,`<span class="num">${sbN(mins)}</span> دقيقة لعب`),
+    activity:{title:"آخر الجولات",items:S.vg.runs.slice().sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at))).slice(0,4).map(r=>({ic:"chart",c:"var(--t-video)",t:(pn.get(r.player_id)||{}).name||"لاعب",d:`المرحلة ${Math.min(4,r.stage||1)} · ${sbAgo(r.d)}`,r:sbN(r.score)+" نقطة",st:SRCN0[r.source]||"",sc:"var(--mute)"}))}};
+  let h=links+sbBento(cfg)+`<div class="st-grid">`;
   h+=monthly("الجولات حسب الشهر","بحسب تاريخ اللعب",S.vg.runs,r=>r.d,"جولة");
   // last 14 days
   const days=[];for(let i=13;i>=0;i--){const d=bhDate(Date.now()-i*864e5);days.push([d.slice(5).replace("-","/"),S.vg.runs.filter(r=>r.d===d).length])}
@@ -1978,19 +2151,20 @@ function awStats({kpi,hbars,monthly,inY,ylabel,pct}){
   const head=links+isel;
   if(!T.sessions&&!T.likes)return head+`<div class="empty-note">لا توجد زيارات ${S.sy==="all"?"بعد":"في "+esc(ylabel)}. أول ما يفتح أحد المجلة تظهر الأرقام هنا مباشرة.</div>`;
   const ses=T.sessions||0;
-  let h=head+`<div class="kpis k5">`
-    +kpi("الزيارات",ses,`<span class="num">${T.today||0}</span> اليوم · ${esc(ylabel)}`)
-    +kpi("القرّاء",T.visitors||0,`<span class="num">${pct(T.returning||0,T.visitors||0)}</span>% رجعوا للمجلة أكثر من مرة`)
-    +kpi("تصفّح الصفحات",T.page_views||0,`متوسط <span class="num">${T.avg_pages||0}</span> صفحة في الزيارة`)
-    +kpi("متوسط وقت القراءة",awDur(T.avg_secs||0),`الوسيط ${awDur(T.median_secs||0)} · المجموع <span class="num">${T.total_mins||0}</span> دقيقة`)
-    +kpi("أكملوا العدد",pct(T.completed||0,ses)+"<small>%</small>",`<span class="num">${T.completed||0}</span> زيارة وصلت للصفحة الأخيرة`)
-    +`</div><div class="kpis aw5">`
-    +kpi("الإعجابات",T.likes||0,`من <span class="num">${T.likers||0}</span> قارئ`)
-    +kpi("مرات المشاركة",T.shares||0,`روابط مواضيع أُرسلت`)
-    +kpi("التقاط الصفحات",T.captures||0,`<span class="num">${T.capture_users||0}</span> قارئ · <span class="num">${T.capture_out||0}</span> حفظ أو مشاركة`)
-    +kpi("تحميل المجلة PDF",T.downloads||0,`<span class="num">${pct(T.downloads||0,ses)}</span>% من الزيارات`)
-    +kpi("الاستماع الصوتي",T.listeners||0,`<span class="num">${T.listen_mins||0}</span> دقيقة استماع`)
-    +`</div><div class="st-grid">`;
+  const aDays=(d.days||[]).map(x=>{const r=[];for(let i=0;i<x.n;i++)r.push(x.d);return r}).flat();const aB=sbBase(aDays);
+  const atp=(d.topics||[]).filter(t=>t.reads||t.views).sort((a,b)=>(b.reads||0)-(a.reads||0)).slice(0,3),ACOL=[["#17325a","#9cb8e3"],["#2b8577","#a6e0d4"],["#b7832a","#f0cf8a"]];
+  const cfg={key:"adwaa|"+S.sy+"|"+(S.ai||"all")+"|"+(S.sbR||"y"),
+    hero:{label:"الزيارات",value:ses,unit:"زيارة",sub:`قرّاء مجلة أضواء في ${esc(ylabel)} · تحديث مباشر.`,days:aB.days,prev30:aB.prev30},
+    cards:{title:"الأكثر قراءة",items:atp.map((t,i)=>({t:t.t||"",tag:"#"+(i+1),meta:sbN(t.reads||t.views)+" قراءة",sub:`${sbN(t.views||0)} مشاهدة · ${sbN(t.likes||0)} إعجاب · ${sbN(t.shares||0)} مشاركة`,c:ACOL[i][0],c2:ACOL[i][1]}))},
+    gauge:{title:"متوسط وقت القراءة",v:(T.avg_secs||0)/60,max:10,unit:"دقيقة",dec:1,sub:`الوسيط ${awDurT(T.median_secs||0)} · المجموع ${sbN(T.total_mins||0)} دقيقة`},
+    chart:{title:"الزيارات",unit:"زيارة",sel:S.sbR||"y",series:aB.series},
+    alloc:{title:"الأجهزة",unit:"زيارة",rows:(d.devices||[]).map((x,i)=>[AW_DEV[x.k]||x.k,x.n,SB_PAL[i]])},
+    accent:{title:"أكملوا العدد",badge:"مباشر",v:pct(T.completed||0,ses),suf:"%",sub:`${sbN(T.completed||0)} زيارة وصلت للصفحة الأخيرة`,prog:{label:"رجعوا للمجلة أكثر من مرة",val:pct(T.returning||0,T.visitors||0)+"%",pct:pct(T.returning||0,T.visitors||0)},
+      rows:[["الإعجابات",sbN(T.likes||0)],["مرات المشاركة",sbN(T.shares||0)],["تحميل PDF",sbN(T.downloads||0)]],mini:sbWeekly(aB.m,10),miniCap:"الزيارات · آخر 10 أسابيع",cta:{href:AW_URL,label:"فتح المجلة"}},
+    leader:sbLeader("أكثر مصدر للزيارات",(d.sources||[]).map(x=>[AW_SRC[x.k]||x.k,x.n]),"زيارة"),
+    stream:sbStream("نشاط القرّاء","زيارة",aB.d42,`<span class="num">${sbN(T.today||0)}</span> اليوم`),
+    activity:{title:"من وين وصلوا؟",items:(d.sources||[]).slice(0,4).map((x,i)=>({ic:"ext",c:SB_PAL[i],t:AW_SRC[x.k]||x.k,d:"مصدر الزيارة",r:sbN(x.n)+" زيارة",st:pct(x.n,ses)+"%",sc:"var(--mute)"}))}};
+  let h=head+sbBento(cfg)+`<div class="st-grid">`;
   // أكثر المواضيع قراءة
   const tps=(d.topics||[]).filter(t=>t.views||t.likes||t.shares||t.captures);const multi=S.ai==="all"&&issues.length>1;
   if(tps.length){const mx=Math.max(1,...tps.map(t=>t.reads||t.views));
@@ -2015,6 +2189,209 @@ function awStats({kpi,hbars,monthly,inY,ylabel,pct}){
   h+=`<div class="panel"><h3>تفاعلات أخرى</h3><div class="cap">${esc(ylabel)}</div><div class="kpis" style="grid-template-columns:repeat(2,minmax(0,1fr));margin:0"><div class="kpi"><span class="k">فتح لعبة «رحلة القيم» من المجلة</span><span class="v num">${T.games||0}</span></div><div class="kpi"><span class="k">ضغط على روابط خارجية</span><span class="v num">${T.links||0}</span></div><div class="kpi"><span class="k">ثبّتوا المجلة على الجهاز</span><span class="v num">${T.installs||0}</span></div><div class="kpi"><span class="k">زيارات اكتفت بالغلاف</span><span class="v num">${pct(T.bounced||0,ses)}<small>%</small></span></div></div></div>`;
   return h+`</div>`;
 }
+/* ---------- Stats bento (sb): hero · stack · gauge · chart · allocation · accent · leader · stream · activity ---------- */
+const sbN=v=>Number(v||0).toLocaleString("en-US");
+const sbFmt=(v,dec)=>dec?Number(v||0).toFixed(dec):sbN(Math.round(v||0));
+function sbCount(dates){const m=new Map();dates.forEach(d=>{if(validDate(d))m.set(d,(m.get(d)||0)+1)});return m}
+function sbDays(m,n,end){end=end||bhNow().date;const out=[];for(let i=n-1;i>=0;i--){const d=addDays(end,-i);out.push({d,n:m.get(d)||0})}return out}
+function sbAgo(d){const td=bhNow().date;if(!validDate(d))return "";const k=daysBetween(d,td);return k<=0?"اليوم":k===1?"أمس":k===2?"قبل يومين":k<=10?`قبل ${k} أيام`:`قبل ${k} يومًا`}
+function sbDM(d){return validDate(d)?(+d.slice(8,10))+"/"+(+d.slice(5,7)):""}
+function sbSmooth(p){return p.map(([x,y],i)=>{if(!i)return `M ${x.toFixed(1)} ${y.toFixed(1)}`;const [px,py]=p[i-1],m=(px+x)/2;return `C ${m.toFixed(1)} ${py.toFixed(1)}, ${m.toFixed(1)} ${y.toFixed(1)}, ${x.toFixed(1)} ${y.toFixed(1)}`}).join(" ")}
+function sbGreet(){const h=+bhNow().time.slice(0,2);const nm=String(S.meName||"").trim().split(/\s+/)[0]||"";const en=typeof I18N_ON!=="undefined"&&I18N_ON;return (en?(h<12?"Good morning":"Good evening"):(h<12?"صباح الخير":"مساء الخير"))+(nm?(en?", ":"، "):"")+`<span class="sb-acc">${esc(nm)}</span>`}
+/* chart series for a date->count map */
+function sbSeries(m,yr){const td=bhNow().date;const day=(a,n)=>sbDays(m,n,a).map(x=>x.n);
+  const Y=(yr&&yr!=="all")?+yr:+td.slice(0,4);const mon=y=>{const a=Array(12).fill(0);m.forEach((n,d)=>{if(d.startsWith(String(y)))a[+d.slice(5,7)-1]+=n});return a};
+  const lastW=sbDays(m,8).map(x=>x.d),lastM=sbDays(m,31).map(x=>x.d);
+  return {w:{cur:day(td,8),prev:day(addDays(td,-8),8),labels:lastW.map((d,i)=>i===7?"اليوم":sbDM(d)),cn:"آخر 8 أيام",pn:"الأيام الـ8 السابقة"},
+    m:{cur:day(td,31),prev:day(addDays(td,-31),31),labels:[0,7,15,23,30].map(i=>i===30?"اليوم":sbDM(lastM[i])),cn:"آخر 31 يومًا",pn:"الشهر السابق"},
+    y:{cur:mon(Y),prev:mon(Y-1),labels:MON_EN.slice(),cn:String(Y),pn:String(Y-1)}}}
+function sbTile(cls,title,action,body,style){return `<section class="sb-t ${cls||""}"${style?` style="${style}"`:""}>${(title||action)?`<header class="sb-h">${title?`<h3>${title}</h3>`:""}${action||""}</header>`:""}${body}</section>`}
+function sbPills(act,opts,sel,label){return `<div class="sb-pills" role="radiogroup" aria-label="${esc(label||"")}">${opts.map(([k,n])=>`<button type="button" role="radio" aria-checked="${k===sel}" data-act="${act}" data-v="${k}">${n}</button>`).join("")}</div>`}
+function sbCU(v,dec,suf){return `<span class="num" data-cu="${+v||0}" data-dec="${dec||0}">${sbFmt(v,dec)}</span>${suf||""}`}
+function sbBento(c){
+  const R=document.documentElement.dir!=="ltr";let h=`<div class="sb" data-sbkey="${esc(c.key)}">`;
+  /* HERO */
+  {const H=c.hero,days=H.days,mx=Math.max(1,...days.map(x=>x.n)),a=days.slice(-30),b=H.prev30||0,cur=a.reduce((s,x)=>s+x.n,0),dl=cur-b,dp=b?Math.round(dl/b*100):(cur?100:0);
+   h+=sbTile("sb-hero","","",`<div class="sb-hero-top"><div class="sb-hi"><p class="sb-greet">${sbGreet()}</p><p class="sb-hsub">${H.sub}</p></div>
+    <div class="sb-hv"><p class="sb-k">${H.label}</p><p class="sb-big">${sbCU(H.value,H.dec,H.suf)}</p><p class="sb-dl"><span class="${dl>=0?"up":"dn"} num">${dl>=0?"+":"−"}${sbN(Math.abs(dl))} (${dp>=0?"":"−"}${Math.abs(dp)}%)</span><span class="muted"> · آخر 30 يومًا</span></p></div></div>
+    <div class="sb-strip">${a.map((x,i)=>`<i class="${x.n?"on":""}" style="--h:${x.n?18+x.n/mx*82:6}%;--d:${i*18}ms" data-tip="${esc(sbDM(x.d)+" · "+x.n+" "+H.unit)}"></i>`).join("")}</div>
+    <div class="sb-sx"><span class="num">${sbDM(a[0].d)}</span><span>${H.unit} يوميًا · آخر 30 يومًا</span><span>اليوم</span></div>`)}
+  /* CARDS STACK */
+  {const it=(c.cards.items||[]).slice(0,3);const n=it.length;
+   h+=sbTile("sb-cards",`${c.cards.title} <sup class="num">${n}</sup>`,"",n?`<div class="sb-stack" data-n="${n}">${it.map((x,i)=>{const pos=n-1-i;return `<button type="button" class="sb-card" data-act="sb-card" data-i="${i}" data-pos="${pos}" style="--c:${x.c};--c2:${x.c2||x.c}" aria-label="${esc(x.t)}">
+      <span class="sb-cf"><span class="sb-holo"></span></span><span class="sb-ct"><span class="sb-cl">${esc(x.tag||"")}</span><span class="num sb-cd">${esc(x.meta||"")}</span></span><span class="sb-cn">${esc(x.t)}</span></button>`}).join("")}</div>
+     <div class="sb-frost" aria-live="polite">${it.map((x,i)=>`<div class="sb-fr" data-i="${i}"${i===0?"":" hidden"}><p class="sb-frt">${esc(x.t)}</p><p class="sb-frs">${esc(x.sub||"")}</p></div>`).join("")}</div>`:`<div class="sb-empty">لا توجد عناصر بعد</div>`)}
+  /* GAUGE */
+  {const G=c.gauge,t=Math.max(0,Math.min(1,(G.v||0)/(G.max||1))),len=Math.PI*62;
+   h+=sbTile("sb-gauge",G.title,G.pills?sbPills("sb-g",G.pills,G.sel,G.title):`<span class="sb-live">مباشر</span>`,`<div class="sb-gw"><svg width="150" height="86" viewBox="0 0 150 86" aria-hidden="true"><path d="M 13 78 A 62 62 0 0 1 137 78" fill="none" stroke-width="10" stroke-linecap="round" class="sb-g0"/><path d="M 13 78 A 62 62 0 0 1 137 78" fill="none" stroke-width="10" stroke-linecap="round" class="sb-g1" style="stroke-dasharray:${len};--off:${len*(1-t)};--len:${len}"/><g class="sb-nd" style="--a:${-90+t*180}deg"><line x1="75" y1="78" x2="75" y2="30" stroke-width="2.5" stroke-linecap="round"/></g><circle cx="75" cy="78" r="5"/></svg>
+    <p class="sb-gv">${sbCU(G.v,G.dec)} <small>${G.unit}</small></p><p class="sb-gs">${G.sub||""}</p></div>`)}
+  /* CHART */
+  {const S0=c.chart.series[c.chart.sel]||c.chart.series.y;const W=640,H=220,all=[...S0.cur,...S0.prev],hi=Math.max(1,...all),y=v=>H-16-(v/hi)*(H-40);
+   const n=S0.cur.length,X=i=>{const x=n>1?i/(n-1)*W:W/2;return R?W-x:x};const pa=S0.cur.map((v,i)=>[X(i),y(v)]),pb=S0.prev.map((v,i)=>[X(i),y(v)]);
+   const sa=S0.cur.reduce((a,b)=>a+b,0),sb2=S0.prev.reduce((a,b)=>a+b,0),lead=sb2?Math.round((sa-sb2)/sb2*100):(sa?100:0),last=n-1;
+   const area=sbSmooth(pa)+` L ${R?0:W} ${H} L ${R?W:0} ${H} Z`;
+   h+=sbTile("sb-chart",c.chart.title,sbPills("sb-rng",[["w","أسبوع"],["m","شهر"],["y","سنة"]],c.chart.sel,"المدى"),
+    `<div class="sb-cv"><div><p class="sb-k"><i class="sb-sw"></i>${S0.cn}</p><p class="sb-cvv num" data-lc="a">${sbN(S0.cur[last])}</p></div><div><p class="sb-k"><i class="sb-sw d"></i>${S0.pn}</p><p class="sb-cvv num muted" data-lc="b">${sbN(S0.prev[last])}</p></div>
+      <span class="sb-chip ${lead>=0?"up":"dn"} num">${lead>=0?"+":"−"}${Math.abs(lead)}% عن ${S0.pn}</span></div>
+    <div class="sb-plot" data-cur="${S0.cur.join(",")}" data-prev="${S0.prev.join(",")}" data-lb="${esc(S0.labels.join("|"))}" data-full="${S0.labels.length===n?1:0}" data-hi="${hi}" data-unit="${esc(c.chart.unit)}">
+      <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="sbg" x1="0" x2="0" y1="0" y2="1"><stop offset="0" class="sb-st0"/><stop offset="1" class="sb-st1"/></linearGradient></defs>
+      ${[.25,.5,.75].map(f=>`<line x1="0" x2="${W}" y1="${H*f}" y2="${H*f}" class="sb-gl" vector-effect="non-scaling-stroke"/>`).join("")}
+      <path d="${area}" fill="url(#sbg)" class="sb-area"/><path d="${sbSmooth(pb)}" class="sb-lb" vector-effect="non-scaling-stroke"/><path d="${sbSmooth(pa)}" class="sb-la" pathLength="1"/></svg>
+      <span class="sb-x"></span><span class="sb-da" style="left:${pa[last][0]/W*100}%;top:${pa[last][1]/H*100}%"></span><span class="sb-db"></span></div>
+    <div class="sb-xl">${(S0.labels.length>8?S0.labels.filter((_,i)=>i%2===0||i===S0.labels.length-1):S0.labels).map(l=>`<span>${esc(l)}</span>`).join("")}</div>`)}
+  /* ALLOCATION */
+  {const A=c.alloc,rows=A.rows.filter(r=>r[1]),tot=rows.reduce((s,r)=>s+r[1],0)||1;
+   h+=sbTile("sb-alloc",A.title,"",`<p class="sb-av">${sbCU(A.total!=null?A.total:tot)} <small>${A.unit}</small></p>
+    <div class="sb-seg">${rows.map((r,i)=>`<span style="--w:${r[1]/tot*100}%;--c:${r[2]||"var(--c1)"};--d:${200+i*60}ms" data-tip="${esc(r[0]+": "+r[1]+" "+A.unit+" ("+Math.round(r[1]/tot*100)+"%)")}" data-ai="${i}"></span>`).join("")}</div>
+    <ul class="sb-lg">${rows.slice(0,8).map((r,i)=>`<li data-ai="${i}"><span><i style="background:${r[2]||"var(--c1)"}"></i>${esc(r[0])}</span><b class="num">${(r[1]/tot*100).toFixed(1)}%</b></li>`).join("")}</ul>`)}
+  /* ACCENT (solid) */
+  {const K=c.accent;const mm=Math.max(1,...K.mini);
+   h+=`<section class="sb-t sb-acc-t"><header class="sb-h"><h3>${K.title}</h3><span class="sb-badge"><i></i>${K.badge||"مباشر"}</span></header>
+    <p class="sb-hugev">${sbCU(K.v,K.dec)}<span>${K.suf||""}</span></p><p class="sb-acs">${K.sub||""}</p>
+    ${K.prog?`<div class="sb-pbox"><div class="sb-pr"><span>${K.prog.label}</span><span class="num">${K.prog.val}</span></div><div class="sb-pt"><b style="--p:${Math.max(0,Math.min(100,K.prog.pct))}%"></b></div></div>`:""}
+    <dl class="sb-dl">${K.rows.map(([k,v])=>`<div><dt>${k}</dt><dd class="num">${v}</dd></div>`).join("")}</dl>
+    <div class="sb-afoot"><div class="sb-mini" aria-hidden="true">${K.mini.map((v,i)=>`<span style="--h:${Math.max(6,v/mm*100)}%;--o:${.18+i/K.mini.length*.6};--d:${i*40}ms"></span>`).join("")}</div><p class="sb-mcap">${K.miniCap||""}</p>
+    ${K.cta?(K.cta.href?`<a class="sb-cta" href="${K.cta.href}" target="_blank" rel="noopener">${K.cta.label}</a>`:`<button type="button" class="sb-cta" data-act="${K.cta.act}"${K.cta.v?` data-v="${K.cta.v}"`:""}>${K.cta.label}</button>`):""}</div></section>`}
+  /* LEADER (range) */
+  {const Ld=c.leader;const sh=Math.max(0,Math.min(100,Ld.share||0)),av=Math.max(0,Math.min(100,Ld.avg||0));
+   h+=sbTile("sb-lead",Ld.title,Ld.name?`<span class="sb-chip up">متصدّر</span>`:"",Ld.name?`<p class="sb-ln">${esc(Ld.name)}</p><p class="sb-ls"><span class="num">${sbN(Ld.n)}</span> ${Ld.unit} · <span class="num">${Math.round(sh)}</span>% من الإجمالي</p>
+    <div class="sb-rng" data-tip="${esc("الحصة "+Math.round(sh)+"% · متوسط البقية "+Math.round(av)+"%")}"><div class="sb-rl"></div><div class="sb-rb" style="--w:${sh}%"></div><div class="sb-rm" style="--x:${av}%"></div></div>
+    <div class="sb-rx"><span>0%</span><span>متوسط البقية <b class="num">${Math.round(av)}%</b></span><span>100%</span></div>`:`<div class="sb-empty">لا توجد بيانات</div>`)}
+  /* STREAM */
+  {const St=c.stream,d=St.days,mx=Math.max(1,...d.map(x=>x.n)),lastActive=[...d].reverse().find(x=>x.n);
+   h+=sbTile("sb-stream",St.title,`<span class="sb-live">${lastActive?sbAgo(lastActive.d):"—"}</span>`,`<div class="sb-sh"><div><p class="sb-sv num">${sbN(d[d.length-1].n)}</p><p class="sb-ss">${St.unit} اليوم · آخر 42 يومًا</p></div><p class="sb-ss">${St.note||""}</p></div>
+    <div class="sb-blocks">${d.map((x,i)=>`<i class="${i===d.length-1?"last":""}" style="--h:${Math.max(4,x.n/mx*100)}%;--o:${.15+i/d.length*.5}" data-tip="${esc(sbDM(x.d)+" · "+x.n+" "+St.unit)}"></i>`).join("")}</div>
+    <dl class="sb-st3">${St.stats.map(([k,v])=>`<div><dt>${k}</dt><dd class="num">${v}</dd></div>`).join("")}</dl>`)}
+  /* ACTIVITY */
+  {const Ac=c.activity;
+   h+=sbTile("sb-act",Ac.title,"",Ac.items.length?`<ul class="sb-al">${Ac.items.slice(0,4).map((x,i)=>`<li style="--d:${300+i*70}ms"><span class="sb-ai" style="--c:${x.c||"var(--accent)"}">${ic(x.ic||"list")}</span><div class="sb-at"><p>${esc(x.t)}</p><p class="muted">${esc(x.d||"")}</p></div><div class="sb-ar"><p class="num">${esc(x.r||"")}</p>${x.st?`<p class="sb-as" style="color:${x.sc||"var(--mute)"}">${x.spin?`<svg viewBox="0 0 24 24" class="sb-spin" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-opacity=".3" stroke-width="3"/><path d="M21 12a9 9 0 0 0-9-9" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>`:""}${esc(x.st)}</p>`:""}</div></li>`).join("")}</ul>`:`<div class="sb-empty">لا يوجد نشاط بعد</div>`)}
+  return h+`</div>`}
+/* after-render: entrance + count-up only when the section/year key changes */
+function sbAfter(){const b=document.querySelector(".sb");if(!b)return;const k=b.dataset.sbkey;const rm=matchMedia("(prefers-reduced-motion: reduce)").matches;
+  sbStackLayout(b);
+  if(S._sbKey===k||rm){b.classList.add("sb-done");S._sbKey=k;return}S._sbKey=k;b.classList.add("sb-in");
+  b.querySelectorAll("[data-cu]").forEach(e=>{const to=+e.dataset.cu,dec=+e.dataset.dec||0,t0=performance.now(),D=1300;const tick=now=>{const p=Math.min(1,(now-t0)/D);e.textContent=sbFmt(to*(1-Math.pow(1-p,4)),dec);if(p<1&&e.isConnected)requestAnimationFrame(tick)};requestAnimationFrame(tick)});
+  setTimeout(()=>{b.classList.add("sb-done")},1800)}
+function sbStackLayout(b,front){const st=b.querySelector(".sb-stack");if(!st)return;const cards=[...st.querySelectorAll(".sb-card")];const n=cards.length;
+  let order=S._sbOrder&&S._sbOrder.k===b.dataset.sbkey&&S._sbOrder.o.length===n?S._sbOrder.o:cards.map((_,i)=>i).reverse();
+  if(front!=null){order=order.filter(i=>i!==front).concat([front])}S._sbOrder={k:b.dataset.sbkey,o:order};
+  const PEEK=40;order.forEach((ci,pos)=>{const ff=n-1-pos,c=cards[ci];c.style.top=(pos*PEEK)+"px";c.style.zIndex=pos+1;c.style.setProperty("--s",1-ff*.055);c.setAttribute("aria-pressed",ff===0);c.dataset.front=ff===0?"1":"0";c.style.setProperty("--g",(30+ff*18)+"%")});
+  st.style.height=((n-1)*PEEK+st.querySelector(".sb-card").offsetWidth*.36)+"px";
+  const f=order[order.length-1];b.querySelectorAll(".sb-fr").forEach(e=>e.hidden=+e.dataset.i!==f)}
+/* chart hover */
+document.addEventListener("pointermove",e=>{const p=e.target.closest&&e.target.closest(".sb-plot");if(!p)return;const cur=p.dataset.cur.split(",").map(Number),prev=p.dataset.prev.split(",").map(Number),lb=p.dataset.lb.split("|"),hi=+p.dataset.hi||1,n=cur.length;
+  const r=p.getBoundingClientRect();const R=document.documentElement.dir!=="ltr";let f=(e.clientX-r.left)/r.width;if(R)f=1-f;const i=Math.max(0,Math.min(n-1,Math.round(f*(n-1))));
+  const xp=(n>1?i/(n-1):.5)*100,X=R?100-xp:xp,Y=v=>(220-16-(v/hi)*(220-40))/220*100;
+  p.querySelector(".sb-x").style.cssText=`left:${X}%;opacity:1`;p.querySelector(".sb-da").style.cssText=`left:${X}%;top:${Y(cur[i])}%`;p.querySelector(".sb-db").style.cssText=`left:${X}%;top:${Y(prev[i])}%;opacity:1`;
+  const t=p.closest(".sb-chart");t.querySelector('[data-lc="a"]').textContent=sbN(cur[i]);t.querySelector('[data-lc="b"]').textContent=sbN(prev[i]);
+  const full=p.dataset.full==="1";p.title=full?lb[i]:""},{passive:true});
+document.addEventListener("pointerleave",e=>{},true);
+document.addEventListener("pointerout",e=>{const p=e.target.closest&&e.target.closest(".sb-plot");if(!p||p.contains(e.relatedTarget))return;const cur=p.dataset.cur.split(",").map(Number),prev=p.dataset.prev.split(",").map(Number),n=cur.length,hi=+p.dataset.hi||1;
+  const R=document.documentElement.dir!=="ltr",X=R?0:100,Y=v=>(220-16-(v/hi)*(220-40))/220*100;p.querySelector(".sb-x").style.opacity=0;p.querySelector(".sb-db").style.opacity=0;p.querySelector(".sb-da").style.cssText=`left:${X}%;top:${Y(cur[n-1])}%`;
+  const t=p.closest(".sb-chart");t.querySelector('[data-lc="a"]').textContent=sbN(cur[n-1]);t.querySelector('[data-lc="b"]').textContent=sbN(prev[n-1])});
+/* allocation hover link (legend <-> segment) */
+document.addEventListener("pointerover",e=>{const a=e.target.closest&&e.target.closest(".sb-alloc [data-ai]");const t=e.target.closest&&e.target.closest(".sb-alloc");if(!t)return;t.querySelectorAll("[data-ai]").forEach(x=>x.classList.toggle("dim",!!a&&x.dataset.ai!==a.dataset.ai))});
+document.addEventListener("pointerout",e=>{const t=e.target.closest&&e.target.closest(".sb-alloc");if(t&&!t.contains(e.relatedTarget))t.querySelectorAll("[data-ai]").forEach(x=>x.classList.remove("dim"))});
+/* card glare follows the pointer */
+document.addEventListener("pointermove",e=>{const s=e.target.closest&&e.target.closest(".sb-cards");if(!s)return;const r=s.getBoundingClientRect();s.style.setProperty("--gx",((e.clientX-r.left)/r.width*100).toFixed(1)+"%")},{passive:true});
+
+/* bento configs per stats section */
+const SB_PAL=["var(--t-design)","var(--t-photo)","var(--t-news)","var(--t-video)","var(--t-form)","var(--t-other)","var(--accent)","var(--warn)"];
+function sbWeekly(m,n){const td=bhNow().date,out=[];for(let w=n-1;w>=0;w--){let s=0;for(let k=0;k<7;k++){s+=m.get(addDays(td,-(w*7+k)))||0}out.push(s)}return out}
+function sbBase(dates){const m=sbCount(dates);const d60=sbDays(m,60);return {m,days:d60.slice(30),prev30:d60.slice(0,30).reduce((a,x)=>a+x.n,0),d42:sbDays(m,42),series:sbSeries(m,S.sy)}}
+function sbStream(title,unit,d42,note){const tot=d42.reduce((a,x)=>a+x.n,0),mx=Math.max(0,...d42.map(x=>x.n)),act=d42.filter(x=>x.n).length;
+  return {title,unit,days:d42,note:note||"",stats:[["المتوسط اليومي",(tot/42).toFixed(1)],["أعلى يوم",sbN(mx)],["أيام نشطة",Math.round(act/42*100)+"%"]]}}
+function sbLeader(title,rows,unit){rows=rows.filter(r=>r[1]);if(!rows.length)return {title};const tot=rows.reduce((a,r)=>a+r[1],0),[nm,n]=rows[0];const sh=n/tot*100;
+  return {title,name:nm,n,unit,share:sh,avg:rows.length>1?(100-sh)/(rows.length-1):0}}
+function sbGaugeScope(arr,dateFn){const td=bhNow().date;return S.sbG==="d30"?arr.filter(x=>{const d=dateFn(x);return validDate(d)&&d>=addDays(td,-30)&&d<=td}):arr}
+const SB_GP=[["d30","30 يوم"],["yr","السنة"]];
+function sbTaskCard(t){const ty=typeOf(t.type);return {t:t.title||"",tag:ty.n,meta:sbDM(t.received),sub:[t.status||"لم يبدأ",(t.owners||[]).map(shortName).join("، "),t.dept].filter(Boolean).join(" · "),c:ty.c,c2:"color-mix(in srgb,"+ty.c+" 55%,#ffffff)"}}
+function sbStatusC(s){const x=STATUS.find(z=>z.k===s);return x?x.c:"var(--mute)"}
+function sbTaskAct(list){return list.slice().sort((a,b)=>String(b.updatedAt||b.received||"").localeCompare(String(a.updatedAt||a.received||""))).slice(0,4).map(t=>{const ty=typeOf(t.type),st=t.status||"لم يبدأ";const when=t.updatedAt?String(t.updatedAt).slice(0,10):t.received;
+  return {ic:ty.k==="photo"?"img":ty.k==="news"?"news":ty.k==="video"?"chan":ty.k==="form"?"list":"edit",c:ty.c,t:t.title||"",d:[(t.updatedBy?shortName(t.updatedBy):(t.owners||[]).map(shortName)[0])||"",sbAgo(when)].filter(Boolean).join(" · "),r:ty.n,st,sc:sbStatusC(st),spin:st==="قيد التنفيذ"}})}
+function sbCfgTasks(sec,X){
+  const {tasks,sel,photos,news,posts,doneT,openT,avg,same,delP,ext,issued,high,ylabel,pct,cnt}=X;const td=bhNow().date;
+  const key=sec+"|"+S.sy+"|"+(S.sbR||"y")+"|"+(S.sbG||"yr");const R=S.sbR||"y",G=S.sbG||"yr";
+  if(sec==="all"||sec==="tasks"){
+    const all=S.tasks.filter(t=>validDate(t.received));const B=sbBase(all.map(t=>t.received));
+    const stopped=tasks.filter(t=>t.status==="متوقف").length;
+    let gauge;
+    if(sec==="all"){const ph=sbGaugeScope(photos.filter(t=>validDate(t.delivered)&&t.delivered>=t.received),t=>t.received).filter(t=>S.sbG==="d30"||inYsb(t.received));const g=ph.length?ph.reduce((a,t)=>a+daysBetween(t.received,t.delivered),0)/ph.length:0;
+      gauge={title:"سرعة تسليم التصوير",v:g,max:7,unit:"يوم",dec:1,sub:`متوسط ${ph.length} تغطية · من الفعالية حتى التسليم`,pills:SB_GP,sel:G}}
+    else{const dn=sbGaugeScope(all.filter(t=>t.status==="مكتمل"&&validDate(t.delivered)&&t.delivered>=t.received),t=>t.received).filter(t=>S.sbG==="d30"||inYsb(t.received));const g=dn.length?dn.reduce((a,t)=>a+daysBetween(t.received,t.delivered),0)/dn.length:0;
+      gauge={title:"متوسط مدة الإنجاز",v:g,max:30,unit:"يوم",dec:1,sub:`من الاستلام حتى التسليم · ${dn.length} مهمة مكتملة`,pills:SB_GP,sel:G}}
+    const cur=all.filter(t=>CURRENT.has(t.status||"لم يبدأ"));
+    return {key,
+      hero:{label:"المهام",value:tasks.length,unit:"مهمة",sub:sec==="all"?`هذا ملخّص عمل الفريق في ${esc(ylabel)}.`:`كل المهام الواردة للفريق في ${esc(ylabel)}.`,days:B.days,prev30:B.prev30},
+      cards:{title:sec==="all"?"أحدث المهام":"المهام الجارية",items:(sec==="all"?all:cur).slice().sort((a,b)=>b.received.localeCompare(a.received)).slice(0,3).map(sbTaskCard)},
+      gauge,
+      chart:{title:"المهام المستلمة",unit:"مهمة",sel:R,series:B.series},
+      alloc:sec==="all"?{title:"حسب النوع",unit:"مهمة",rows:TYPES.map(t=>[t.n,tasks.filter(x=>typeOf(x.type).k===t.k).length,t.c]).sort((a,b)=>b[1]-a[1])}
+        :{title:"حسب الحالة",unit:"مهمة",rows:STATUS.map(s=>[s.k,tasks.filter(x=>(x.status||"لم يبدأ")===s.k).length,s.c])},
+      accent:{title:"نسبة الإنجاز",badge:esc(ylabel),v:pct(doneT,tasks.length),suf:"%",sub:`${sbN(doneT)} مكتملة من ${sbN(tasks.length)} مهمة`,
+        prog:{label:"المهام الجارية",val:sbN(openT),pct:pct(openT,tasks.length)},rows:[["قيد التنفيذ",sbN(tasks.filter(t=>t.status==="قيد التنفيذ").length)],["بانتظار المراجعة",sbN(tasks.filter(t=>t.status==="بانتظار المراجعة").length)],["متوقفة",sbN(stopped)]],
+        mini:sbWeekly(B.m,10),miniCap:"المهام المستلمة · آخر 10 أسابيع",cta:sec==="all"?{act:"stats-report",label:"تصدير التقرير"}:{act:"tab",v:"tasks",label:"عرض المهام"}},
+      leader:sec==="all"?sbLeader("أكثر جهة طالبة",cnt(tasks,t=>[t.dept||""]),"مهمة"):sbLeader("الأكثر إنجازًا في الفريق",cnt(tasks.filter(t=>t.status==="مكتمل"),t=>(t.owners||[]).map(shortName)),"مهمة مكتملة"),
+      stream:sec==="all"?sbStream("الرصد اليومي","خبر",sbDays(sbCount([...(S.monitor||[]),...(S.social||[])].filter(x=>x.verified!==false).map(x=>x.date)),42),`<span class="num">${sbN(high)}</span> بمستوى عالٍ في ${esc(ylabel)}`)
+        :sbStream("تدفّق المهام","مهمة",B.d42,`<span class="num">${sbN(openT)}</span> جارية الآن`),
+      activity:{title:"آخر التحديثات",items:sbTaskAct(sec==="all"?all:all)}}}
+  if(sec==="photo"){
+    const B=sbBase(photos.map(t=>t.received));
+    const ph=sbGaugeScope(photos.filter(t=>validDate(t.delivered)&&t.delivered>=t.received),t=>t.received).filter(t=>S.sbG==="d30"||inYsb(t.received));const g=ph.length?ph.reduce((a,t)=>a+daysBetween(t.received,t.delivered),0)/ph.length:0;
+    return {key,
+      hero:{label:"التغطيات",value:sel.length,unit:"تغطية",sub:`تغطيات التصوير في ${esc(ylabel)}.`,days:B.days,prev30:B.prev30},
+      cards:{title:"أحدث التغطيات",items:photos.slice().sort((a,b)=>b.received.localeCompare(a.received)).slice(0,3).map((t,i)=>({t:t.title||"",tag:t.dept||"تصوير",meta:sbDM(t.received),sub:[validDate(t.delivered)?"سُلّمت "+sbDM(t.delivered):"بانتظار التسليم",(t.channels||[]).join("، "),(t.owners||[]).map(shortName).join("، ")].filter(Boolean).join(" · "),c:["var(--t-photo)","var(--t-design)","var(--t-video)"][i],c2:"color-mix(in srgb,var(--t-photo) 40%,#ffffff)"}))},
+      gauge:{title:"سرعة التسليم",v:g,max:7,unit:"يوم",dec:1,sub:`متوسط ${ph.length} تغطية · من الفعالية حتى التسليم`,pills:SB_GP,sel:G},
+      chart:{title:"التغطيات",unit:"تغطية",sel:R,series:B.series},
+      alloc:{title:"استخدام الصور",unit:"استخدام",rows:CHANNELS.map((c,i)=>[c,sel.filter(t=>(t.channels||[]).includes(c)).length,SB_PAL[i]]).concat([["غير محدد",sel.filter(t=>!(t.channels||[]).length).length,"var(--t-other)"]])},
+      accent:{title:"تسليم في نفس اليوم",badge:esc(ylabel),v:pct(same,delP.length),suf:"%",sub:`${sbN(same)} من ${sbN(delP.length)} تغطية مُسلّمة`,
+        prog:{label:"للنشر الخارجي",val:pct(ext,sel.length)+"%",pct:pct(ext,sel.length)},rows:[["متوسط التسليم",avg.toFixed(1)+" يوم"],["جهات طالبة",sbN(new Set(sel.map(t=>t.dept).filter(Boolean)).size)],["بانتظار التسليم",sbN(sel.filter(t=>!validDate(t.delivered)).length)]],
+        mini:sbWeekly(B.m,10),miniCap:"التغطيات · آخر 10 أسابيع",cta:{act:"stats-report",label:"تصدير التقرير"}},
+      leader:sbLeader("أكثر جهة طالبة للتصوير",cnt(sel,t=>[t.dept||""]),"تغطية"),
+      stream:sbStream("تدفّق التغطيات","تغطية",B.d42,`<span class="num">${sbN(sel.filter(t=>!validDate(t.delivered)).length)}</span> بانتظار التسليم`),
+      activity:{title:"آخر التغطيات",items:photos.slice().sort((a,b)=>String(b.delivered||b.received).localeCompare(String(a.delivered||a.received))).slice(0,4).map(t=>{const dv=validDate(t.delivered);return {ic:"img",c:"var(--t-photo)",t:t.title||"",d:[t.dept,sbAgo(dv?t.delivered:t.received)].filter(Boolean).join(" · "),r:(t.channels||[])[0]||"",st:dv?"سُلّمت":"بانتظار التسليم",sc:dv?"var(--ok)":"var(--warn)",spin:!dv}})}}}
+  if(sec==="news"){
+    const allN=S.tasks.filter(t=>t.type==="news"&&validDate(t.received)),nw=allN.filter(t=>inYsb(t.received));const B=sbBase(allN.map(t=>t.received));
+    const cov=nw.map(t=>({t,c:coverageOf(t)}));const covd=cov.filter(x=>x.c.news.length||x.c.social.length).length;
+    const watch=cov.filter(x=>!x.c.news.length&&!x.c.social.length&&x.t.received>=addDays(td,-7)).length;
+    const gsc=sbGaugeScope(nw.concat(S.sbG==="d30"?allN.filter(t=>!inYsb(t.received)):[]),t=>t.received);const gch=gsc.length?gsc.reduce((a,t)=>a+(t.pub||[]).length,0)/gsc.length:0;
+    const outs=[];cov.forEach(x=>x.c.news.forEach(n=>outs.push(n.outletName||outletOf(n.outlet).n)));const oc=new Map();outs.forEach(o=>oc.set(o,(oc.get(o)||0)+1));
+    return {key,
+      hero:{label:"الأخبار الصادرة",value:nw.length,unit:"خبر",sub:`الأخبار التي نشرتها الإدارة في ${esc(ylabel)}.`,days:B.days,prev30:B.prev30},
+      cards:{title:"أحدث الأخبار",items:allN.slice().sort((a,b)=>b.received.localeCompare(a.received)).slice(0,3).map((t,i)=>({t:t.title||"",tag:"خبر",meta:sbDM(t.received),sub:(t.pub||[]).join("، ")||"قنوات النشر غير محددة",c:["var(--t-news)","var(--t-design)","var(--t-form)"][i],c2:"color-mix(in srgb,var(--t-news) 45%,#ffffff)"}))},
+      gauge:{title:"قنوات النشر لكل خبر",v:gch,max:PUBCH.length,unit:"قناة",dec:1,sub:`متوسط ${gsc.length} خبر · من ${PUBCH.length} قنوات`,pills:SB_GP,sel:G},
+      chart:{title:"الأخبار المنشورة",unit:"خبر",sel:R,series:B.series},
+      alloc:{title:"حسب قناة النشر",unit:"خبر",total:nw.length,rows:PUBCH.map((c,i)=>[c,nw.filter(t=>(t.pub||[]).includes(c)).length,SB_PAL[i]])},
+      accent:{title:"نسبة الأخبار المرصودة",badge:esc(ylabel),v:pct(covd,nw.length),suf:"%",sub:`${sbN(covd)} من ${sbN(nw.length)} خبر ظهر في قنوات الرصد`,
+        prog:{label:"قيد المتابعة (آخر 7 أيام)",val:sbN(watch),pct:pct(watch,nw.length)},rows:[["تغطيات الصحف",sbN(cov.reduce((a,x)=>a+x.c.news.length,0))],["منشورات السوشيال",sbN(cov.reduce((a,x)=>a+x.c.social.length,0))],["لم تُرصد",sbN(nw.length-covd-watch)]],
+        mini:sbWeekly(B.m,10),miniCap:"الأخبار المنشورة · آخر 10 أسابيع",cta:{act:"tab",v:"monitor",label:"فتح الرصد"}},
+      leader:sbLeader("أكثر وسيلة غطّت أخبارنا",[...oc.entries()].sort((a,b)=>b[1]-a[1]),"تغطية"),
+      stream:sbStream("تدفّق الأخبار","خبر",B.d42,`<span class="num">${sbN(watch)}</span> قيد المتابعة`),
+      activity:{title:"تتبّع التغطية",items:allN.slice().sort((a,b)=>b.received.localeCompare(a.received)).slice(0,4).map(t=>{const c=coverageOf(t),n=c.news.length+c.social.length,w=t.received>=addDays(td,-7);
+        return {ic:"news",c:"var(--t-news)",t:t.title||"",d:[(t.pub||[]).slice(0,2).join("، "),sbAgo(t.received)].filter(Boolean).join(" · "),r:n?`${n} تغطية`:"",st:n?"رُصد":w?"قيد المتابعة":"لم يُرصد",sc:n?"var(--ok)":w?"var(--warn)":"var(--mute)",spin:!n&&w}})}}}
+  if(sec==="monitor"){
+    const allM=[...(S.monitor||[]).map(x=>Object.assign({_sm:false},x)),...(S.social||[]).map(x=>Object.assign({_sm:true},x))].filter(x=>x.verified!==false&&validDate(x.date));
+    const yr=allM.filter(x=>inYsb(x.date));const B=sbBase(allM.map(x=>x.date));
+    const lv=x=>lvlOf(x,x._sm),LC={high:"var(--stop)",med:"var(--warn)",low:"var(--idle)"};
+    const gs=sbGaugeScope(allM,x=>x.date).filter(x=>S.sbG==="d30"||inYsb(x.date));const gh=gs.filter(x=>lv(x)==="high").length;
+    const nm=x=>x._sm?(x.accountName||(SM_PF.find(p=>p.k===x.platform)||{}).n||"سوشيال"):(x.outletName||outletOf(x.outlet).n);
+    const ttl=x=>String(x._sm?(x.summary||x.text||""):(x.headline||"")).replace(/\s+/g," ").trim();
+    const top=allM.slice().sort((a,b)=>b.date.localeCompare(a.date));const hi=top.filter(x=>lv(x)==="high");
+    return {key,
+      hero:{label:"المرصود",value:yr.length,unit:"خبر",sub:`أخبار الصحف ومنشورات السوشيال في ${esc(ylabel)}.`,days:B.days,prev30:B.prev30},
+      cards:{title:"أبرز المرصود",items:(hi.length>=3?hi:top).slice(0,3).map(x=>{const l=lv(x);return {t:ttl(x),tag:nm(x),meta:sbDM(x.date),sub:[LVL.find(z=>z.k===l).n+" المستوى",(MTOPICS.find(t=>t.k===x.topic)||{}).n].filter(Boolean).join(" · "),c:l==="high"?"#b4413f":l==="med"?"#b7832a":"#4a6b93",c2:l==="high"?"#e88a7a":l==="med"?"#e8c27a":"#9cb8e3"}})},
+      gauge:{title:"الأخبار عالية المستوى",v:pct(gh,gs.length),max:100,unit:"%",sub:`${sbN(gh)} من ${sbN(gs.length)} خبر`,pills:SB_GP,sel:G},
+      chart:{title:"المرصود",unit:"خبر",sel:R,series:B.series},
+      alloc:{title:"حسب الموضوع",unit:"خبر",rows:MTOPICS.map((t,i)=>[t.n,yr.filter(x=>x.topic===t.k).length,SB_PAL[i]]).sort((a,b)=>b[1]-a[1])},
+      accent:{title:"صادرة عن الهيئة",badge:esc(ylabel),v:pct(issued,yr.length),suf:"%",sub:`${sbN(issued)} من ${sbN(yr.length)} خبر مرصود`,
+        prog:{label:"بمستوى عالٍ",val:sbN(high),pct:pct(high,yr.length)},rows:[["أخبار الصحف",sbN(news.length)],["منشورات السوشيال",sbN(posts.length)],["سلبية النبرة",sbN(posts.filter(x=>x.tone==="neg").length)]],
+        mini:sbWeekly(B.m,10),miniCap:"المرصود · آخر 10 أسابيع",cta:{act:"tab",v:"monitor",label:"فتح الرصد"}},
+      leader:sbLeader("أكثر وسيلة نشرًا",cnt(news,x=>[x.outletName||outletOf(x.outlet).n]),"خبر"),
+      stream:sbStream("الرصد اليومي","خبر",B.d42,`<span class="num">${sbN(high)}</span> بمستوى عالٍ`),
+      activity:{title:"آخر المرصود",items:top.slice(0,4).map(x=>{const l=lv(x);return {ic:x._sm?"social":"news",c:LC[l],t:ttl(x),d:[nm(x),sbAgo(x.date)].join(" · "),r:(MTOPICS.find(t=>t.k===x.topic)||{n:""}).n.split(" ")[0],st:LVL.find(z=>z.k===l).n,sc:LC[l]}})}}}
+  return null}
+let inYsb=()=>true;
+
 function renderStats(){
   const el=$("view-stats");
   const yOf=d=>validDate(d)?d.slice(0,4):"";
@@ -2027,7 +2404,7 @@ function renderStats(){
   const sel=photos.filter(t=>inY(t.received));
   const news=(S.monitor||[]).filter(x=>x.verified!==false&&inY(x.date)),posts=(S.social||[]).filter(x=>x.verified!==false&&inY(x.date));
   const pct=(x,d)=>d?Math.round(x/d*100):0;const ylabel=S.sy==="all"?"كل السنوات":S.sy;
-  const SECS=[{k:"all",n:"نظرة عامة"},{k:"tasks",n:"المهام"},{k:"photo",n:"التصوير"},{k:"news",n:"الأخبار والرصد"},{k:"game",n:"رحلة القيم"},{k:"adwaa",n:"أضواء"}];
+  const SECS=[{k:"all",n:"نظرة عامة"},{k:"tasks",n:"المهام"},{k:"photo",n:"التصوير"},{k:"news",n:"الأخبار"},{k:"monitor",n:"الرصد"},{k:"game",n:"رحلة القيم"},{k:"adwaa",n:"أضواء"}];inYsb=inY;
   let h=`<div class="toolbar"><div class="grp"><h2 style="font-size:22px;font-weight:800">الإحصائيات</h2></div>
     <div class="grp"><div class="seg" role="group" aria-label="السنة">${years.map(y=>`<button type="button" data-act="sy" data-v="${y}" aria-pressed="${S.sy===y}">${y}</button>`).join("")}<button type="button" data-act="sy" data-v="all" aria-pressed="${S.sy==="all"}">الكل</button></div>
     ${xlBtn("stats")}<button class="btn" type="button" data-act="stats-report">${ic("report")}تصدير التقرير</button><button class="btn write-only" type="button" data-act="photo-new">${ic("plus")}<span data-en="Coverage">تغطية</span></button></div></div>
@@ -2037,7 +2414,7 @@ function renderStats(){
     const m=Math.max(...r.map(x=>x[1]));const T=tot||rows.reduce((a,x)=>a+x[1],0);return `<div class="hbars">`+r.map(([k,v,c])=>`<div class="hb" data-tip="${esc(k+": "+v+" "+unit+" ("+pct(v,T)+"%)")}"><div class="nm"><span>${esc(k)}</span><span class="num muted">${v}</span></div><div class="tr"><div class="fl" style="width:${v/m*100}%;${c?"background:"+c:""}"></div></div></div>`).join("")+`</div>`};
   const cnt=(arr,fn)=>{const c=new Map();arr.forEach(t=>fn(t).forEach(k=>{if(k)c.set(k,(c.get(k)||0)+1)}));return [...c.entries()].sort((a,b)=>b[1]-a[1])};
   let kpiN=0;const awDays=[];if(sec==="adwaa"&&S.aw&&S.aw.d)(S.aw.d.days||[]).forEach(x=>{if(inY(x.d))for(let i=0;i<x.n;i++)awDays.push({d:x.d})});
-  const heroArr=sec==="adwaa"?awDays:sec==="game"?((S.vg&&S.vg.runs)||[]).filter(r=>inY(r.d)):sec==="photo"?sel:sec==="news"?[...news,...posts]:tasks,heroDate=(sec==="game"||sec==="adwaa")?(x=>x.d):sec==="news"?(x=>x.date):(x=>x.received);
+  const heroArr=sec==="adwaa"?awDays:sec==="game"?((S.vg&&S.vg.runs)||[]).filter(r=>inY(r.d)):sec==="photo"?sel:sec==="monitor"?[...news,...posts]:tasks,heroDate=(sec==="game"||sec==="adwaa")?(x=>x.d):sec==="monitor"?(x=>x.date):(x=>x.received);
   const hmo=Array(12).fill(0);heroArr.forEach(x=>{const d=heroDate(x);if(validDate(d))hmo[+d.slice(5,7)-1]++});const hmm=Math.max(1,...hmo);
   const heroBg=`<div class="kpi-bg" aria-hidden="true"><div class="bg-spark">${hmo.map((v,i)=>`<i style="height:${Math.max(4,v/hmm*100)}%"${S.sy===String(now.getFullYear())&&i===now.getMonth()?' class="cur"':""}></i>`).join("")}</div><div class="sp-ml">${MONTHS.map((m,i)=>`<span>${mAbbr(m,i)}</span>`).join("")}</div></div>`;
   const kpi=(k,v,sub)=>{const hero=kpiN++===0;return `<div class="kpi${hero?" hero":""}">${hero?heroBg:""}<span class="k">${k}</span><span class="v num">${v}</span><span class="sub">${sub}</span></div>`};
@@ -2048,20 +2425,16 @@ function renderStats(){
     for(let v=0;v<=top;v+=step)s+=`<div class="gl" style="bottom:${v/top*100}%"><span class="num">${v}</span></div>`;
     s+=`<div class="cols">`;for(let m=0;m<12;m++){const tip=MONTHS[m]+"\n"+cy.map((y,i)=>y+": "+serie[i][m]+" "+unit).join("\n");s+=`<div class="mcol" data-tip="${esc(tip)}">`+cy.map((y,i)=>`<div class="bar" style="height:${serie[i][m]/top*100}%;background:${cols[ci[i]]}"></div>`).join("")+`</div>`}
     return s+`</div></div><div class="mlabels">${MONTHS.map((x,i)=>`<span><b class="ml-f">${x}</b><b class="ml-s" data-noi18n>${mAbbr(x,i)}</b></span>`).join("")}</div></div>`};
-  if(sec==="game"){el.innerHTML=h+vgStats({kpi,hbars,monthly,inY,ylabel,pct});return}
-  if(sec==="adwaa"){el.innerHTML=h+awStats({kpi,hbars,monthly,inY,ylabel,pct});return}
+  if(sec==="game"){el.innerHTML=h+vgStats({kpi,hbars,monthly,inY,ylabel,pct});sbAfter();return}
+  if(sec==="adwaa"){el.innerHTML=h+awStats({kpi,hbars,monthly,inY,ylabel,pct});sbAfter();return}
   // numbers
   const doneT=tasks.filter(t=>t.status==="مكتمل").length,openT=tasks.filter(t=>CURRENT.has(t.status||"لم يبدأ")).length;
   const delP=sel.filter(t=>validDate(t.delivered)&&t.delivered>=t.received);const avg=delP.length?delP.reduce((a,t)=>a+daysBetween(t.received,t.delivered),0)/delP.length:0;
   const same=delP.filter(t=>t.delivered===t.received).length,ext=sel.filter(t=>(t.channels||[]).includes("نشر خارجي")).length;
   const issued=news.filter(x=>newsCat(x)==="issued").length+posts.filter(x=>smCat(x)==="issued").length;
   const high=news.filter(x=>lvlOf(x,false)==="high").length+posts.filter(x=>lvlOf(x,true)==="high").length;
-  h+=`<div class="kpis k5">`;
-  if(sec==="all")h+=kpi("المهام",tasks.length,`<span class="num">${doneT}</span> مكتملة · <span class="num">${openT}</span> جارية`)+kpi("نسبة الإنجاز",pct(doneT,tasks.length)+"<small>%</small>",esc(ylabel))+kpi("تغطيات التصوير",sel.length,`متوسط التسليم <span class="num">${avg.toFixed(1)}</span> يوم`)+kpi("الأخبار الصادرة عن الهيئة",issued,`من <span class="num">${news.length+posts.length}</span> مرصود`)+kpi("أخبار بمستوى عالٍ",high,"صحف وسوشيال");
-  if(sec==="tasks")h+=kpi("إجمالي المهام",tasks.length,esc(ylabel))+kpi("مكتملة",doneT,`<span class="num">${pct(doneT,tasks.length)}</span>%`)+kpi("جارية",openT,"لم تبدأ · قيد التنفيذ · مراجعة · معلقة")+kpi("متوقفة",tasks.filter(t=>t.status==="متوقف").length,"")+kpi("أنواع المهام",new Set(tasks.map(t=>t.type)).size,"");
-  if(sec==="photo")h+=kpi("عدد التغطيات",sel.length,esc(ylabel))+kpi("متوسط مدة التسليم",avg.toFixed(1)+"<small>يوم</small>","من الفعالية حتى التسليم")+kpi("تسليم في نفس اليوم",pct(same,delP.length)+"<small>%</small>",`<span class="num">${same}</span> من <span class="num">${delP.length}</span>`)+kpi("للنشر الخارجي",pct(ext,sel.length)+"<small>%</small>",`<span class="num">${ext}</span> تغطية`)+kpi("جهات طالبة",new Set(sel.map(t=>t.dept).filter(Boolean)).size,"");
-  if(sec==="news")h+=kpi("أخبار الصحف",news.length,esc(ylabel))+kpi("منشورات السوشيال",posts.length,"")+kpi("صادرة عن الهيئة",issued,"")+kpi("مستوى عالٍ",high,"")+kpi("سلبية النبرة",posts.filter(x=>x.tone==="neg").length,"منشورات سوشيال");
-  h+=`</div><div class="st-grid">`;
+  {const cfg=sbCfgTasks(sec,{tasks,sel,photos,news,posts,doneT,openT,avg,same,delP,ext,issued,high,ylabel,pct,cnt});if(cfg)h+=sbBento(cfg)}
+  h+=`<div class="st-grid">`;
   if(sec==="all"||sec==="tasks"){
     if(sec==="tasks")h+=monthly("المهام حسب الشهر","بحسب تاريخ الاستلام",S.tasks,t=>t.received,"مهمة");
     h+=`<div class="panel"><h3>المهام حسب النوع</h3><div class="cap">${esc(ylabel)}</div>${hbars(TYPES.map(t=>[t.n,tasks.filter(x=>typeOf(x.type).k===t.k).length,t.c]),8,"مهمة",tasks.length)}</div>`;
@@ -2073,15 +2446,21 @@ function renderStats(){
     h+=monthly("التغطيات حسب الشهر","مقارنة آخر سنتين · بحسب تاريخ الفعالية",photos,t=>t.received,"تغطية");
     if(sec==="photo"){h+=`<div class="panel"><h3>حسب الجهة الطالبة</h3><div class="cap">أكثر الجهات طلبًا للتصوير</div>${hbars(cnt(sel,t=>[t.dept||"غير محددة"]),8,"تغطية",sel.length)}</div>`;
       h+=`<div class="panel"><h3>استخدام الصور</h3><div class="cap">قد تُستخدم التغطية الواحدة لأكثر من غرض</div>${hbars(CHANNELS.map(c=>[c,sel.filter(t=>(t.channels||[]).includes(c)).length]).concat([["غير محدد",sel.filter(t=>!(t.channels||[]).length).length]]),6,"تغطية",sel.length)}</div>`}}
-  if(sec==="all"||sec==="news"){
-    if(sec==="news")h+=monthly("الأخبار المرصودة حسب الشهر","صحف وسوشيال · بحسب تاريخ النشر",[...(S.monitor||[]),...(S.social||[])].filter(x=>x.verified!==false),x=>x.date,"خبر");
+  if(sec==="news"){const allN=S.tasks.filter(t=>t.type==="news"&&validDate(t.received)),nw=allN.filter(t=>inY(t.received));
+    h+=monthly("الأخبار المنشورة حسب الشهر","بحسب تاريخ النشر · مقارنة آخر سنتين",allN,t=>t.received,"خبر");
+    h+=`<div class="panel"><h3>حسب قناة النشر</h3><div class="cap">قد يُنشر الخبر الواحد في أكثر من قناة · <span class="num">${nw.length}</span> خبر</div>${hbars(PUBCH.map(c=>[c,nw.filter(t=>(t.pub||[]).includes(c)).length]),5,"خبر",nw.length)}</div>`;
+    const oc=[];nw.forEach(t=>coverageOf(t).news.forEach(n=>oc.push(n.outletName||outletOf(n.outlet).n)));
+    h+=`<div class="panel"><h3>الوسائل التي غطّت أخبارنا</h3><div class="cap">تغطيات الصحف المرتبطة تلقائيًا بالأخبار المنشورة</div>${hbars(cnt(oc,x=>[x]),8,"تغطية")}</div>`;
+    h+=`<div class="panel"><h3>حالة الرصد</h3><div class="cap">${esc(ylabel)}</div>${hbars([["رُصد",nw.filter(t=>{const c=coverageOf(t);return c.news.length||c.social.length}).length,"var(--ok)"],["قيد المتابعة",nw.filter(t=>{const c=coverageOf(t);return !c.news.length&&!c.social.length&&t.received>=addDays(bhNow().date,-7)}).length,"var(--warn)"],["لم يُرصد",nw.filter(t=>{const c=coverageOf(t);return !c.news.length&&!c.social.length&&t.received<addDays(bhNow().date,-7)}).length,"var(--idle)"]],3,"خبر",nw.length)}</div>`}
+  if(sec==="all"||sec==="monitor"){
+    if(sec==="monitor")h+=monthly("الأخبار المرصودة حسب الشهر","صحف وسوشيال · بحسب تاريخ النشر",[...(S.monitor||[]),...(S.social||[])].filter(x=>x.verified!==false),x=>x.date,"خبر");
     h+=`<div class="panel"><h3>الأخبار حسب الفئة</h3><div class="cap">صحف وسوشيال · ${esc(ylabel)}</div>${hbars(RCAT.map(c=>[c.n,news.filter(x=>newsCat(x)===c.k).length+posts.filter(x=>smCat(x)===c.k).length]),3,"خبر")}</div>`;
     h+=`<div class="panel"><h3>الأخبار حسب المستوى</h3><div class="cap">صحف وسوشيال</div>${hbars(LVL.map(l=>[l.n,news.filter(x=>lvlOf(x,false)===l.k).length+posts.filter(x=>lvlOf(x,true)===l.k).length,l.k==="high"?"var(--stop)":l.k==="med"?"var(--warn)":"var(--idle)"]),3,"خبر")}</div>`;
-    if(sec==="news"){h+=`<div class="panel"><h3>حسب الوسيلة الإعلامية</h3><div class="cap">الصحف ووكالات الأنباء</div>${hbars(cnt(news,x=>[x.outletName||outletOf(x.outlet).n]),10,"خبر")}</div>`;
+    if(sec==="monitor"){h+=`<div class="panel"><h3>حسب الوسيلة الإعلامية</h3><div class="cap">الصحف ووكالات الأنباء</div>${hbars(cnt(news,x=>[x.outletName||outletOf(x.outlet).n]),10,"خبر")}</div>`;
       h+=`<div class="panel"><h3>السوشيال حسب المنصة والنبرة</h3><div class="cap">منشورات مرصودة</div>${hbars(SM_PF.map(p=>[p.n,posts.filter(x=>x.platform===p.k).length]).concat(SM_TONE.map(t=>["نبرة "+t.n,posts.filter(x=>(x.tone||"neu")===t.k).length,t.c])),8,"منشور",posts.length)}</div>`;
       h+=`<div class="panel"><h3>حسب الموضوع</h3><div class="cap">صحف وسوشيال</div>${hbars(MTOPICS.map(t=>[t.n,news.filter(x=>x.topic===t.k).length+posts.filter(x=>x.topic===t.k).length]),8,"خبر")}</div>`}}
   h+=`</div>`;
-  el.innerHTML=h;
+  el.innerHTML=h;sbAfter();
 }
 const FINE=matchMedia("(hover:hover) and (pointer:fine)");
 document.addEventListener("mouseover",e=>{if(!FINE.matches)return;const t=e.target.closest("[data-tip]"),tip=$("tip");if(!t){tip.hidden=true;return}tip.textContent=t.dataset.tip;tip.hidden=false});
@@ -3490,6 +3869,9 @@ document.addEventListener("click",async e=>{
     case "task-edit":{const t=S.tasks.find(x=>x.id===v);if(t)openTask(t);break}
     case "f-state":S.f.state=v;render();break;
     case "ss":S.ss=v;render();break;
+    case "sb-rng":S.sbR=v;render();break;
+    case "sb-g":S.sbG=v;render();break;
+    case "sb-card":{const b=a.closest(".sb");if(b&&a.dataset.front!=="1")sbStackLayout(b,+a.dataset.i);break}
     case "aw-issue":S.ai=v;S.aw=null;render();break;
     case "aw-qr":{const u=AW_URL+"?via=qr";const done=ok=>{a.innerHTML=ic(ok?"check":"close")+(ok?"تم النسخ":"تعذّر النسخ");setTimeout(()=>{a.innerHTML=ic("dup")+"نسخ رابط QR"},1800);if(!ok)prompt("انسخ الرابط:",u)};try{navigator.clipboard.writeText(u).then(()=>done(true),()=>done(false))}catch(err){done(false)}break}
     case "theme":{const n=themeNow()==="dark"?"light":"dark";document.documentElement.setAttribute("data-theme",n);try{localStorage.setItem("lmra-theme",n)}catch(err){}paintTheme();break}
