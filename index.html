@@ -1048,6 +1048,43 @@ dialog::backdrop{background:rgba(10,20,40,.28);-webkit-backdrop-filter:blur(6px)
 .bnav{background:var(--g-strong)!important;border-top:1px solid var(--g-bd)}
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){:root{--g-bg:rgba(255,255,255,.9);--g-strong:#fff}:root[data-theme="dark"]{--g-bg:rgba(21,34,55,.94);--g-strong:#152237}}
 @media (prefers-reduced-transparency:reduce){:root{--g-bg:var(--surface);--g-bg2:var(--surface-2);--g-strong:var(--surface)}}
+/* ===== Tilted glass dock ===== */
+.dock{position:fixed;left:50%;bottom:26px;z-index:70;transform:translateX(-50%);perspective:900px;pointer-events:none}
+.dock-in{pointer-events:auto;display:flex;gap:30px;padding:16px 34px;border-radius:26px;
+  background:rgba(255,255,255,.34);border:1px solid rgba(255,255,255,.55);-webkit-backdrop-filter:blur(26px) saturate(180%);backdrop-filter:blur(26px) saturate(180%);
+  box-shadow:0 1px 0 rgba(255,255,255,.7) inset,0 18px 44px -10px rgba(23,50,90,.38),0 4px 12px rgba(23,50,90,.10);
+  transform-style:preserve-3d;transform:rotateX(18deg) rotateY(var(--ry,0deg));transition:transform 900ms cubic-bezier(.23,1,.32,1)}
+:root[data-theme="dark"] .dock-in{background:rgba(10,18,34,.36);border-color:rgba(255,255,255,.10);box-shadow:0 1px 0 rgba(255,255,255,.08) inset,0 18px 44px -8px rgba(0,0,0,.6)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .dock-in{background:rgba(10,18,34,.36);border-color:rgba(255,255,255,.10);box-shadow:0 1px 0 rgba(255,255,255,.08) inset,0 18px 44px -8px rgba(0,0,0,.6)}}
+.di{appearance:none;border:0;background:none;padding:6px;margin:0;cursor:pointer;position:relative;display:grid;justify-items:center;color:var(--ink);font:inherit;
+  transform-style:preserve-3d;transition:transform 420ms cubic-bezier(.34,1.56,.64,1),opacity 260ms ease;-webkit-tap-highlight-color:transparent}
+.di .ic{width:27px;height:27px;transition:transform 380ms cubic-bezier(.34,1.56,.64,1)}
+.di .dl{position:absolute;top:calc(100% + 4px);white-space:nowrap;font-size:12px;font-weight:700;color:var(--ink);opacity:0;transform:translateY(5px);transition:opacity 260ms ease,transform 260ms ease;pointer-events:none;
+  background:var(--g-strong,rgba(255,255,255,.85));border:1px solid var(--g-bd,rgba(255,255,255,.6));border-radius:7px;padding:1px 8px}
+.di[aria-current="page"]{color:var(--accent)}
+.di[aria-current="page"]::after{content:"";position:absolute;bottom:-5px;width:5px;height:5px;border-radius:50%;background:currentColor}
+@media (hover:hover) and (pointer:fine){
+  .dock-in:hover .di{opacity:.5;transform:translateZ(-20px)}
+  .dock-in .di:hover,.dock-in .di:focus-visible{opacity:1;transform:scale(1.4) translateZ(70px)}
+  .di:hover .ic{transform:rotateX(-10deg) rotateY(10deg)}
+  .di:hover .dl,.di:focus-visible .dl{opacity:1;transform:none}}
+.di:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:10px}
+body{padding-bottom:120px}
+#rpt{padding-bottom:130px}
+@media (min-width:761px){.bnav{display:none!important}}
+@media (max-width:760px){
+  .bnav{display:none!important}
+  body{padding-bottom:calc(98px + env(safe-area-inset-bottom))}
+  .dock{bottom:calc(10px + env(safe-area-inset-bottom));width:calc(100% - 20px)}
+  .dock-in{gap:0;justify-content:space-between;padding:9px 10px 8px;border-radius:22px;transform:rotateX(10deg)}
+  .di{flex:1;gap:3px;padding:4px 2px}
+  .di .ic{width:23px;height:23px}
+  .di .dl{position:static;opacity:.75;transform:none;background:none;border:0;padding:0;font-size:10.5px}
+  .di[aria-current="page"] .dl{opacity:1}
+  .di[aria-current="page"]::after{bottom:-6px;width:16px;height:3px;border-radius:3px}
+  .di:active{transform:scale(.92)}}
+@media (prefers-reduced-motion:reduce){.dock-in,.di,.di .ic,.di .dl{transition:none}.dock-in{transform:rotateX(14deg)}}
+@media print{.dock{display:none!important}body,#rpt{padding-bottom:0!important}}
 </style>
 <script>
 /* ---------- English translation layer ---------- */
@@ -1491,7 +1528,7 @@ function render(){
   if(S.dailyOpen)try{refreshDaily()}catch(e){}
   document.body.classList.toggle("ro",!S.canWrite);
   for(const v of ["home","calendar","tasks","stats","monitor"]){$("view-"+v).hidden=S.view!==v;$("tab-"+v).setAttribute("aria-selected",String(S.view===v))}
-  document.querySelectorAll(".bnav [data-v]").forEach(b=>b.setAttribute("aria-current",b.dataset.v===S.view?"page":"false"));
+  document.querySelectorAll(".bnav [data-v],.dock [data-v]").forEach(b=>b.setAttribute("aria-current",b.dataset.v===S.view?"page":"false"));
   if(S.view==="home")renderHome();else if(S.view==="calendar")renderCalendar();else if(S.view==="stats")renderStats();else if(S.view==="monitor")renderMonitor();else renderTasks();
   labelTables();
 }
@@ -1504,8 +1541,9 @@ function paintTheme(){const d=themeNow()==="dark";const b=$("theme-btn");if(b){b
   const m=document.querySelector('meta[name="theme-color"]');if(m)m.content=d?"#17325a":"#efe9df"}
 function initChrome(){document.querySelectorAll(".tabs .tab").forEach(t=>{if(!t.querySelector(".ic"))t.insertAdjacentHTML("afterbegin",ic(TAB_IC[t.dataset.v]))});
   const mb=document.querySelector(".mmenu");if(mb)mb.innerHTML=ic("menu");
-  if(!document.querySelector(".bnav")){const n=document.createElement("nav");n.className="bnav";n.setAttribute("aria-label","التنقل");
-    n.innerHTML=["home","calendar","tasks","monitor","stats"].map(v=>`<button type="button" data-act="tab" data-v="${v}">${ic(TAB_IC[v])}<span>${TAB_SHORT[v]}</span></button>`).join("");document.body.appendChild(n)}
+  if(!document.querySelector(".dock")){const n=document.createElement("nav");n.className="dock";n.setAttribute("aria-label","التنقل");
+    n.innerHTML='<div class="dock-in">'+["home","calendar","tasks","stats","monitor"].map(v=>`<button type="button" class="di" data-act="dock" data-v="${v}" aria-label="${TAB_SHORT[v]}">${ic(TAB_IC[v])}<span class="dl">${TAB_SHORT[v]}</span></button>`).join("")+'</div>';document.body.appendChild(n);
+    const di=n.firstChild;let raf=0,mx=0;if(!matchMedia("(prefers-reduced-motion: reduce)").matches&&matchMedia("(pointer:fine)").matches)addEventListener("mousemove",e=>{mx=e.clientX/innerWidth-.5;if(!raf)raf=requestAnimationFrame(()=>{raf=0;di.style.setProperty("--ry",(mx*10).toFixed(2)+"deg")})},{passive:true})}
   paintTheme();try{matchMedia("(prefers-color-scheme: dark)").addEventListener("change",paintTheme)}catch(e){}
   if(innerWidth<760&&!location.hash.includes("calendar"))S.calMode="month"}
 
@@ -3027,6 +3065,7 @@ function alertErr(err){alert(typeof errText==="function"?errText(err):String(err
 document.addEventListener("click",async e=>{
   const a=e.target.closest("[data-act]");if(!a)return;const act=a.dataset.act,v=a.dataset.v;
   switch(act){
+    case "dock":if(!$("rpt").hidden)closeReport();
     case "tab":{const m=document.querySelector(".mast.menu-open");if(m)m.classList.remove("menu-open")}if(v==="home"&&S.view!=="home")pickQuote();S.view=v;location.hash=v;render();window.scrollTo(0,0);break;
     case "cal-mode":S.calMode=v;render();break;
     case "cal-prev":if(S.calMode==="year")S.year--;else{S.month--;if(S.month<1){S.month=12;S.year--}}render();break;
