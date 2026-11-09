@@ -1085,11 +1085,95 @@ body{padding-bottom:120px}
   .di:active{transform:scale(.92)}}
 @media (prefers-reduced-motion:reduce){.dock-in,.di,.di .ic,.di .dl{transition:none}.dock-in{transform:rotateX(14deg)}}
 @media print{.dock{display:none!important}body,#rpt{padding-bottom:0!important}}
+/* ===== تحدي الصباح ===== */
+.gdlg{width:min(620px,calc(100% - 24px));padding:0;overflow:hidden}
+.gdlg:has(.g-wrap.wide){width:min(760px,calc(100% - 24px))}
+.g-wrap{display:grid;gap:16px;padding:20px 22px 18px}
+.g-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.g-badge{display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:13.5px;color:var(--accent);background:var(--accent-soft);border:1px solid var(--g-bd,var(--line));border-radius:999px;padding:5px 12px 5px 14px}
+.g-badge .ic{width:16px;height:16px}
+.g-tr{display:inline-flex;align-items:center;gap:10px}.g-score{font-weight:800;color:var(--accent);font-size:15px}
+.g-eyebrow{font-size:12.5px;font-weight:700;letter-spacing:.02em;color:var(--mast-eyebrow,var(--mute))}
+.g-hero,.g-res{display:grid;gap:8px;padding:6px 2px}
+.g-hero h3{font-size:24px}
+.g-hero p{margin:0;line-height:1.75}
+.g-meta{display:flex;flex-wrap:wrap;gap:8px}
+.g-meta span{font-size:13px;background:var(--g-bg2,var(--surface-2));border:1px solid var(--g-bd,var(--line));border-radius:999px;padding:4px 12px}
+.g-foot{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.g-foot:empty{display:none}
+.g-time{position:relative;height:6px;border-radius:6px;background:var(--g-line,var(--line));overflow:visible}
+.g-time i{position:absolute;inset:0;border-radius:inherit;background:linear-gradient(90deg,var(--accent),var(--t-photo));transform-origin:right center;transition:transform .1s linear}
+html[dir=ltr] .g-time i{transform-origin:left center}
+.g-time.low i{background:var(--stop)}
+.g-time b{position:absolute;top:-24px;inset-inline-end:0;font-size:12.5px;color:var(--mute)}
+.g-time.low b{color:var(--stop)}
+.g-q{display:grid;gap:4px}.g-q h3{font-size:19px;line-height:1.6}
+.g-opts{display:grid;gap:10px}
+.g-opt{appearance:none;font:inherit;text-align:start;cursor:pointer;padding:13px 16px;border-radius:12px;border:1px solid var(--g-bd,var(--line-2));background:var(--g-bg,var(--surface));color:var(--ink);font-weight:500;transition:transform 160ms var(--ease-out,ease),border-color .16s,background .16s}
+.g-opt:hover:not(:disabled){border-color:var(--accent);transform:translateY(-1px)}
+.g-opt:active:not(:disabled){transform:scale(.98)}
+.g-opt.ok{background:color-mix(in srgb,var(--ok) 16%,transparent);border-color:var(--ok);font-weight:700}
+.g-opt.bad{background:color-mix(in srgb,var(--stop) 14%,transparent);border-color:var(--stop)}
+.g-opt:disabled{cursor:default}
+.g-ans{min-height:58px;display:flex;flex-wrap:wrap;gap:8px;align-content:flex-start;padding:12px;border-radius:12px;border:1.5px dashed var(--line-2);background:var(--g-bg2,var(--surface-2))}
+.g-pool{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.g-chip{appearance:none;font:inherit;cursor:pointer;padding:8px 14px;border-radius:10px;border:1px solid var(--g-bd,var(--line-2));background:var(--g-bg,var(--surface));color:var(--ink);font-weight:700;font-size:15px;box-shadow:0 1px 0 rgba(255,255,255,.4) inset,0 2px 6px rgba(23,50,90,.06);transition:transform 160ms var(--ease-out,ease),opacity .2s}
+.g-chip:hover:not(:disabled){transform:translateY(-2px)}
+.g-chip:disabled{opacity:.25;cursor:default;transform:scale(.95)}
+.g-chip.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.shake{animation:gshake .42s}
+@keyframes gshake{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.g-reveal{display:grid;gap:6px;padding:14px 16px;border-radius:12px;border:1px solid}
+.g-reveal.ok{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 12%,transparent)}
+.g-reveal.bad{border-color:var(--hold);background:color-mix(in srgb,var(--hold) 10%,transparent)}
+.g-reveal b{font-size:17px;line-height:1.7}
+.g-para{margin:0;font-size:17px;line-height:2.15;text-align:justify}
+.g-w{cursor:pointer;border-radius:6px;padding:1px 2px;transition:background .15s}
+.g-w:hover{background:var(--accent-soft)}
+.g-w.hit{background:color-mix(in srgb,var(--ok) 20%,transparent);color:var(--ok);font-weight:700;text-decoration:underline;text-underline-offset:5px}
+.g-w.missed{background:color-mix(in srgb,var(--stop) 14%,transparent);color:var(--stop);font-weight:700}
+.g-w.miss{animation:gshake .38s;background:color-mix(in srgb,var(--stop) 12%,transparent)}
+.g-found{display:flex;align-items:center;gap:6px;margin-top:10px}
+.g-found i{width:26px;height:6px;border-radius:6px;background:var(--line-2)}
+.g-found i.on{background:var(--ok)}
+.g-big{font-size:56px;font-weight:800;line-height:1.05;color:var(--accent)}
+.g-big small{font-size:17px;color:var(--mute);margin-inline-start:6px;font-weight:700}
+.g-tbl{border:1px solid var(--g-bd,var(--line));border-radius:12px;overflow:hidden;background:var(--g-bg2,var(--surface))}
+.g-tbl table{width:100%;min-width:0;border-collapse:collapse;font-size:14px}
+.g-tbl caption{text-align:start;padding:10px 14px 4px;font-weight:700;font-size:13px;color:var(--mute)}
+.g-tbl th,.g-tbl td{padding:9px 14px;text-align:start;border-bottom:1px solid var(--g-line,var(--line))}
+.g-tbl th{position:static;font-size:12px}
+.g-tbl tr:last-child td{border-bottom:0}
+.g-tbl tr.me td{background:var(--accent-soft)}
+.g-rk{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;font-size:12px;font-weight:800;background:var(--g-bg,var(--surface-2));border:1px solid var(--g-bd,var(--line))}
+.g-rk.r1{background:linear-gradient(145deg,#f3d58a,#c9962f);color:#3b2a06;border-color:#c9962f}
+.g-rk.r2{background:linear-gradient(145deg,#e9edf2,#a9b3bf);color:#26313d;border-color:#a9b3bf}
+.g-rk.r3{background:linear-gradient(145deg,#efc49f,#b9774a);color:#3a1f0c;border-color:#b9774a}
+.g-empty{padding:18px;text-align:center;border:1px dashed var(--line-2);border-radius:12px}
+.g-seg{justify-self:start}
+.g-admin{display:grid;gap:10px;padding:14px;border-radius:12px;border:1px solid var(--g-bd,var(--line));background:var(--g-bg2,var(--surface-2))}
+.g-admin .btn{justify-self:start}
+.g-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+.g-kpis div{display:grid;gap:2px}.g-kpis b{font-size:22px;color:var(--accent)}.g-kpis span{font-size:12px;color:var(--mute)}
+.gcard{margin-top:18px;display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:22px;align-items:center;padding:22px 24px;border-radius:16px;border:1px solid var(--g-bd,var(--line));background:var(--g-bg,var(--surface));-webkit-backdrop-filter:var(--g-blur);backdrop-filter:var(--g-blur);box-shadow:var(--g-sh,var(--card-shadow));position:relative;overflow:hidden}
+.gcard::before{content:"";position:absolute;inset:auto auto -60px -40px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--t-news) 30%,transparent),transparent 70%);pointer-events:none}
+.gc-main{display:grid;gap:6px;position:relative}
+.gc-main h3{font-size:20px}
+.gc-main p{margin:0}
+.gc-act{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.gc-act .ic{width:16px;height:16px}
+.gc-board{display:grid;gap:8px;position:relative}
+.gc-board ol{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.gc-board li{display:flex;align-items:center;gap:10px;padding:6px 10px;border-radius:10px;background:var(--g-bg2,var(--surface-2));border:1px solid var(--g-bd,var(--line))}
+.gc-board li.me{border-color:var(--accent)}
+.gc-board .nm{flex:1;font-weight:500;font-size:14px}
+@media (max-width:760px){.gcard{grid-template-columns:1fr;padding:18px}.g-wrap{padding:18px 16px}.g-hero h3{font-size:21px}.g-big{font-size:46px}.g-para{font-size:16px}.gdlg{width:100%;max-width:100%}}
+@media (prefers-reduced-motion:reduce){.shake,.g-w.miss{animation:none}.g-time i{transition:none}}
 </style>
 <script>
 /* ---------- English translation layer ---------- */
 const I18N_EXACT={"من":"of","إلى":"to","الكل":"All","عام":"Year","حذف":"Delete","تعديل":"Edit","حفظ":"Save","إلغاء":"Cancel","إغلاق":"Close","بحث":"Search","ابحث":"Search","افتح":"Open","خبر":"stories","العدد":"Count","النسبة":"Share","الاسم":"Name","تأكيد":"Confirm","دخول":"Sign in","تغيير":"Change","عضو":"Member","مسؤول":"Admin","مشاهد":"Viewer","الرقم":"Number","ع":"AR","عرض":"View","فقط":"only","حتى":"until","صدر":"Published","رُصد:":"Covered:","مرصود":"monitored","منشور":"post","مهمة":"task","مهام":"tasks","صحف":"press","سوشيال":"social","تغطية":"coverage","يوم":"day","أيام":"days"};
-const I18N_DICT={
+const I18N_DICT={"نتيجتك اليوم:":"Your score today:","أحسنت! سجّلت":"Well done! You scored","تحدي اليوم:":"Today's challenge:","عُد غدًا لتحدٍّ جديد وحافظ على سلسلتك 🔥":"Come back tomorrow and keep your streak 🔥","الترتيب —":"Ranking —","دقة":"Accuracy","محاولة":"attempts","من 3":"of 3","نقطة اليوم":"pts today","تحدي الصباح":"Morning Challenge","سؤال الهيئة":"LMRA Quiz","رتّب العنوان":"Unscramble the Headline","اكتشف الخطأ":"Spot the Errors","جاهز لتحدي اليوم؟":"Ready for today's challenge?","محاولة واحدة فقط في اليوم":"One attempt per day","لاحقًا":"Later","ابدأ التحدي":"Start challenge","يوم":"day","أيام":"days","متتالية 🔥":"in a row 🔥","نقطة":"pts","السؤال":"Question","رتّب كلمات العنوان":"Put the headline words in order","اضغط الكلمات بالترتيب. اضغط كلمة في السطر الأعلى لإرجاعها.":"Tap the words in order. Tap a word in the top row to put it back.","مسح":"Clear","تحقق":"Check","إجابة صحيحة":"Correct!","انتهى الوقت · العنوان الصحيح":"Time's up · the correct headline","اكتشف الأخطاء الثلاثة":"Find the three errors","اضغط على الكلمة الخاطئة. الضغط الخاطئ يخصم 20 نقطة.":"Tap each wrong word. A wrong tap costs 20 points.","نتيجتك اليوم":"Your score today","صحيحة":"correct","ثانية":"sec","الترتيب اليوم":"Today's rank","لوحة اليوم":"Today's board","التحدي القادم غدًا صباحًا":"Next challenge tomorrow morning","لوحة الصدارة":"Leaderboard","لا توجد نتائج بعد. كن أول من يلعب!":"No scores yet. Be the first to play!","الموظف":"Employee","النقاط":"Points","مرات اللعب":"Played","الدقة":"Accuracy","هذا الأسبوع":"This week","هذا الشهر":"This month","منذ البداية":"All time","للمشرفين":"Admins only","شاركوا اليوم":"played today","تصدير النتائج Excel":"Export results to Excel","لعبت تحدي اليوم ✓":"You've played today ✓","العب تحدي اليوم":"Play today's challenge","أبطال الأسبوع":"This week's champions","لا توجد نتائج بعد هذا الأسبوع":"No scores yet this week","3 أسئلة عن الهيئة وخدماتها وقوانينها. لكل سؤال 20 ثانية.":"3 questions about LMRA, its services and laws. 20 seconds each.","عنوان خبر حقيقي نشرته الهيئة، كلماته مبعثرة. رتّبها بالضغط على الكلمات بالترتيب الصحيح خلال 90 ثانية.":"A real LMRA news headline with its words shuffled. Tap them in the right order within 90 seconds.","فقرة خبر فيها 3 أخطاء: إملائي، ورقم أو تاريخ، ومعلومة. اضغط على الكلمات الخاطئة خلال 90 ثانية.":"A news paragraph with 3 errors: a spelling mistake, a wrong number or date, and a wrong fact. Tap the wrong words within 90 seconds.",
 /* masthead & nav */
 "هيئة تنظيم سوق العمل":"Labour Market Regulatory Authority","منصة فريق إدارة الاتصال":"Communications Team Platform","فريق إدارة الاتصال":"Communications Team","إدارة الاتصال":"Communications Department",
 "الرئيسية":"Home","التقويم السنوي":"Annual Calendar","التقويم":"Calendar","المهام":"Tasks","الإحصائيات":"Statistics","الرصد الإعلامي":"Media Monitoring","الرصد":"Monitoring",
@@ -1444,7 +1528,7 @@ const S={
   tasks:[],leaves:[],holidays:[],settings:{members:FALLBACK_MEMBERS,departments:[]},
   view:"home",calMode:"year",year:now.getFullYear(),month:now.getMonth()+1,
   f:{state:"current",type:"all",owner:"all",year:"all",q:""},
-  editTask:null,editLeave:null,ready:{tasks:false,leaves:false,holidays:false,monitor:false},monitor:[],checks:[]
+  editTask:null,editLeave:null,ready:{tasks:false,leaves:false,holidays:false,monitor:false,game:false},game:[],monitor:[],checks:[]
 };
 
 /* ---------- helpers ---------- */
@@ -1531,6 +1615,7 @@ function render(){
   document.querySelectorAll(".bnav [data-v],.dock [data-v]").forEach(b=>b.setAttribute("aria-current",b.dataset.v===S.view?"page":"false"));
   if(S.view==="home")renderHome();else if(S.view==="calendar")renderCalendar();else if(S.view==="stats")renderStats();else if(S.view==="monitor")renderMonitor();else renderTasks();
   labelTables();
+  try{gAuto()}catch(e){}
 }
 // تسميات الأعمدة لكل خلية — تُستخدم في عرض البطاقات على الجوال والتابلت
 function labelTables(){document.querySelectorAll("table.ttbl,table.mtbl,table.scant").forEach(t=>{const hs=[...t.querySelectorAll("thead th")].map(th=>th.textContent.trim());
@@ -1782,6 +1867,7 @@ function renderHome(){
       ${card("monitor","b-news","news","الرصد الإعلامي",`<b class="num">${todayNews.length}</b> مرصود اليوم`,bgNews)}
       ${card("stats","b-stats","chart","الإحصائيات",`<b class="num">${done}</b> مهمة مكتملة في ${yr}`,bgStats)}
     </div>
+    ${gHomeCard()}
     <blockquote class="hquote"><span class="qm">”</span><p>${esc(QUOTES[S.qi])}</p><cite>فريق إدارة الاتصال</cite></blockquote>
   </div>`}
 
@@ -2498,8 +2584,13 @@ async function exportXlsx(scope){
       leaves.slice().sort((a,b)=>String(a.from).localeCompare(String(b.from))).map(l=>{const [c,w]=leaveDays(l);return {name:l.name,type:l.type,from:l.from,to:validDate(l.to)?l.to:l.from,cal:c,work:w,notes:l.notes}}),{title:"الإجازات"+(all?"":" — "+yr),sub:stamp+" · أيام العمل تستثني الجمعة والسبت والعطل الرسمية"});
     sheet("العطل الرسمية",[{k:"name",n:"العطلة",w:34},{k:"from",n:"من",w:14,t:"date",al:"center"},{k:"to",n:"إلى",w:14,t:"date",al:"center"},{k:"tent",n:"ملاحظة",w:18}],
       hols.slice().sort((a,b)=>String(a.from).localeCompare(String(b.from))).map(h=>({name:h.name,from:h.from,to:validDate(h.to)?h.to:h.from,tent:h.tentative?"تاريخ تقريبي":""})),{title:"العطل الرسمية"+(all?"":" — "+yr),sub:stamp})}
+  if(all||scope==="game"){const TN={quiz:"سؤال الهيئة",scramble:"رتّب العنوان",spot:"اكتشف الخطأ"};
+    sheet("تحدي الصباح",[{k:"date",n:"التاريخ",w:13,t:"date",al:"center"},{k:"name",n:"الموظف",w:26},{k:"type",n:"نوع التحدي",w:16},{k:"score",n:"النقاط",w:10,al:"center"},{k:"res",n:"الإجابات الصحيحة",w:16,al:"center"},{k:"wrong",n:"محاولات خاطئة",w:14,al:"center"},{k:"sec",n:"المدة (ثانية)",w:13,al:"center"}],
+      (S.game||[]).slice().sort((a,b)=>String(b.date).localeCompare(String(a.date))||(b.score||0)-(a.score||0)).map(g=>({date:g.date,name:g.name,type:TN[g.type]||g.type,score:g.score||0,res:(g.correct||0)+" / "+(g.total||0),wrong:g.wrong||0,sec:Math.round((g.ms||0)/1000)})),{title:"تحدي الصباح — النتائج",sub:stamp});
+    sheet("لوحة الصدارة",[{k:"rank",n:"الترتيب",w:9,al:"center"},{k:"name",n:"الموظف",w:26},{k:"pts",n:"مجموع النقاط",w:14,al:"center"},{k:"n",n:"مرات اللعب",w:12,al:"center"},{k:"acc",n:"الدقة",w:10,al:"center"},{k:"streak",n:"السلسلة الحالية",w:14,al:"center"}],
+      gBoard("all").map(r=>({rank:r.rank,name:r.name,pts:r.pts,n:r.n,acc:r.acc+"%",streak:r.streak})),{title:"تحدي الصباح — لوحة الصدارة (منذ البداية)",sub:stamp})}
   const buf=await wb.xlsx.writeBuffer();const blob=new Blob([buf],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
-  const nm={all:"All Data",tasks:"Tasks",calendar:"Leaves "+yr,monitor:"Monitoring "+M.from+(M.to!==M.from?" to "+M.to:""),stats:"Statistics "+(sy==="all"?"All Years":sy)}[scope];
+  const nm={game:"Morning Challenge",all:"All Data",tasks:"Tasks",calendar:"Leaves "+yr,monitor:"Monitoring "+M.from+(M.to!==M.from?" to "+M.to:""),stats:"Statistics "+(sy==="all"?"All Years":sy)}[scope];
   st.textContent="بانتظار تأكيد التحميل…";await offerFile(`LMRA CCD - ${nm} - ${now0.date}.xlsx`,blob);st.textContent="تم تجهيز الملف ✓";setTimeout(()=>st.hidden=true,2200)}
   catch(e){console.error(e);st.textContent="تعذّر إنشاء ملف Excel";setTimeout(()=>st.hidden=true,3000)}}
 
@@ -3058,6 +3149,143 @@ document.addEventListener("change",e=>{const c=e.target.closest&&e.target.closes
   if(k==="news"){const M=monPeriod();M.ch=M.ch||[];M.ch=c.checked?[...new Set([...M.ch,v])]:M.ch.filter(x=>x!==v)}else{S.smCh=S.smCh||[];S.smCh=c.checked?[...new Set([...S.smCh,v])]:S.smCh.filter(x=>x!==v)}render()});
 document.addEventListener("click",e=>{if(S.pop&&!e.target.closest(".popw")){S.pop=null;render()}},true);
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&S.pop&&!document.querySelector("dialog[open]")){S.pop=null;render()}});
+/* ---------- تحدي الصباح ---------- */
+const GQ=[
+["بموجب أي قانون أُنشئت هيئة تنظيم سوق العمل؟",["القانون رقم (19) لسنة 2006","القانون رقم (36) لسنة 2012","القانون رقم (57) لسنة 2006","القانون رقم (1) لسنة 2008"]],
+["ما رقم مركز الاتصال الرئيسي للهيئة؟",["17506055","17103103","17388788","80008001"]],
+["ما الخط الساخن الوطني لمكافحة الاتجار بالأشخاص؟",["995","999","17506055","199"]],
+["متى بدأت المرحلة الأولى من نظام حماية الأجور؟",["1 مايو 2021","1 سبتمبر 2021","1 يناير 2022","1 فبراير 2026"]],
+["من شملت المرحلة الأولى من نظام حماية الأجور؟",["أصحاب العمل الذين لديهم 500 عامل فأكثر","أصحاب العمل الذين لديهم 50–499 عاملًا","المنشآت الصغيرة أقل من 50 عاملًا","جميع أصحاب العمل دفعة واحدة"]],
+["المرحلة الثانية من نظام حماية الأجور (سبتمبر 2021) شملت المنشآت التي لديها:",["من 50 إلى 499 عاملًا","500 عامل فأكثر","أقل من 10 عمال","العمالة المنزلية فقط"]],
+["ما مدة المهلة الممنوحة مع بدء كل مرحلة من نظام حماية الأجور؟",["ستة أشهر","شهر واحد","ثلاثة أشهر","سنة كاملة"]],
+["نظام حماية الأجور يربط الهيئة إلكترونيًا مع:",["مصرف البحرين المركزي والمؤسسات المالية","وزارة الداخلية فقط","غرفة تجارة وصناعة البحرين فقط","هيئة المعلومات والحكومة الإلكترونية فقط"]],
+["حتى أي تاريخ طُلب من أصحاب العمل تعيين مسؤول عن الأجور؟",["1 فبراير 2026","1 مايو 2021","1 يناير 2025","31 ديسمبر 2026"]],
+["أي برنامج حلّ محل «التصريح المرن»؟",["برنامج تسجيل العمالة عبر مراكز التسجيل المعتمدة","نظام حماية الأجور","برنامج البحرنة الموازية","نظام إدارة العمالة الوافدة"]],
+["متى أُطلق برنامج تسجيل العمالة بديلًا عن التصريح المرن؟",["ديسمبر 2022","مايو 2021","يناير 2020","أكتوبر 2024"]],
+["في أي عام افتُتح مركز حماية العمالة الوافدة؟",["2015","2006","2018","2021"]],
+["أين يقع مركز حماية العمالة الوافدة التابع للهيئة؟",["السهلة الشمالية","المحرق","مدينة عيسى","سترة"]],
+["منذ أي عام تحافظ البحرين على تصنيف «الفئة الأولى» في تقرير الاتجار بالأشخاص الأمريكي؟",["2018","2011","2015","2021"]],
+["في تقرير الاتجار بالأشخاص لعام 2026، كم عامًا متتاليًا حافظت البحرين على الفئة الأولى؟",["9 أعوام","7 أعوام","8 أعوام","10 أعوام"]],
+["كم دولة خليجية صُنّفت في الفئة الأولى بتقرير الاتجار بالأشخاص 2026؟",["دولة واحدة: البحرين","دولتان","ثلاث دول","جميع دول الخليج"]],
+["ما القانون البحريني الخاص بمكافحة الاتجار بالأشخاص؟",["القانون رقم (1) لسنة 2008","القانون رقم (19) لسنة 2006","القانون رقم (36) لسنة 2012","المرسوم رقم (39) لسنة 2019"]],
+["ما عقوبة السجن لجريمة الاتجار بالأشخاص وفق قانون 2008؟",["من 3 إلى 15 سنة","من سنة إلى 3 سنوات","من 5 إلى 7 سنوات","السجن المؤبد فقط"]],
+["كم عدد أعضاء مجلس إدارة الهيئة بمن فيهم الرئيس (وفق تعديل 2015)؟",["تسعة أعضاء","سبعة أعضاء","خمسة أعضاء","أحد عشر عضوًا"]],
+["من يرأس اللجنة الوطنية لمكافحة الاتجار بالأشخاص؟",["الرئيس التنفيذي لهيئة تنظيم سوق العمل","وزير الداخلية","النائب العام","وزير الخارجية"]],
+["ما رقم خدمات العمالة الوافدة في الهيئة؟",["17103103","17506055","995","17388788"]],
+["حجز جواز سفر العامل الأجنبي أو بطاقته الشخصية من قبل صاحب العمل:",["مخالف للقانون","مسموح بموافقة الهيئة","مسموح خلال فترة التجربة","مسموح للعمالة المنزلية فقط"]],
+["هل يجوز للعامل الأجنبي دفع مبلغ مقابل إصدار تصريح عمله أو استمراره؟",["لا، تحت أي ظرف","نعم، إذا وافق صاحب العمل","نعم، في السنة الأولى فقط","نعم، عبر مكتب التوظيف"]],
+["ما الذي أطلقته البحرين كأول آلية من نوعها في الشرق الأوسط؟",["الآلية الوطنية لإحالة ضحايا الاتجار بالأشخاص","نظام حماية الأجور","التصريح المرن","مراكز تسجيل العمالة"]],
+["في أي عام أنشأت البحرين أول صندوق حكومي في المنطقة لمساعدة ضحايا الاتجار بالأشخاص؟",["2018","2008","2015","2022"]],
+["كم حملة وزيارة تفتيشية نفذتها الهيئة خلال أكتوبر 2026؟",["3,692","3,152","2,840","4,105"]],
+["كم مخالفًا تم ترحيله خلال حملات التفتيش في أكتوبر 2026؟",["574","62","1,200","3,692"]],
+["ما اسم المساعد الافتراضي للهيئة؟",["سند","سهل","تواصل","بوابتي"]],
+["ما اسم المجلة التي تصدرها الهيئة ويعمل عليها فريق إدارة الاتصال؟",["أضواء","آفاق","رؤى","نبض"]],
+["ما اسم المعرض الفني المصاحب لملتقى مكافحة الاتجار بالأشخاص؟",["إنسان","أمل","كرامة","حياة"]]
+];
+const GE=[
+"نفذت هيئة {تنضيم|تنظيم} سوق العمل خلال شهر أكتوبر الماضي {3,962|3,692} حملة وزيارة تفتيشية بالتنسيق مع الجهات الحكومية ذات العلاقة، أسفرت عن ضبط 62 عاملًا مخالفًا وغير نظامي، وذلك في إطار الجهود المستمرة لضبط سوق العمل والحفاظ على عدالة وتنافسية بيئة {التعليم|العمل}.",
+"أعلنت هيئة تنظيم سوق العمل بدء المرحلة الأولى من نظام حماية الأجور في الأول من {يونيو|مايو} 2021، وتشمل أصحاب العمل الذين لديهم 500 عامل فأكثر، مؤكدة أن النظام يرتبط إلكترونيًا مع مصرف البحرين {الوطني|المركزي} والمؤسسات المالية، ويمنح مهلة ستة أشهر مع بداية كل {مرحله|مرحلة}.",
+"حافظت مملكة البحرين على تصنيفها ضمن الفئة {الثانية|الأولى} في تقرير وزارة الخارجية الأمريكية لمكافحة {الإتجار|الاتجار} بالأشخاص للعام التاسع على التوالي، لتكون الدولة {الأوروبية|الخليجية} الوحيدة في هذه الفئة.",
+"{إستقبلت|استقبلت} هيئة تنظيم سوق العمل وفدًا رسميًا في مركز حماية العمالة الوافدة بمنطقة {المحرق|السهلة} الشمالية، حيث اطّلع الوفد على الخدمات التي يقدمها المركز منذ افتتاحه عام {2019|2015}.",
+"دعت هيئة تنظيم سوق العمل أصحاب العمل إلى تعيين {مسؤل|مسؤول} عن الأجور في موعد أقصاه الأول من {مارس|فبراير} 2026، وذلك لمتابعة إعداد ملفات الأجور ورفعها عبر نظام حماية {الأسعار|الأجور} المطوّر.",
+"أطلقت الهيئة برنامج تسجيل العمالة في ديسمبر {2020|2022} بديلًا عن التصريح {الدائم|المرن}، حيث يتم تسجيل العمال عبر مراكز التسجيل {المعتمده|المعتمدة} التي تحدّث بياناتهم بشكل دوري.",
+"أكدت الهيئة أن حجز جواز سفر العامل الأجنبي أو بطاقته الشخصية يُعد {مسموحًا|مخالفًا} للقانون، داعية العمال إلى التواصل مع مركز الاتصال على الرقم {17506505|17506055} أو زيارة مركز الحماية {والتظلومات|والتظلمات}.",
+"انتهت إدارة الاتصال من إعداد العدد {12|11} من مجلة {أنوار|أضواء}، الذي يسلّط الضوء على أبرز {إنجازت|إنجازات} الهيئة ومبادراتها خلال الفترة الماضية.",
+"دشّنت الهيئة النسخة التجريبية من المساعد الافتراضي {سهل|سند}، ضمن جهودها لتطوير الخدمات {الالكترونيه|الإلكترونية} وتسهيل {وصل|وصول} العملاء إليها.",
+"يعاقب القانون رقم (1) لسنة 2008 بشأن مكافحة الاتجار {بالأشخاض|بالأشخاص} بالسجن من 3 إلى {10|15} سنة وبغرامة تصل إلى {20,000|10,000} دينار."
+];
+const GS_FALLBACK=["هيئة تنظيم سوق العمل تنفذ 3,692 حملة وزيارة تفتيشية خلال شهر أكتوبر","هيئة تنظيم سوق العمل تطوّر خدمة تحديث صلاحيات الشخص المخوّل","هيئة تنظيم سوق العمل تستقبل وفدًا من مملكة تايلاند في مركز حماية العمالة الوافدة","اللجنة الوطنية لمكافحة الاتجار بالأشخاص تعقد اجتماعها الدوري"];
+const GTYPES={quiz:{n:"سؤال الهيئة",ic:"info",d:"3 أسئلة عن الهيئة وخدماتها وقوانينها. لكل سؤال 20 ثانية."},scramble:{n:"رتّب العنوان",ic:"list",d:"عنوان خبر حقيقي نشرته الهيئة، كلماته مبعثرة. رتّبها بالضغط على الكلمات بالترتيب الصحيح خلال 90 ثانية."},spot:{n:"اكتشف الخطأ",ic:"search",d:"فقرة خبر فيها 3 أخطاء: إملائي، ورقم أو تاريخ، ومعلومة. اضغط على الكلمات الخاطئة خلال 90 ثانية."}};
+const GORDER=["quiz","scramble","spot"];
+function gHash(s){let h=1779033703^s.length;for(let i=0;i<s.length;i++){h=Math.imul(h^s.charCodeAt(i),3432918353);h=h<<13|h>>>19}return ()=>{h=Math.imul(h^h>>>16,2246822507);h=Math.imul(h^h>>>13,3266489909);return (h^=h>>>16)>>>0}}
+function gRng(seed){let a=gHash(seed)();return ()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return ((t^t>>>14)>>>0)/4294967296}}
+function gShuffle(arr,seed){const r=gRng(seed),a=arr.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function gDayN(d){return Math.floor(Date.parse(d+"T12:00:00Z")/864e5)}
+function gToday(){return bhNow().date}
+function gTypeOf(d){return GORDER[((gDayN(d)%3)+3)%3]}
+function gMine(){return (S.game||[]).filter(g=>g.uid===S.me)}
+function gPlayed(d){return gMine().find(g=>g.date===d)}
+function gIsWork(d){const w=new Date(d+"T12:00:00Z").getUTCDay();return w!==5&&w!==6}
+function gStreak(uid){const days=new Set((S.game||[]).filter(g=>g.uid===uid).map(g=>g.date));let d=gToday(),n=0;if(!days.has(d))d=addDays(d,-1);for(let i=0;i<400;i++){if(!gIsWork(d)){d=addDays(d,-1);continue}if(days.has(d)){n++;d=addDays(d,-1)}else break}return n}
+function gQuizSet(d){const order=gShuffle(GQ.map((q,i)=>i),"lmra-quiz-v1");const k=Math.floor(gDayN(d)/3);const out=[];for(let i=0;i<3;i++){const qi=order[(k*3+i)%order.length];const q=GQ[qi];out.push({q:q[0],ans:q[1][0],opts:gShuffle(q[1],d+"-"+qi)})}return out}
+function gScrambleSrc(d){const pool=[...new Set([...(S.tasks||[]).filter(t=>t.type==="news"||t.type==="أخبار"||t.type==="خبر").map(t=>t.title),...(S.monitor||[]).filter(x=>x.topic==="lmra").map(x=>x.headline),...GS_FALLBACK])].map(s=>String(s||"").replace(/\s+/g," ").trim()).filter(s=>{const n=s.split(" ").length;return n>=5&&n<=11&&/[؀-ۿ]/.test(s)&&!/[|«»"]/.test(s)}).sort();
+  const pick=pool.length?pool[Math.floor(gRng("lmra-scr-"+d)()*pool.length)]:GS_FALLBACK[0];const words=pick.split(" ");let sh=gShuffle(words.map((w,i)=>i),"scr-"+d);if(sh.every((v,i)=>v===i))sh=sh.reverse();return {text:pick,words,order:sh}}
+function gSpotSrc(d){const order=gShuffle(GE.map((x,i)=>i),"lmra-spot-v1");const raw=GE[order[Math.floor(gDayN(d)/3)%order.length]];const toks=[];raw.split(/\s+/).forEach(w=>{const m=w.match(/^(.*)\{([^|]+)\|([^}]+)\}(.*)$/);if(m)toks.push({t:m[1]+m[2]+m[4],err:true,fix:m[1]+m[3]+m[4]});else toks.push({t:w})});return toks}
+const G={};
+function gDlg(){let d=$("dlg-game");if(!d){d=document.createElement("dialog");d.id="dlg-game";d.className="gdlg";document.body.appendChild(d);d.addEventListener("cancel",e=>{if(G.live){e.preventDefault()}});d.addEventListener("close",()=>{gStop()})}return d}
+function gStop(){clearInterval(G.tick);G.tick=0;G.live=false}
+function gOpen(auto){if(!S.db||!S.me)return;const d=gDlg();const td=gToday();const mine=gPlayed(td);if(mine){gResult(mine);if(!d.open)d.showModal();return}
+  const ty=gTypeOf(td),T=GTYPES[ty],st=gStreak(S.me);
+  d.innerHTML=`<div class="g-wrap"><div class="g-top"><span class="g-badge">${ic(T.ic)}<span>${T.n}</span></span><button class="btn icon" type="button" data-act="g-close" aria-label="إغلاق">✕</button></div>
+    <div class="g-hero"><div class="g-eyebrow">تحدي الصباح · ${esc(longDate(td))}</div><h3>جاهز لتحدي اليوم؟</h3><p class="muted">${T.d}</p>
+    <div class="g-meta"><span><b class="num">${st}</b> ${st===1?"يوم":"أيام"} متتالية 🔥</span><span>محاولة واحدة فقط في اليوم</span></div></div>
+    <div class="g-foot"><button class="btn" type="button" data-act="g-later">لاحقًا</button><button class="btn primary" type="button" data-act="g-start">ابدأ التحدي</button></div></div>`;
+  if(!d.open)d.showModal()}
+function gTimer(sec,onTick,onEnd){gStop();G.live=true;G.t0=performance.now();G.lim=sec*1000;const bar=()=>{const el=G.dlg.querySelector(".g-time i"),lb=G.dlg.querySelector(".g-time b");const left=Math.max(0,G.lim-(performance.now()-G.t0));if(el)el.style.transform=`scaleX(${left/G.lim})`;if(lb)lb.textContent=Math.ceil(left/1000);if(el)el.parentElement.classList.toggle("low",left<5000);onTick&&onTick(left);if(left<=0){gStop();onEnd()}};G.tick=setInterval(bar,100);bar()}
+function gLeft(){return Math.max(0,G.lim-(performance.now()-G.t0))}
+function gStart(){const d=gDlg();G.dlg=d;const td=gToday();G.date=td;G.type=gTypeOf(td);G.score=0;G.correct=0;G.wrong=0;G.ms0=Date.now();
+  if(G.type==="quiz"){G.qs=gQuizSet(td);G.qi=0;G.total=3;gQuizQ()}
+  else if(G.type==="scramble"){G.src=gScrambleSrc(td);G.pick=[];G.total=1;gScr()}
+  else{G.toks=gSpotSrc(td);G.found=new Set();G.total=3;gSpot()}}
+function gShell(title,body,foot){return `<div class="g-wrap"><div class="g-top"><span class="g-badge">${ic(GTYPES[G.type].ic)}<span>${GTYPES[G.type].n}</span></span><span class="g-tr"><span class="g-score num">${G.score} نقطة</span><button class="btn icon" type="button" data-act="g-close" aria-label="إنهاء" title="إنهاء التحدي واحتساب النتيجة الحالية">✕</button></span></div>
+  <div class="g-time"><i></i><b class="num"></b></div><div class="g-q">${title}</div><div class="g-body" data-noi18n>${body}</div><div class="g-foot">${foot||""}</div></div>`}
+function gQuizQ(){const q=G.qs[G.qi];G.dlg.innerHTML=gShell(`<span class="muted small">السؤال ${G.qi+1} من 3</span><h3 data-noi18n>${esc(q.q)}</h3>`,`<div class="g-opts">${q.opts.map((o,i)=>`<button type="button" class="g-opt" data-act="g-ans" data-v="${i}">${esc(o)}</button>`).join("")}</div>`);
+  G.lock=false;gTimer(20,null,()=>gQuizAns(-1))}
+function gQuizAns(i){if(G.lock)return;G.lock=true;const q=G.qs[G.qi];const left=gLeft();gStop();const ok=i>=0&&q.opts[i]===q.ans;
+  G.dlg.querySelectorAll(".g-opt").forEach((b,k)=>{b.disabled=true;if(q.opts[k]===q.ans)b.classList.add("ok");else if(k===i)b.classList.add("bad")});
+  if(ok){G.correct++;G.score+=100+Math.round(50*left/20000)}else G.wrong++;
+  const sc=G.dlg.querySelector(".g-score");if(sc)sc.textContent=G.score+" نقطة";
+  setTimeout(()=>{G.qi++;if(G.qi<3)gQuizQ();else gFinish()},ok?900:1600)}
+function gScr(){const s=G.src;const used=new Set(G.pick);
+  G.dlg.innerHTML=gShell(`<h3>رتّب كلمات العنوان</h3><span class="muted small">اضغط الكلمات بالترتيب. اضغط كلمة في السطر الأعلى لإرجاعها.</span>`,
+   `<div class="g-ans" id="g-ans">${G.pick.map((wi,k)=>`<button type="button" class="g-chip on" data-act="g-unpick" data-v="${k}">${esc(s.words[wi])}</button>`).join("")||'<span class="muted small">…</span>'}</div>
+    <div class="g-pool">${s.order.map(wi=>`<button type="button" class="g-chip" data-act="g-pick" data-v="${wi}" ${used.has(wi)?"disabled":""}>${esc(s.words[wi])}</button>`).join("")}</div>`,
+   `<button class="btn" type="button" data-act="g-clear">مسح</button><button class="btn primary" type="button" data-act="g-check" ${G.pick.length===s.words.length?"":"disabled"}>تحقق</button>`);
+  if(!G.live)gTimer(90,null,()=>gScrEnd(false));else{const el=G.dlg.querySelector(".g-time i");if(el)el.style.transform=`scaleX(${gLeft()/G.lim})`}}
+function gScrCheck(){const s=G.src;const got=G.pick.map(i=>s.words[i]).join(" ");if(got===s.text){gScrEnd(true)}else{G.wrong++;const a=$("g-ans");if(a){a.classList.remove("shake");void a.offsetWidth;a.classList.add("shake")}}}
+function gScrEnd(ok){const left=gLeft();gStop();if(ok){G.correct=1;G.score=Math.max(100,300+Math.round(150*left/90000)-30*G.wrong)}
+  G.dlg.querySelector(".g-body").innerHTML=`<div class="g-reveal ${ok?"ok":"bad"}"><span class="small muted">${ok?"إجابة صحيحة":"انتهى الوقت · العنوان الصحيح"}</span><b>${esc(G.src.text)}</b></div>`;G.dlg.querySelector(".g-foot").innerHTML="";setTimeout(gFinish,ok?1100:2200)}
+function gSpot(){G.dlg.innerHTML=gShell(`<h3>اكتشف الأخطاء الثلاثة</h3><span class="muted small">اضغط على الكلمة الخاطئة. الضغط الخاطئ يخصم 20 نقطة.</span>`,
+   `<p class="g-para">${G.toks.map((t,i)=>`<span class="g-w${G.found.has(i)?" hit":""}" data-act="g-word" data-v="${i}" role="button" tabindex="0">${esc(G.found.has(i)?t.fix:t.t)}</span>`).join(" ")}</p><div class="g-found">${[0,1,2].map(k=>`<i class="${k<G.found.size?"on":""}"></i>`).join("")}<span class="small muted">${G.found.size} من 3</span></div>`);
+  if(!G.live)gTimer(90,null,()=>gSpotEnd())}
+function gSpotWord(i){if(!G.live)return;const t=G.toks[i];if(!t||G.found.has(i))return;
+  if(t.err){G.found.add(i);G.correct=G.found.size;G.score+=100;const el=G.dlg.querySelector(`.g-w[data-v="${i}"]`);if(el){el.classList.add("hit");el.title=t.t+" ← "+t.fix;el.textContent=t.fix}
+    const f=G.dlg.querySelector(".g-found");if(f)f.outerHTML=`<div class="g-found">${[0,1,2].map(k=>`<i class="${k<G.found.size?"on":""}"></i>`).join("")}<span class="small muted">${G.found.size} من 3</span></div>`;
+    if(G.found.size===3){G.score+=Math.round(150*gLeft()/90000);gSpotEnd()}}
+  else{G.wrong++;G.score=Math.max(0,G.score-20);const el=G.dlg.querySelector(`.g-w[data-v="${i}"]`);if(el){el.classList.remove("miss");void el.offsetWidth;el.classList.add("miss")}}
+  const sc=G.dlg.querySelector(".g-score");if(sc)sc.textContent=G.score+" نقطة"}
+function gSpotEnd(){gStop();G.toks.forEach((t,i)=>{if(t.err&&!G.found.has(i)){const el=G.dlg.querySelector(`.g-w[data-v="${i}"]`);if(el){el.classList.add("missed");el.textContent=t.t+" ← "+t.fix}}});G.dlg.querySelectorAll(".g-w").forEach(e=>e.removeAttribute("data-act"));setTimeout(gFinish,G.found.size===3?1100:2600)}
+async function gFinish(){gStop();const rec={uid:S.me,name:S.meName||"",date:G.date,type:G.type,score:Math.round(G.score),correct:G.correct,total:G.total,wrong:G.wrong,ms:Date.now()-G.ms0,ts:new Date().toISOString()};
+  try{await S.db.collection("game").doc(G.date+"_"+S.me).set(rec)}catch(e){console.error(e)}
+  if(!(S.game||[]).some(g=>g.uid===S.me&&g.date===G.date))(S.game=S.game||[]).push(Object.assign({id:G.date+"_"+S.me},rec));gResult(rec);render()}
+function gBoard(range){const td=gToday();let from="0000";if(range==="day")from=td;else if(range==="week"){const w=new Date(td+"T12:00:00Z").getUTCDay();from=addDays(td,-w)}else if(range==="month")from=td.slice(0,8)+"01";
+  const rows={};(S.game||[]).filter(g=>g.date>=from&&g.date<=td).forEach(g=>{const r=rows[g.uid]||(rows[g.uid]={uid:g.uid,name:g.name||"—",pts:0,n:0,c:0,t:0});r.pts+=g.score||0;r.n++;r.c+=g.correct||0;r.t+=g.total||0;if(g.name)r.name=g.name});
+  return Object.values(rows).sort((a,b)=>b.pts-a.pts||b.c-a.c).map((r,i)=>Object.assign(r,{rank:i+1,acc:r.t?Math.round(100*r.c/r.t):0,streak:gStreak(r.uid)}))}
+function gResult(rec){const d=gDlg();G.dlg=d;const T=GTYPES[rec.type]||GTYPES.quiz;const day=gBoard("day");const me=day.find(r=>r.uid===rec.uid);
+  d.innerHTML=`<div class="g-wrap"><div class="g-top"><span class="g-badge">${ic(T.ic)}<span>${T.n}</span></span><button class="btn icon" type="button" data-act="g-close" aria-label="إغلاق">✕</button></div>
+   <div class="g-res"><div class="g-eyebrow">نتيجتك اليوم</div><div class="g-big num">${rec.score}<small>نقطة</small></div>
+   <div class="g-meta"><span><b class="num">${rec.correct}/${rec.total}</b> صحيحة</span><span><b class="num">${Math.round((rec.ms||0)/1000)}</b> ثانية</span>${me?`<span>الترتيب اليوم <b class="num">#${me.rank}</b> من ${day.length}</span>`:""}<span><b class="num">${gStreak(rec.uid)}</b> 🔥</span></div></div>
+   ${gTable(day.slice(0,5),"لوحة اليوم")}
+   <div class="g-foot"><span class="small muted">التحدي القادم غدًا صباحًا</span><button class="btn primary" type="button" data-act="g-board">لوحة الصدارة</button></div></div>`;
+  if(!d.open)d.showModal()}
+function gTable(rows,cap,full){if(!rows.length)return `<div class="g-empty muted small">لا توجد نتائج بعد. كن أول من يلعب!</div>`;
+  return `<div class="g-tbl"><table><caption>${cap}</caption><thead><tr><th>#</th><th>الموظف</th><th>النقاط</th>${full?"<th>مرات اللعب</th><th>الدقة</th>":""}<th>🔥</th></tr></thead><tbody>${rows.map(r=>`<tr class="${r.uid===S.me?"me":""}"><td class="num"><span class="g-rk r${r.rank}">${r.rank}</span></td><td>${esc(shortName?shortName(r.name):r.name)}</td><td class="num"><b>${r.pts}</b></td>${full?`<td class="num">${r.n}</td><td class="num">${r.acc}%</td>`:""}<td class="num">${r.streak||"—"}</td></tr>`).join("")}</tbody></table></div>`}
+function gBoardOpen(range){const d=gDlg();G.dlg=d;range=range||G.range||"week";G.range=range;const rows=gBoard(range);const names={day:"اليوم",week:"هذا الأسبوع",month:"هذا الشهر",all:"منذ البداية"};
+  let admin="";if(S.isAdmin){const td=gToday();const today=(S.game||[]).filter(g=>g.date===td);const mem=memberNames().length;const byT=GORDER.map(k=>{const xs=(S.game||[]).filter(g=>g.type===k);const c=xs.reduce((a,g)=>a+(g.correct||0),0),t=xs.reduce((a,g)=>a+(g.total||0),0);return {k,n:xs.length,acc:t?Math.round(100*c/t):0}});
+    admin=`<div class="g-admin"><div class="g-eyebrow">للمشرفين</div><div class="g-kpis"><div><b class="num">${today.length}${mem?"/"+mem:""}</b><span>شاركوا اليوم</span></div>${byT.map(x=>`<div><b class="num">${x.acc}%</b><span>دقة «${GTYPES[x.k].n}» · ${x.n} محاولة</span></div>`).join("")}</div>
+     <button class="btn" type="button" data-act="xl" data-v="game">${ic("download")}تصدير النتائج Excel</button></div>`}
+  d.innerHTML=`<div class="g-wrap wide"><div class="g-top"><span class="g-badge">${ic("chart")}<span>لوحة الصدارة</span></span><button class="btn icon" type="button" data-act="g-close" aria-label="إغلاق">✕</button></div>
+   <div class="seg g-seg" role="group">${Object.keys(names).map(k=>`<button type="button" data-act="g-range" data-v="${k}" aria-pressed="${k===range}">${names[k]}</button>`).join("")}</div>
+   ${gTable(rows,"الترتيب — "+names[range],true)}${admin}
+   <div class="g-foot">${gPlayed(gToday())?'<span class="small muted">لعبت تحدي اليوم ✓</span>':'<button class="btn primary" type="button" data-act="g-open">العب تحدي اليوم</button>'}</div></div>`;
+  if(!d.open)d.showModal()}
+function gHomeCard(){if(!S.db)return "";const td=gToday(),ty=gTypeOf(td),T=GTYPES[ty],mine=gPlayed(td),wk=gBoard("week").slice(0,5);
+  return `<section class="gcard"><div class="gc-main"><div class="g-eyebrow">تحدي الصباح</div><h3>${mine?"نتيجتك اليوم: "+mine.score+" نقطة":"تحدي اليوم: "+T.n}</h3><p class="muted small">${mine?"عُد غدًا لتحدٍّ جديد وحافظ على سلسلتك 🔥 "+gStreak(S.me):T.d}</p>
+   <div class="gc-act">${mine?"":`<button class="btn primary" type="button" data-act="g-open">${ic(T.ic)}ابدأ التحدي</button>`}<button class="btn" type="button" data-act="g-board">لوحة الصدارة</button></div></div>
+   <div class="gc-board"><div class="small muted">أبطال الأسبوع</div>${wk.length?`<ol>${wk.map(r=>`<li class="${r.uid===S.me?"me":""}"><span class="g-rk r${r.rank}">${r.rank}</span><span class="nm">${esc(shortName?shortName(r.name):r.name)}</span><b class="num">${r.pts}</b></li>`).join("")}</ol>`:'<div class="small muted">لا توجد نتائج بعد هذا الأسبوع</div>'}</div></section>`}
+function gAuto(){if(G.autoDone||!S.db||!S.me||!S.ready.game)return;G.autoDone=true;const td=gToday();if(gPlayed(td))return;try{if(localStorage.getItem("lmra-g-later")===td)return}catch(e){}
+  const go=()=>{if(document.querySelector("dialog[open]"))return setTimeout(go,1500);gOpen(true)};setTimeout(go,document.querySelector(".intro")?4200:1200)}
+
 function confirmBox(title,msg,okText){return new Promise(res=>{let d=$("dlg-confirm");if(!d){d=document.createElement("dialog");d.id="dlg-confirm";d.className="cfm";document.body.appendChild(d)}
   d.innerHTML=`<form method="dialog"><div class="cfm-h"><span class="cfm-ic">${ic("info")}</span><div><h3>${esc(title)}</h3><p>${esc(msg)}</p></div></div><div class="cfm-f"><button class="btn" value="no">إلغاء</button><button class="btn danger" value="ok">${esc(okText)}</button></div></form>`;
   d.onclose=()=>res(d.returnValue==="ok");d.returnValue="";d.showModal();setTimeout(()=>d.querySelector('[value="no"]').focus(),30)})}
@@ -3124,6 +3352,19 @@ document.addEventListener("click",async e=>{
     case "photo-new":openTask(null,"photo");break;
     case "f-type":S.f.type=S.f.type===v?"all":v;S.tpg=0;render();break;
     case "xl":S.pop=null;render();exportXlsx(v);break;
+    case "g-open":gOpen();break;
+    case "g-start":gStart();break;
+    case "g-later":try{localStorage.setItem("lmra-g-later",gToday())}catch(e){}gDlg().close();break;
+    case "g-close":if(G.live){gFinish()}else gDlg().close();break;
+    case "g-ans":gQuizAns(+v);break;
+    case "g-pick":if(G.live&&!G.pick.includes(+v)){G.pick.push(+v);gScr()}break;
+    case "g-unpick":if(G.live){G.pick.splice(+v,1);gScr()}break;
+    case "g-clear":if(G.live){G.pick=[];gScr()}break;
+    case "g-check":if(G.live)gScrCheck();break;
+    case "g-word":gSpotWord(+v);break;
+    case "g-board":gBoardOpen();break;
+    case "g-range":gBoardOpen(v);break;
+
     case "lang":setLang(I18N_ON?"ar":"en");break;
     case "pop":e.stopPropagation();S.pop=S.pop===v?null:v;render();break;
     case "f-st":{const a2=new Set(S.f.st||[]);a2.has(v)?a2.delete(v):a2.add(v);S.f.st=[...a2];S.tpg=0;render();break}
@@ -3234,7 +3475,7 @@ initChrome();routeFromHash();render();
       if(!snap.metadata.fromCache){S.ready[key]=true;if(S.ready.tasks&&S.ready.leaves){clearTimeout(timer);if(S.canWrite)banner("")}}
       render();
     },err=>{S.ready[key]=true;clearTimeout(timer);banner(err&&err.code==="revoked"?"انتهت صلاحية الوصول لهذه الجلسة.":"تعذّر تحميل جزء من البيانات. أعد فتح الصفحة لاحقًا.",true);render()});
-  sub("tasks","tasks");sub("leaves","leaves");sub("holidays","holidays");sub("monitor","monitor");sub("monitorChecks","checks");sub("social","social");sub("socialChecks","smChecks");
+  sub("tasks","tasks");sub("leaves","leaves");sub("holidays","holidays");sub("monitor","monitor");sub("monitorChecks","checks");sub("social","social");sub("socialChecks","smChecks");sub("game","game");
   if(typeof I18N_ON!=="undefined"&&I18N_ON)db.doc("i18n/en").onSnapshot(d=>{window.__setTr&&__setTr(d.exists?d.data():{})},()=>{});
   db.doc("settings/team").onSnapshot(d=>{if(d.exists){const v=d.data();S.settings={members:(v.members&&v.members.length)?v.members:FALLBACK_MEMBERS,departments:v.departments||[]};render()}},()=>{});
   if(!S.canWrite)banner("لديك صلاحية العرض فقط. لإضافة الإجازات والمهام تواصل مع مسؤول المنصة.");
