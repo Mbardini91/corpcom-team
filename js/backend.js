@@ -253,6 +253,19 @@
     if (!member) { showDenied(); return; }
     const el = $("auth"); if (el) el.hidden = true;
     window.lmraSearch = async (payload) => { const { data, error } = await sb.functions.invoke("news-search", { body: payload }); if (error) throw error; return data; };
+    /* لعبة «رحلة القيم»: قراءة النتائج (لأعضاء الفريق فقط عبر RLS) + تحديث لحظي عند كل جولة جديدة */
+    window.lmraGame = {
+      async load() {
+        const all = async (table, cols, order) => { const out = []; for (let from = 0; ; from += 1000) {
+          const { data, error } = await sb.from(table).select(cols).order(order, { ascending: false }).range(from, from + 999);
+          if (error) throw mapErr(error); out.push(...data); if (data.length < 1000) break; } return out; };
+        const [players, runs] = await Promise.all([
+          all("game_players", "player_id,name,avatar,best_score,best_values,best_gates,plays,first_at,last_at,best_at", "best_score"),
+          all("game_runs", "player_id,score,values_n,gates,combos,stage,duration_s,source,created_at", "created_at")]);
+        return { players, runs };
+      },
+      subscribe(cb) { return sb.channel("game-runs").on("postgres_changes", { event: "INSERT", schema: "public", table: "game_runs" }, () => cb()).subscribe(); }
+    };
     if (!booted) { booted = true; resolveReady(); addHeaderButtons(); }
   }
   function addHeaderButtons() {

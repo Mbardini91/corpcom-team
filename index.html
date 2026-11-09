@@ -1896,10 +1896,58 @@ function renderHome(){
 
 /* ---------- photo stats ---------- */
 function daysBetween(a,b){return Math.round((toUTC(b)-toUTC(a))/864e5)}
+/* ---------- رحلة القيم: live game stats (Supabase game_players / game_runs) ---------- */
+const VG_URL="/game";
+const bhDate=ts=>new Date(ts).toLocaleDateString("en-CA",{timeZone:"Asia/Bahrain"});
+function loadVG(){
+  if(S.vgLoading)return;
+  if(!window.lmraGame){S.vg={players:[],runs:[],err:"not_ready"};return}
+  S.vgLoading=true;
+  window.lmraGame.load().then(g=>{
+    g.runs.forEach(r=>{r.d=bhDate(r.created_at)});S.vg=g;S.vgLoading=false;S.vgAt=new Date();
+    if(!S.vgSub){S.vgSub=true;let t=null;window.lmraGame.subscribe(()=>{clearTimeout(t);t=setTimeout(()=>{S.vgLoading=false;loadVG()},800)})}
+    if(S.view==="stats"&&S.ss==="game")render();
+  },e=>{S.vgLoading=false;S.vg={players:[],runs:[],err:String(e&&e.message||e)};if(S.view==="stats"&&S.ss==="game")render()});
+}
+function vgStats({kpi,hbars,monthly,inY,ylabel,pct}){
+  const links=`<div class="g-links" style="display:flex;gap:8px;flex-wrap:wrap;margin:0 0 16px"><a class="btn" href="${VG_URL}" target="_blank" rel="noopener">${ic("ext")}فتح اللعبة</a><a class="btn" href="${VG_URL}#board" target="_blank" rel="noopener">${ic("chart")}شاشة العرض</a>${S.vgAt?`<span class="muted" style="align-self:center;font-size:13px">تحديث مباشر · آخر تحميل ${esc(S.vgAt.toLocaleTimeString("ar-BH",{hour:"2-digit",minute:"2-digit"}))}</span>`:""}</div>`;
+  if(!S.vg){loadVG();return links+`<div class="empty-note">جارٍ تحميل نتائج اللعبة…</div>`}
+  if(S.vg.err)return links+`<div class="empty-note">تعذّر تحميل نتائج اللعبة. أعد فتح الصفحة لاحقًا.</div>`;
+  const runs=S.vg.runs.filter(r=>inY(r.d));
+  const ids=new Set(runs.map(r=>r.player_id));
+  const players=S.vg.players.filter(p=>ids.has(p.player_id));
+  if(!runs.length)return links+`<div class="empty-note">لا توجد جولات ${S.sy==="all"?"بعد":"في "+esc(ylabel)}. شارك رابط اللعبة أو افتحها من مجلة أضواء.</div>`;
+  const topRun=runs.reduce((m,r)=>!m||r.score>m.score||(r.score===m.score&&r.created_at<m.created_at)?r:m,null),best=topRun.score,champ=S.vg.players.find(p=>p.player_id===topRun.player_id);
+  const avg=Math.round(runs.reduce((a,r)=>a+r.score,0)/runs.length);
+  const vals=runs.reduce((a,r)=>a+r.values_n,0),combos=runs.reduce((a,r)=>a+r.combos,0);
+  const mins=Math.round(runs.reduce((a,r)=>a+r.duration_s,0)/60);
+  const today=bhDate(Date.now()),todayRuns=S.vg.runs.filter(r=>r.d===today).length;
+  let h=links+`<div class="kpis k5">`
+    +kpi("الجولات",runs.length,`<span class="num">${todayRuns}</span> اليوم · ${esc(ylabel)}`)
+    +kpi("المشاركون",ids.size,`متوسط <span class="num">${(runs.length/ids.size).toFixed(1)}</span> جولة لكل لاعب`)
+    +kpi("أعلى نتيجة",best,champ?esc(champ.name):"")
+    +kpi("متوسط النقاط",avg,"لكل جولة")
+    +kpi("القيم الملتقطة",vals,`<span class="num">${combos}</span> اكتمال للقيم الخمس`)
+    +`</div><div class="st-grid">`;
+  h+=monthly("الجولات حسب الشهر","بحسب تاريخ اللعب",S.vg.runs,r=>r.d,"جولة");
+  // last 14 days
+  const days=[];for(let i=13;i>=0;i--){const d=bhDate(Date.now()-i*864e5);days.push([d.slice(5).replace("-","/"),S.vg.runs.filter(r=>r.d===d).length])}
+  h+=`<div class="panel"><h3>النشاط في آخر 14 يومًا</h3><div class="cap">عدد الجولات يوميًا</div>${hbars(days.slice().reverse(),14,"جولة")}</div>`;
+  const top=players.slice().sort((a,b)=>b.best_score-a.best_score||String(a.best_at).localeCompare(String(b.best_at))).slice(0,10);
+  h+=`<div class="panel"><h3>أفضل 10 لاعبين</h3><div class="cap">أعلى نتيجة لكل لاعب · بالاسم الذي شارك به</div>${hbars(top.map((p,i)=>[(i+1)+". "+p.name+" · "+p.plays+" جولة",p.best_score]),10,"نقطة",top.reduce((a,p)=>a+p.best_score,0))}</div>`;
+  const SRCN={magazine:"من مجلة أضواء",app:"من النسخة المحمّلة (PDF أو التطبيق)",direct:"من الرابط المباشر"};
+  h+=`<div class="panel"><h3>من أين يلعبون؟</h3><div class="cap">مصدر الجولة</div>${hbars(Object.keys(SRCN).map(k=>[SRCN[k],runs.filter(r=>r.source===k).length]),3,"جولة",runs.length)}</div>`;
+  const STN=["الانطلاقة","نحو القمة","صنّاع الأثر","أفق المنامة"];
+  h+=`<div class="panel"><h3>أبعد مرحلة وصلوا إليها</h3><div class="cap">لكل جولة</div>${hbars(STN.map((n,i)=>[(i+1)+" · "+n,runs.filter(r=>Math.min(4,r.stage)===i+1).length]),4,"جولة",runs.length)}</div>`;
+  const B=[[0,24],[25,49],[50,99],[100,199],[200,1e9]];
+  h+=`<div class="panel"><h3>توزيع النقاط</h3><div class="cap">عدد الجولات في كل فئة</div>${hbars(B.map(([a,b])=>[b>1e8?a+"+ نقطة":a+"–"+b+" نقطة",runs.filter(r=>r.score>=a&&r.score<=b).length]),5,"جولة",runs.length)}</div>`;
+  h+=`<div class="panel"><h3>وقت اللعب</h3><div class="cap">مجموع الدقائق في ${esc(ylabel)}</div><div class="kpis" style="grid-template-columns:repeat(2,minmax(0,1fr));margin:0"><div class="kpi"><span class="k">إجمالي وقت اللعب</span><span class="v num">${mins}<small>دقيقة</small></span></div><div class="kpi"><span class="k">متوسط مدة الجولة</span><span class="v num">${Math.round(runs.reduce((a,r)=>a+r.duration_s,0)/runs.length)}<small>ثانية</small></span></div></div></div>`;
+  return h+`</div>`;
+}
 function renderStats(){
   const el=$("view-stats");
   const yOf=d=>validDate(d)?d.slice(0,4):"";
-  const years=[...new Set([...S.tasks.map(t=>yOf(t.received)),...(S.monitor||[]).map(x=>yOf(x.date)),...(S.social||[]).map(x=>yOf(x.date))].filter(Boolean))].sort();
+  const years=[...new Set([...S.tasks.map(t=>yOf(t.received)),...(S.monitor||[]).map(x=>yOf(x.date)),...(S.social||[]).map(x=>yOf(x.date)),...((S.ss==='game'&&S.vg&&S.vg.runs)?S.vg.runs.map(r=>yOf(r.d)):[])].filter(Boolean))].sort();
   if(!S.sy||(S.sy!=="all"&&!years.includes(S.sy)))S.sy=years.includes(String(now.getFullYear()))?String(now.getFullYear()):(years[years.length-1]||"all");
   const inY=d=>S.sy==="all"||String(d||"").startsWith(S.sy);
   const sec=S.ss||"all";
@@ -1908,7 +1956,7 @@ function renderStats(){
   const sel=photos.filter(t=>inY(t.received));
   const news=(S.monitor||[]).filter(x=>x.verified!==false&&inY(x.date)),posts=(S.social||[]).filter(x=>x.verified!==false&&inY(x.date));
   const pct=(x,d)=>d?Math.round(x/d*100):0;const ylabel=S.sy==="all"?"كل السنوات":S.sy;
-  const SECS=[{k:"all",n:"نظرة عامة"},{k:"tasks",n:"المهام"},{k:"photo",n:"التصوير"},{k:"news",n:"الأخبار والرصد"}];
+  const SECS=[{k:"all",n:"نظرة عامة"},{k:"tasks",n:"المهام"},{k:"photo",n:"التصوير"},{k:"news",n:"الأخبار والرصد"},{k:"game",n:"رحلة القيم"}];
   let h=`<div class="toolbar"><div class="grp"><h2 style="font-size:22px;font-weight:800">الإحصائيات</h2></div>
     <div class="grp"><div class="seg" role="group" aria-label="السنة">${years.map(y=>`<button type="button" data-act="sy" data-v="${y}" aria-pressed="${S.sy===y}">${y}</button>`).join("")}<button type="button" data-act="sy" data-v="all" aria-pressed="${S.sy==="all"}">الكل</button></div>
     ${xlBtn("stats")}<button class="btn" type="button" data-act="stats-report">${ic("report")}تصدير التقرير</button><button class="btn write-only" type="button" data-act="photo-new">${ic("plus")}<span data-en="Coverage">تغطية</span></button></div></div>
@@ -1917,7 +1965,7 @@ function renderStats(){
   const hbars=(rows,lim,unit,tot)=>{rows=rows.filter(x=>x[1]);if(!rows.length)return `<div class="empty-note">لا توجد بيانات.</div>`;let r=rows;if(rows.length>lim){const rest=rows.slice(lim-1).reduce((a,x)=>a+x[1],0);r=rows.slice(0,lim-1).concat([["أخرى",rest]])}
     const m=Math.max(...r.map(x=>x[1]));const T=tot||rows.reduce((a,x)=>a+x[1],0);return `<div class="hbars">`+r.map(([k,v,c])=>`<div class="hb" data-tip="${esc(k+": "+v+" "+unit+" ("+pct(v,T)+"%)")}"><div class="nm"><span>${esc(k)}</span><span class="num muted">${v}</span></div><div class="tr"><div class="fl" style="width:${v/m*100}%;${c?"background:"+c:""}"></div></div></div>`).join("")+`</div>`};
   const cnt=(arr,fn)=>{const c=new Map();arr.forEach(t=>fn(t).forEach(k=>{if(k)c.set(k,(c.get(k)||0)+1)}));return [...c.entries()].sort((a,b)=>b[1]-a[1])};
-  let kpiN=0;const heroArr=sec==="photo"?sel:sec==="news"?[...news,...posts]:tasks,heroDate=sec==="news"?(x=>x.date):(x=>x.received);
+  let kpiN=0;const heroArr=sec==="game"?((S.vg&&S.vg.runs)||[]).filter(r=>inY(r.d)):sec==="photo"?sel:sec==="news"?[...news,...posts]:tasks,heroDate=sec==="game"?(x=>x.d):sec==="news"?(x=>x.date):(x=>x.received);
   const hmo=Array(12).fill(0);heroArr.forEach(x=>{const d=heroDate(x);if(validDate(d))hmo[+d.slice(5,7)-1]++});const hmm=Math.max(1,...hmo);
   const heroBg=`<div class="kpi-bg" aria-hidden="true"><div class="bg-spark">${hmo.map((v,i)=>`<i style="height:${Math.max(4,v/hmm*100)}%"${S.sy===String(now.getFullYear())&&i===now.getMonth()?' class="cur"':""}></i>`).join("")}</div><div class="sp-ml">${MONTHS.map((m,i)=>`<span>${mAbbr(m,i)}</span>`).join("")}</div></div>`;
   const kpi=(k,v,sub)=>{const hero=kpiN++===0;return `<div class="kpi${hero?" hero":""}">${hero?heroBg:""}<span class="k">${k}</span><span class="v num">${v}</span><span class="sub">${sub}</span></div>`};
@@ -1928,6 +1976,7 @@ function renderStats(){
     for(let v=0;v<=top;v+=step)s+=`<div class="gl" style="bottom:${v/top*100}%"><span class="num">${v}</span></div>`;
     s+=`<div class="cols">`;for(let m=0;m<12;m++){const tip=MONTHS[m]+"\n"+cy.map((y,i)=>y+": "+serie[i][m]+" "+unit).join("\n");s+=`<div class="mcol" data-tip="${esc(tip)}">`+cy.map((y,i)=>`<div class="bar" style="height:${serie[i][m]/top*100}%;background:${cols[ci[i]]}"></div>`).join("")+`</div>`}
     return s+`</div></div><div class="mlabels">${MONTHS.map((x,i)=>`<span><b class="ml-f">${x}</b><b class="ml-s" data-noi18n>${mAbbr(x,i)}</b></span>`).join("")}</div></div>`};
+  if(sec==="game"){el.innerHTML=h+vgStats({kpi,hbars,monthly,inY,ylabel,pct});return}
   // numbers
   const doneT=tasks.filter(t=>t.status==="مكتمل").length,openT=tasks.filter(t=>CURRENT.has(t.status||"لم يبدأ")).length;
   const delP=sel.filter(t=>validDate(t.delivered)&&t.delivered>=t.received);const avg=delP.length?delP.reduce((a,t)=>a+daysBetween(t.received,t.delivered),0)/delP.length:0;
