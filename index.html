@@ -1079,7 +1079,7 @@ const I18N_DICT={
 "ابدأ بما هو ضروري، ثم بما هو ممكن، وستجد نفسك تصنع المستحيل.":"Start with what's necessary, then what's possible, and you'll find yourself doing the impossible.",
 "فريق واحد، رسالة واحدة، أثر كبير.":"One team, one message, big impact.","معًا نصنع محتوى يليق بالبحرين.":"Together we create content worthy of Bahrain.",
 /* calendar */
-"السنة":"Year","الشهر":"Month","اليوم":"Today","طريقة العرض":"View","تسجيل إجازة":"Log leave","+ تسجيل إجازة":"+ Log leave","نوع الإجازة":"Leave type","سنوية":"Annual","مرضية":"Sick","طارئة":"Emergency","مهمة رسمية / تدريب":"Official duty / Training","أخرى":"Other",
+"السنة":"Year","الشهر":"Month","اليوم":"Today","آخر 24 ساعة":"Last 24 hours","طريقة العرض":"View","تسجيل إجازة":"Log leave","+ تسجيل إجازة":"+ Log leave","نوع الإجازة":"Leave type","سنوية":"Annual","مرضية":"Sick","طارئة":"Emergency","مهمة رسمية / تدريب":"Official duty / Training","أخرى":"Other",
 "تفاصيل الإجازة":"Leave details","تعديل الإجازة":"Edit leave","تعديل الإجازة السابقة":"Edit previous leave","حذف الإجازة":"Delete leave","الإجازات":"Leaves","الإجازات القادمة":"Upcoming leaves","الإجازات في":"Leaves in","الإجازات الرسمية":"Public holidays","العطل الرسمية":"Public holidays","العطلة":"Holiday","إجازة رسمية":"Public holiday","إجازة":"Leave",
 "لا توجد إجازات مسجلة":"No leaves recorded","اضغط «تسجيل إجازة» لإضافة إجازتك":"Press “Log leave” to add your leave","في هذا الشهر":"this month","في إجازة":"on leave","لديه إجازة مسجلة مسبقًا في هذه الأيام":"already has a leave recorded on these days","تتقاطع مع إجازة":"overlaps with a leave",
 "اختر التاريخين لحساب أيام العمل":"Pick both dates to count working days","يوم عمل (بعد استبعاد الجمعة والسبت والإجازات الرسمية)":"working days (excluding Fri, Sat and public holidays)","يوم تقويمي، منها":"calendar days, of which",
@@ -1849,7 +1849,7 @@ function outletOf(k){return OUTLETS.find(o=>o.k===k)||OUTLETS[OUTLETS.length-1]}
 function mtopic(k){return MTOPICS.find(t=>t.k===k)}
 function gDate(s){const p=parts(s);return p.m+"/"+p.d+"/"+p.y}
 function gLink(q,from,to){return "https://www.google.com/search?q="+encodeURIComponent(q)+"&tbs="+encodeURIComponent("cdr:1,cd_min:"+gDate(from)+",cd_max:"+gDate(to))}
-function monPeriod(){const M=S.mon||(S.mon={});const bh=bhNow();if(!M.from){M.from=bh.date;M.to=bh.date;M.topics=MTOPICS.map(t=>t.k);M.preset="today"}return M}
+function monPeriod(){const M=S.mon||(S.mon={});const bh=bhNow();if(!M.from){M.from=addDays(bh.date,-1);M.to=bh.date;M.topics=MTOPICS.map(t=>t.k);M.preset="d1"}return M}
 function periodKey(M){return M.from+"_"+M.to}
 function inPeriod(d,M){return validDate(d)&&d>=M.from&&d<=M.to}
 function renderMonitor(){
@@ -1989,7 +1989,7 @@ function monSwitch(){const m=S.monMode||"news";return `<div class="seg msw" role
 function monHead(title,mode,M,cut){const sm=mode==="social";return `<div class="mon-head"><div><h2 style="font-size:22px;font-weight:800">${title}</h2>
     <div class="period">${ic("cal")} <b class="num">${esc(fmt(M.from))}${M.to!==M.from?" – "+esc(fmt(M.to)):""}</b> · حتى <b class="num">${cut}</b></div></div>
     <div class="grp" style="display:flex;gap:8px;flex-wrap:wrap">${xlBtn("monitor")}<button class="btn primary" type="button" data-act="daily">${ic("download")}تحميل التقرير</button><button class="btn icon" type="button" data-act="${sm?"sm-copy":"mon-copy"}" ${sm?"":'id="mon-copy"'} title="نسخ التقرير" aria-label="نسخ التقرير">${ic("copy")}</button><button class="btn write-only" type="button" data-act="${sm?"sm-add":"mon-add"}">${ic("plus")}<span data-en="${sm?"Post":"Story"}">${sm?"منشور":"خبر"}</span></button></div></div>`}
-function periodCtl(M){return `<div class="mon-filters">${ic("cal","lbl")}<div class="seg" role="group" aria-label="الفترة"><button type="button" data-act="mon-preset" data-v="today" aria-pressed="${!!M.dateSet&&M.preset==="today"}">اليوم</button><button type="button" data-act="mon-preset" data-v="week" aria-pressed="${!!M.dateSet&&M.preset==="week"}">7 أيام</button><button type="button" data-act="mon-preset" data-v="custom" aria-pressed="${!!M.dateSet&&M.preset==="custom"}">محددة</button></div>
+function periodCtl(M){return `<div class="mon-filters">${ic("cal","lbl")}<div class="seg" role="group" aria-label="الفترة"><button type="button" data-act="mon-preset" data-v="d1" aria-pressed="${!!M.dateSet&&M.preset==="d1"}">آخر 24 ساعة</button><button type="button" data-act="mon-preset" data-v="week" aria-pressed="${!!M.dateSet&&M.preset==="week"}">7 أيام</button><button type="button" data-act="mon-preset" data-v="custom" aria-pressed="${!!M.dateSet&&M.preset==="custom"}">محددة</button></div>
   <input type="date" id="mon-from" value="${M.from}" aria-label="من" class="${M.dateSet?"":"unset"}"><span class="muted">–</span><input type="date" id="mon-to" value="${M.to}" aria-label="إلى" class="${M.dateSet?"":"unset"}"></div>`}
 function chanCtl(kind,list,sel){return `<div class="mrow2 chans">${ic("chan","lbl")}<div class="chips">${list.map(c=>`<label><input type="checkbox" data-ch="${kind}:${c.k}" ${sel.includes(c.k)?"checked":""}>${c.i||""}${c.n}</label>`).join("")}</div></div>`}
 function goBtn(mode,ready,missing,label){const st=scanState(mode);const dis=st.loading||!ready;
@@ -2211,7 +2211,7 @@ function buildDaily(opt){const V2=!(opt&&opt.classic);
   const high=news.filter(x=>lvlOf(x,false)==="high").length+posts.filter(x=>lvlOf(x,true)==="high").length;
   return {M,pages,pg,v2:V2,counts:{news:news.length,posts:posts.length,issued,high}};
 }
-function dailyDateLine(M){return M.from===M.to?longDate(M.to):longDate(M.from)+" إلى "+longDate(M.to)}
+function dailyDateLine(M){return (M.from===M.to||M.preset==="d1")?longDate(M.to):longDate(M.from)+" إلى "+longDate(M.to)}
 function dailyFileName(M,ext){const p=parts(M.to);return "LMRA - Daily News Report "+pad2(p.d)+"-"+pad2(p.m)+"-"+p.y+"."+ext}
 function itemTitle(x,sm){return sm?clip(x.text,170):String(x.headline||"")}
 function itemMeta(x,sm){return (sm?(smPf(x.platform).n+" · "+smAccName(x)+(smHandle(x)?" @"+smHandle(x):"")+" · "+fmt(x.date)):(pressLabel(x)+" · "+fmt(x.date)))+" · المستوى: "+lvlName(lvlOf(x,sm))}
@@ -3053,7 +3053,7 @@ document.addEventListener("click",async e=>{
     case "sy":S.sy=v;render();break;
     case "mon-add":openMon(null);break;
     case "mon-edit":{if(e.target.closest("[data-noedit]"))return;const x=S.monitor.find(m=>m.id===v);if(x)openMon(x);break}
-    case "mon-preset":{const M=monPeriod(),bh=bhNow();M.preset=v;M.dateSet=true;if(v==="today"){M.from=bh.date;M.to=bh.date}else if(v==="week"){M.to=bh.date;M.from=addDays(bh.date,-6)}render();break}
+    case "mon-preset":{const M=monPeriod(),bh=bhNow();M.preset=v;M.dateSet=true;if(v==="d1"){M.from=addDays(bh.date,-1);M.to=bh.date}else if(v==="week"){M.to=bh.date;M.from=addDays(bh.date,-6)}render();break}
     case "mon-print":openReport();break;
     case "mon-mode":S.monMode=v;render();break;
     case "daily":openDaily();break;
