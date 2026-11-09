@@ -1178,6 +1178,13 @@ html[dir=ltr] .g-time i{transform-origin:left center}
 .ql .ql-x{width:15px;height:15px;color:var(--mute);flex:none;opacity:.7}
 @media (max-width:980px){.ql-g{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:420px){.ql{padding:12px}.ql .ql-ic{width:34px;height:34px;padding:8px}.ql .ql-x{display:none}}
+.dow .dw-s{display:none}
+@media (max-width:760px){.month .dow .dw-f{display:none}.month .dow .dw-s{display:inline}}
+.mlabels{container-type:inline-size}
+.mlabels b{font-weight:inherit}
+.mlabels .ml-s{display:none}
+@container (max-width:640px){.mlabels .ml-f{display:none}.mlabels .ml-s{display:inline}}
+.mini .wk .dow{font-size:10px;letter-spacing:.01em}
 </style>
 <script>
 /* ---------- English translation layer ---------- */
@@ -1493,11 +1500,11 @@ function setLang(l){try{localStorage.setItem("lmra-lang",l)}catch(_){}location.r
 "use strict";
 /* ---------- constants ---------- */
 const MONTHS=["يناير","فبراير","مارس","أبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"];
-const DOW=["أحد","إثنين","ثلاثاء","أربعاء","خميس","جمعة","سبت"]; // week starts Sunday; Fri/Sat weekend
+const DOW=["الأحد","الاثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"];const DOW_EN=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"]; // week starts Sunday; Fri/Sat weekend
 const DOW_S=["ح","ن","ث","ر","خ","ج","س"];
 const MON_EN=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-function mAbbr(m,i){return typeof I18N_ON!=="undefined"&&I18N_ON?MON_EN[i]:m.slice(0,3)}
-if(typeof I18N_ON!=="undefined"&&I18N_ON){DOW.splice(0,7,"Sun","Mon","Tue","Wed","Thu","Fri","Sat");DOW_S.splice(0,7,"S","M","T","W","T","F","S")}
+function mAbbr(m,i){return MON_EN[i]}
+if(typeof I18N_ON!=="undefined"&&I18N_ON){DOW.splice(0,7,"Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday")}
 const TYPES=[
   {k:"design",n:"تصميم",c:"var(--t-design)"},{k:"video",n:"إنتاج فيديو",c:"var(--t-video)"},
   {k:"photo",n:"تصوير",c:"var(--t-photo)"},{k:"news",n:"الأخبار",c:"var(--t-news)"},{k:"form",n:"استمارات",c:"var(--t-form)"},{k:"other",n:"أخرى",c:"var(--t-other)"}];
@@ -1546,6 +1553,7 @@ function $(id){return document.getElementById(id)}
 const hijriFmt=(()=>{try{return new Intl.DateTimeFormat("ar-SA-u-ca-islamic-umalqura-nu-latn",{day:"numeric",month:"long",timeZone:"UTC"})}catch(e){return null}})();
 const hijriDay=(()=>{try{return new Intl.DateTimeFormat("ar-SA-u-ca-islamic-umalqura-nu-latn",{day:"numeric",timeZone:"UTC"})}catch(e){return null}})();
 function hj(s,full){const f=full?hijriFmt:hijriDay;if(!f)return "";try{return f.format(new Date(toUTC(s)))}catch(e){return ""}}
+function isCCD(d){return /^\s*(ccd|communications?(\s+(directorate|department|dept))?|إدارة الاتصال المؤسسي)\s*$/i.test(String(d||""))}
 function memberNames(){return (S.settings.members||[]).map(m=>typeof m==="string"?m:m.name).filter(Boolean)}
 function pcolor(name){const i=memberNames().indexOf(name);if(i>=0)return PCOL[i%PCOL.length];let h=0;for(const ch of String(name))h=(h*31+ch.charCodeAt(0))>>>0;return PCOL[h%PCOL.length]}
 function editStamp(iso){const d=new Date(iso);if(isNaN(d))return "";const b=new Date(d.getTime()+3*36e5),p=n=>String(n).padStart(2,"0");return b.getUTCDate()+" "+MONTHS[b.getUTCMonth()]+" "+b.getUTCFullYear()+" · "+p(b.getUTCHours())+":"+p(b.getUTCMinutes())}
@@ -1664,7 +1672,7 @@ function yearGrid(y,hmap,lmap){
     const people=new Set();const hnames=[];
     for(let d=1;d<=n;d++){const s=iso(y,m,d);(lmap.get(s)||[]).forEach(l=>people.add(l.name));(hmap.get(s)||[]).forEach(x=>{if(!hnames.includes(x.name))hnames.push(x.name)})}
     h+=`<div class="card mini"><div class="mini-head"><button type="button" data-act="open-month" data-v="${m}">${MONTHS[m-1]}</button><span class="cnt">${people.size?people.size+" في إجازة":""}</span></div><div class="wk">`;
-    DOW_S.forEach((x,i)=>h+=`<div class="dow" title="${DOW[i]}">${x}</div>`);
+    DOW_EN.forEach((x,i)=>h+=`<div class="dow" title="${DOW[i]}" data-noi18n>${x}</div>`);
     for(let i=0;i<off;i++)h+=`<div class="md empty"></div>`;
     for(let d=1;d<=n;d++){
       const s=iso(y,m,d),hol=hmap.get(s),lv=lmap.get(s)||[];
@@ -1681,7 +1689,7 @@ function yearGrid(y,hmap,lmap){
 function monthGrid(y,m,hmap,lmap){
   const first=iso(y,m,1),off=dow(first),n=daysIn(y,m);
   let h=`<div class="card month"><div class="wk">`;
-  DOW.forEach(x=>h+=`<div class="dow">${x}</div>`);
+  DOW.forEach((x,i)=>h+=`<div class="dow"><span class="dw-f">${x}</span><span class="dw-s" data-noi18n>${DOW_EN[i]}</span></div>`);
   for(let i=0;i<off;i++)h+=`<div class="bd out"></div>`;
   for(let d=1;d<=n;d++){
     const s=iso(y,m,d),hol=hmap.get(s)||[],lv=lmap.get(s)||[];
@@ -1745,7 +1753,7 @@ function renderTasks(){
   const el=$("view-tasks");const f=S.f;
   const scope=S.tasks.filter(t=>f.year==="all"||String(t.received||"").startsWith(f.year));
   const years=[...new Set(S.tasks.map(t=>String(t.received||"").slice(0,4)).filter(Boolean))].sort().reverse();
-  const owners=[...new Set([...memberNames(),...S.tasks.flatMap(t=>t.owners||[])])];
+  const owners=memberNames();
   const hid=tHidden();if(!S.tsel)S.tsel=new Set();
   const tcounts=TYPES.map(t=>{const all=scope.filter(x=>(x.type||"other")===t.k);return {t,all,cur:all.filter(x=>CURRENT.has(x.status)),done:all.filter(x=>x.status==="مكتمل").length}}).sort((a,b)=>b.all.length-a.all.length);
   const totCur=scope.filter(x=>CURRENT.has(x.status)).length,totDone=scope.filter(x=>x.status==="مكتمل").length;
@@ -1907,7 +1915,7 @@ function renderStats(){
     let s=`<div class="panel wide"><h3>${title}</h3><div class="cap">${cap}</div><div class="lgd">${cy.map((y,i)=>`<span><i style="background:${cols[ci[i]]}"></i>${y} · <span class="num">${serie[i].reduce((a,b)=>a+b,0)}</span> ${unit}</span>`).join("")}</div><div class="chart">`;
     for(let v=0;v<=top;v+=step)s+=`<div class="gl" style="bottom:${v/top*100}%"><span class="num">${v}</span></div>`;
     s+=`<div class="cols">`;for(let m=0;m<12;m++){const tip=MONTHS[m]+"\n"+cy.map((y,i)=>y+": "+serie[i][m]+" "+unit).join("\n");s+=`<div class="mcol" data-tip="${esc(tip)}">`+cy.map((y,i)=>`<div class="bar" style="height:${serie[i][m]/top*100}%;background:${cols[ci[i]]}"></div>`).join("")+`</div>`}
-    return s+`</div></div><div class="mlabels">${MONTHS.map((x,i)=>`<span>${mAbbr(x,i)}</span>`).join("")}</div></div>`};
+    return s+`</div></div><div class="mlabels">${MONTHS.map((x,i)=>`<span><b class="ml-f">${x}</b><b class="ml-s" data-noi18n>${mAbbr(x,i)}</b></span>`).join("")}</div></div>`};
   // numbers
   const doneT=tasks.filter(t=>t.status==="مكتمل").length,openT=tasks.filter(t=>CURRENT.has(t.status||"لم يبدأ")).length;
   const delP=sel.filter(t=>validDate(t.delivered)&&t.delivered>=t.received);const avg=delP.length?delP.reduce((a,t)=>a+daysBetween(t.received,t.delivered),0)/delP.length:0;
@@ -2447,7 +2455,7 @@ function buildStats(){
     let g="";for(let v=0;v<=top;v+=step)g+=`<div class="gl" style="bottom:${v/top*100}%"><span>${v}</span></div>`;
     let c="";for(let m=0;m<12;m++)c+=`<div class="mc">`+cy.map((y,i)=>`<div class="b" style="height:${serie[i][m]/top*100}%;background:${cols[ci[i]]}">${serie[i][m]?`<u>${serie[i][m]}</u>`:""}</div>`).join("")+`</div>`;
     const lg=`<div class="sr-lg">${cy.map((y,i)=>`<span><i style="background:${cols[ci[i]]}"></i>${y} · ${serie[i].reduce((a,b)=>a+b,0)} ${unit}</span>`).join("")}</div>`;
-    return panel(title,cap,lg+`<div class="sr-mch">${g}<div class="cols">${c}</div></div><div class="sr-ml">${MONTHS.map(x=>`<span>${x.slice(0,3)}</span>`).join("")}</div>`,true)};
+    return panel(title,cap,lg+`<div class="sr-mch">${g}<div class="cols">${c}</div></div><div class="sr-ml">${MONTHS.map(x=>`<span>${x}</span>`).join("")}</div>`,true)};
   const K=(k,v,sub)=>`<div><span class="k">${k}</span><b>${v}</b><small>${sub||"&nbsp;"}</small></div>`;
   const kp=a=>`<div class="sr-kp">${a.join("")}</div>`;
   const typeRows=TYPES.map(t=>[t.n,tasks.filter(x=>typeOf(x.type).k===t.k).length,SR_T_C[t.k]]);
@@ -3460,7 +3468,7 @@ $("f-task").addEventListener("submit",async e=>{
   const rec=$("t-received").value,del=$("t-delivered").value;
   if(rec&&del&&del<rec){$("t-err").textContent="تاريخ التسليم قبل تاريخ الاستلام.";return}
   const data=Object.assign({},t?Object.fromEntries(Object.entries(t).filter(([k])=>k!=="id")):{},{
-    type,title,dept:$("t-dept").value.trim(),owners,received:rec,delivered:del,status:$("t-status").value,
+    type,title,dept:isCCD($("t-dept").value)?"إدارة الاتصال":$("t-dept").value.trim(),owners,received:rec,delivered:del,status:$("t-status").value,
     duration:$("t-duration").value,channels:type==="photo"?[...document.querySelectorAll('input[name="tch"]:checked')].map(x=>x.value):[],pub:type==="news"?[...document.querySelectorAll('input[name="tpub"]:checked')].map(x=>x.value):[],
     notes:$("t-notes").value.trim(),updatedAt:new Date().toISOString()});
   if(!t){data.createdAt=new Date().toISOString();if(S.me)data.by=S.me}else if(S.meName){data.updatedBy=S.meName}
@@ -3509,7 +3517,7 @@ initChrome();routeFromHash();render();
   S.db=db;S.live=true;
   const timer=setTimeout(()=>{if(!S.ready.tasks||!S.ready.leaves)banner("تعذّر الوصول إلى بيانات الفريق حتى الآن. تحقق من الاتصال؛ ستظهر البيانات تلقائيًا عند توفره.",true)},10000);
   const sub=(col,key)=>db.collection(col).onSnapshot(snap=>{
-      S[key]=snap.docs.map(d=>Object.assign({id:d.id},d.data()));
+      S[key]=snap.docs.map(d=>Object.assign({id:d.id},d.data()));if(key==="tasks")S.tasks.forEach(t=>{if(isCCD(t.dept))t.dept="إدارة الاتصال"});
       if(!snap.metadata.fromCache){S.ready[key]=true;if(S.ready.tasks&&S.ready.leaves){clearTimeout(timer);if(S.canWrite)banner("")}}
       render();
     },err=>{S.ready[key]=true;clearTimeout(timer);banner(err&&err.code==="revoked"?"انتهت صلاحية الوصول لهذه الجلسة.":"تعذّر تحميل جزء من البيانات. أعد فتح الصفحة لاحقًا.",true);render()});
