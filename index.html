@@ -228,6 +228,7 @@ dialog::backdrop{background:rgba(14,24,40,.5)}
 .panel h3{font-size:16px;font-weight:800;margin-bottom:4px}
 .panel .cap{font-size:12.5px;color:var(--mute);margin-bottom:14px}
 .panel.wide{grid-column:1/-1}
+.kpis.aw5{grid-template-columns:repeat(5,minmax(0,1fr))}@media (max-width:900px){.kpis.aw5{grid-template-columns:repeat(2,minmax(0,1fr))}}.aw-tw{overflow-x:auto}table.aw-t{min-width:640px;width:100%;border-collapse:collapse;font-size:14px}table.aw-t th{font-weight:600;color:var(--mute);font-size:12.5px;text-align:center;padding:6px 8px;border-bottom:1px solid var(--line);white-space:nowrap}table.aw-t th:first-child{text-align:start}table.aw-t td{padding:9px 8px;border-bottom:1px solid var(--line);text-align:center;vertical-align:middle}table.aw-t td:first-child{text-align:start;width:46%}table.aw-t tr:last-child td{border-bottom:0}.aw-tn{display:flex;gap:8px;align-items:baseline;margin-bottom:6px}.aw-tn b{color:var(--mute);font-weight:600;min-width:18px}.aw-t .tr{height:6px;background:var(--grid);border-radius:4px;overflow:hidden}.aw-t .fl{height:100%;background:var(--c1);border-radius:4px}
 .lgd{display:flex;gap:16px;font-size:13px;color:var(--mute);flex-wrap:wrap}
 .lgd i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-inline-end:6px;vertical-align:0}
 .chart{position:relative;height:220px;margin-top:10px;padding-inline-start:30px}
@@ -1944,10 +1945,77 @@ function vgStats({kpi,hbars,monthly,inY,ylabel,pct}){
   h+=`<div class="panel"><h3>وقت اللعب</h3><div class="cap">مجموع الدقائق في ${esc(ylabel)}</div><div class="kpis" style="grid-template-columns:repeat(2,minmax(0,1fr));margin:0"><div class="kpi"><span class="k">إجمالي وقت اللعب</span><span class="v num">${mins}<small>دقيقة</small></span></div><div class="kpi"><span class="k">متوسط مدة الجولة</span><span class="v num">${Math.round(runs.reduce((a,r)=>a+r.duration_s,0)/runs.length)}<small>ثانية</small></span></div></div></div>`;
   return h+`</div>`;
 }
+/* ---------- مجلة أضواء: إحصائيات المجلة التفاعلية (Supabase adwaa_events · adwaa_likes) ---------- */
+const AW_URL="https://lmra-adhwa-magazine.vercel.app/";
+const AW_SRC={whatsapp:"واتساب",linkedin:"لينكدإن",x:"منصة X",instagram:"إنستغرام",facebook:"فيسبوك",telegram:"تيليجرام",email:"البريد الإلكتروني",teams:"Microsoft Teams",platform:"منصة إدارة الاتصال",lmra:"موقع الهيئة",google:"بحث Google",search:"محركات البحث",qr:"رمز QR (النسخة المطبوعة)",app:"المجلة المثبّتة على الجهاز",share:"مشاركة من قائمة الجهاز",link:"رابط منسوخ",quote:"صورة اقتباس",web:"مواقع أخرى",direct:"مباشر (رابط مكتوب أو بدون مصدر)"};
+const AW_SH={whatsapp:"واتساب",x:"منصة X",linkedin:"لينكدإن",email:"البريد الإلكتروني",link:"نسخ الرابط",share:"قائمة المشاركة في الجهاز"};
+const AW_CAP={save:"حفظ الصورة",copy:"نسخ الصورة",share:"مشاركة الصورة"};
+const AW_DEV={mobile:"الجوال",tablet:"التابلت",desktop:"الكمبيوتر"};
+const awDur=s=>{s=Math.round(+s||0);if(s<60)return `${s}<small>ث</small>`;const m=Math.floor(s/60),r=String(s%60).padStart(2,"0");return m>=60?`<span dir="ltr">${Math.floor(m/60)}:${String(m%60).padStart(2,"0")}:${r}</span><small>س</small>`:`<span dir="ltr">${m}:${r}</span><small>د</small>`};
+const awDurT=s=>awDur(s).replace(/<[^>]+>/g,"");
+function loadAW(){
+  if(!window.lmraAdwaa){S.aw={err:"not_ready"};return}
+  const yr=S.sy&&S.sy!=="all"?S.sy:null,iss=S.ai&&S.ai!=="all"?S.ai:null,key=(iss||"all")+"|"+(yr||"all");
+  if(S.awLoading===key)return;S.awLoading=key;
+  window.lmraAdwaa.stats(iss,yr).then(d=>{
+    if(S.awLoading!==key)return;S.awLoading=null;
+    if(S.ai===undefined){const cur=(d.issues||[]).find(i=>i.sessions>0)||(d.issues||[])[0];S.ai=cur?cur.id:"all";if(S.ai!=="all"){S.aw=null;loadAW();return}}
+    S.aw={key,d};S.awAt=new Date();
+    if(!S.awSub){S.awSub=true;let t=null;window.lmraAdwaa.subscribe(()=>{clearTimeout(t);t=setTimeout(()=>{if(S.view==="stats"&&S.ss==="adwaa"){S.awLoading=null;S.aw&&(S.aw.stale=true);loadAW()}},1500)})}
+    if(S.view==="stats"&&S.ss==="adwaa")render();
+  },e=>{S.awLoading=null;S.aw={key,err:String(e&&e.message||e)};if(S.view==="stats"&&S.ss==="adwaa")render()});
+}
+function awStats({kpi,hbars,monthly,inY,ylabel,pct}){
+  const yr=S.sy&&S.sy!=="all"?S.sy:null,key=((S.ai&&S.ai!=="all")?S.ai:"all")+"|"+(yr||"all");
+  const links=`<div class="g-links" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:0 0 16px"><a class="btn" href="${AW_URL}" target="_blank" rel="noopener">${ic("ext")}فتح المجلة</a><button class="btn" type="button" data-act="aw-qr" title="رابط فيه ?via=qr — استخدمه في رمز QR للنسخة المطبوعة عشان تنحسب زياراته">${ic("dup")}نسخ رابط QR</button>${S.awAt?`<span class="muted" style="font-size:13px">تحديث مباشر · آخر تحميل ${esc(S.awAt.toLocaleTimeString("ar-BH",{hour:"2-digit",minute:"2-digit"}))}</span>`:""}</div>`;
+  if(!S.aw||(S.aw.key!==key&&!S.aw.err)){loadAW();if(!S.aw||!S.aw.d)return links+`<div class="empty-note">جارٍ تحميل إحصائيات المجلة…</div>`}
+  if(S.aw.err){return links+`<div class="empty-note">تعذّر تحميل إحصائيات المجلة. أعد فتح الصفحة لاحقًا.</div>`}
+  const d=S.aw.d,T=d.totals||{},issues=d.issues||[];
+  const isel=issues.length?`<div class="seg" role="group" aria-label="العدد" style="margin:0 0 16px">${issues.map(i=>`<button type="button" data-act="aw-issue" data-v="${esc(i.id)}" aria-pressed="${S.ai===i.id}">${esc(i.number?"العدد "+i.number:i.label||i.id)}</button>`).join("")}<button type="button" data-act="aw-issue" data-v="all" aria-pressed="${S.ai==="all"}">كل الأعداد</button></div>`:"";
+  const head=links+isel;
+  if(!T.sessions&&!T.likes)return head+`<div class="empty-note">لا توجد زيارات ${S.sy==="all"?"بعد":"في "+esc(ylabel)}. أول ما يفتح أحد المجلة تظهر الأرقام هنا مباشرة.</div>`;
+  const ses=T.sessions||0;
+  let h=head+`<div class="kpis k5">`
+    +kpi("الزيارات",ses,`<span class="num">${T.today||0}</span> اليوم · ${esc(ylabel)}`)
+    +kpi("القرّاء",T.visitors||0,`<span class="num">${pct(T.returning||0,T.visitors||0)}</span>% رجعوا للمجلة أكثر من مرة`)
+    +kpi("تصفّح الصفحات",T.page_views||0,`متوسط <span class="num">${T.avg_pages||0}</span> صفحة في الزيارة`)
+    +kpi("متوسط وقت القراءة",awDur(T.avg_secs||0),`الوسيط ${awDur(T.median_secs||0)} · المجموع <span class="num">${T.total_mins||0}</span> دقيقة`)
+    +kpi("أكملوا العدد",pct(T.completed||0,ses)+"<small>%</small>",`<span class="num">${T.completed||0}</span> زيارة وصلت للصفحة الأخيرة`)
+    +`</div><div class="kpis aw5">`
+    +kpi("الإعجابات",T.likes||0,`من <span class="num">${T.likers||0}</span> قارئ`)
+    +kpi("مرات المشاركة",T.shares||0,`روابط مواضيع أُرسلت`)
+    +kpi("التقاط الصفحات",T.captures||0,`<span class="num">${T.capture_users||0}</span> قارئ · <span class="num">${T.capture_out||0}</span> حفظ أو مشاركة`)
+    +kpi("تحميل المجلة PDF",T.downloads||0,`<span class="num">${pct(T.downloads||0,ses)}</span>% من الزيارات`)
+    +kpi("الاستماع الصوتي",T.listeners||0,`<span class="num">${T.listen_mins||0}</span> دقيقة استماع`)
+    +`</div><div class="st-grid">`;
+  // أكثر المواضيع قراءة
+  const tps=(d.topics||[]).filter(t=>t.views||t.likes||t.shares||t.captures);const multi=S.ai==="all"&&issues.length>1;
+  if(tps.length){const mx=Math.max(1,...tps.map(t=>t.reads||t.views));
+    h+=`<div class="panel wide" style="min-width:0"><h3>أكثر المواضيع قراءة</h3><div class="cap">«قراءة» = قارئ بقي على الموضوع 15 ثانية أو أكثر · مرتبة حسب القراءات</div><div class="aw-tw"><table class="aw-t"><thead><tr><th>الموضوع</th><th>القراءات</th><th>المشاهدات</th><th>متوسط الوقت</th><th>إعجاب</th><th>مشاركة</th><th>التقاط</th></tr></thead><tbody>`
+      +tps.slice(0,20).map((t,i)=>`<tr><td><div class="aw-tn"><b class="num">${i+1}</b><span>${esc(t.t)}${multi&&t.label?` <small class="muted">· ${esc(t.label)}</small>`:""}${t.s?` <small class="muted num">ص ${t.s}${t.e>t.s?"–"+t.e:""}</small>`:""}</span></div><div class="tr"><div class="fl" style="width:${(t.reads||0)/mx*100}%"></div></div></td><td class="num"><b>${t.reads||0}</b></td><td class="num">${t.views||0}</td><td class="num">${t.views?awDur(t.secs/t.views):"—"}</td><td class="num">${t.likes||0}</td><td class="num">${t.shares||0}</td><td class="num">${t.captures||0}</td></tr>`).join("")
+      +`</tbody></table></div></div>`}
+  const days=(d.days||[]),dayArr=[];days.forEach(x=>{for(let i=0;i<x.n;i++)dayArr.push(x.d)});
+  h+=monthly("الزيارات حسب الشهر","بحسب تاريخ الزيارة (توقيت البحرين)",dayArr,x=>x,"زيارة");
+  const dm=new Map(days.map(x=>[x.d,x.n])),l14=[];for(let i=13;i>=0;i--){const k=bhDate(Date.now()-i*864e5);l14.push([k.slice(5).replace("-","/"),dm.get(k)||0])}
+  h+=`<div class="panel"><h3>الزيارات في آخر 14 يومًا</h3><div class="cap">عدد الزيارات يوميًا</div>${hbars(l14.slice().reverse(),14,"زيارة")}</div>`;
+  h+=`<div class="panel"><h3>من وين وصلوا للمجلة؟</h3><div class="cap">مصدر الزيارة · روابط المشاركة من المجلة تحمل مصدرها تلقائيًا</div>${hbars((d.sources||[]).map(x=>[AW_SRC[x.k]||x.k,x.n]),10,"زيارة",ses)}</div>`;
+  h+=`<div class="panel"><h3>الإعجابات حسب الموضوع</h3><div class="cap">الإعجابات الحالية (بعد إلغاء أي إعجاب)</div>${hbars((d.topics||[]).filter(t=>t.likes).sort((a,b)=>b.likes-a.likes).map(t=>[t.t,t.likes]),20,"إعجاب",T.likes)}</div>`;
+  h+=`<div class="panel"><h3>قنوات المشاركة</h3><div class="cap">وين شارك القرّاء روابط المواضيع</div>${hbars((d.share_ch||[]).map(x=>[AW_SH[x.k]||x.k,x.n]),6,"مشاركة",T.shares)}</div>`;
+  h+=`<div class="panel"><h3>التقاط الصفحات</h3><div class="cap"><span class="num">${T.captures||0}</span> صورة اقتباس أُنشئت · وش سووا فيها</div>${hbars((d.capture_ch||[]).map(x=>[AW_CAP[x.k]||x.k,x.n]),3,"مرة",T.capture_out)}</div>`;
+  h+=`<div class="panel"><h3>الأجهزة</h3><div class="cap">نوع الجهاز في كل زيارة</div>${hbars((d.devices||[]).map(x=>[AW_DEV[x.k]||x.k,x.n]),3,"زيارة",ses)}</div>`;
+  const HB=[["الصباح · 6–11",6,11],["الظهر · 12–15",12,15],["العصر والمساء · 16–19",16,19],["الليل · 20–23",20,23],["بعد منتصف الليل · 0–5",0,5]],hr=d.hours||[];
+  h+=`<div class="panel"><h3>أوقات القراءة</h3><div class="cap">بداية الزيارة بتوقيت البحرين</div>${hbars(HB.map(([n,a,b])=>[n,hr.filter(x=>x.h>=a&&x.h<=b).reduce((s,x)=>s+x.n,0)]),5,"زيارة",ses)}</div>`;
+  const pmap=new Map((d.pages||[]).map(x=>[x.p,x.n])),np=Math.max(0,...(d.pages||[]).map(x=>x.p)),PB=[];for(let a=1;a<=np;a+=10){const b=Math.min(np,a+9);let m=0;for(let p=a;p<=b;p++)m=Math.max(m,pmap.get(p)||0);PB.push(["الصفحات "+a+"–"+b,m])}
+  if(PB.length)h+=`<div class="panel"><h3>إلى أي مدى تصفّحوا؟</h3><div class="cap">عدد الزيارات التي وصلت لكل مجموعة صفحات · <span class="num">${pct(T.bounced||0,ses)}</span>% اكتفوا بالغلاف</div>${hbars(PB,8,"زيارة",ses)}</div>`;
+  if((d.search||[]).length)h+=`<div class="panel"><h3>أكثر الكلمات بحثًا</h3><div class="cap"><span class="num">${T.searches||0}</span> عملية بحث داخل المجلة</div>${hbars(d.search.map(x=>[x.k,x.n]),10,"بحث",T.searches)}</div>`;
+  if((d.links||[]).length)h+=`<div class="panel"><h3>الروابط الخارجية الأكثر ضغطًا</h3><div class="cap">روابط داخل صفحات المجلة</div>${hbars(d.links.map(x=>[x.k==="mailto"?"إيميل":x.k==="tel"?"اتصال هاتفي":x.k,x.n]),10,"ضغطة",T.links)}</div>`;
+  h+=`<div class="panel"><h3>تفاعلات أخرى</h3><div class="cap">${esc(ylabel)}</div><div class="kpis" style="grid-template-columns:repeat(2,minmax(0,1fr));margin:0"><div class="kpi"><span class="k">فتح لعبة «رحلة القيم» من المجلة</span><span class="v num">${T.games||0}</span></div><div class="kpi"><span class="k">ضغط على روابط خارجية</span><span class="v num">${T.links||0}</span></div><div class="kpi"><span class="k">ثبّتوا المجلة على الجهاز</span><span class="v num">${T.installs||0}</span></div><div class="kpi"><span class="k">زيارات اكتفت بالغلاف</span><span class="v num">${pct(T.bounced||0,ses)}<small>%</small></span></div></div></div>`;
+  return h+`</div>`;
+}
 function renderStats(){
   const el=$("view-stats");
   const yOf=d=>validDate(d)?d.slice(0,4):"";
-  const years=[...new Set([...S.tasks.map(t=>yOf(t.received)),...(S.monitor||[]).map(x=>yOf(x.date)),...(S.social||[]).map(x=>yOf(x.date)),...((S.ss==='game'&&S.vg&&S.vg.runs)?S.vg.runs.map(r=>yOf(r.d)):[])].filter(Boolean))].sort();
+  const years=[...new Set([...S.tasks.map(t=>yOf(t.received)),...(S.monitor||[]).map(x=>yOf(x.date)),...(S.social||[]).map(x=>yOf(x.date)),...((S.ss==='game'&&S.vg&&S.vg.runs)?S.vg.runs.map(r=>yOf(r.d)):[]),...((S.ss==='adwaa'&&S.aw&&S.aw.d)?(S.aw.d.years||[]).map(String):[])].filter(Boolean))].sort();
   if(!S.sy||(S.sy!=="all"&&!years.includes(S.sy)))S.sy=years.includes(String(now.getFullYear()))?String(now.getFullYear()):(years[years.length-1]||"all");
   const inY=d=>S.sy==="all"||String(d||"").startsWith(S.sy);
   const sec=S.ss||"all";
@@ -1956,7 +2024,7 @@ function renderStats(){
   const sel=photos.filter(t=>inY(t.received));
   const news=(S.monitor||[]).filter(x=>x.verified!==false&&inY(x.date)),posts=(S.social||[]).filter(x=>x.verified!==false&&inY(x.date));
   const pct=(x,d)=>d?Math.round(x/d*100):0;const ylabel=S.sy==="all"?"كل السنوات":S.sy;
-  const SECS=[{k:"all",n:"نظرة عامة"},{k:"tasks",n:"المهام"},{k:"photo",n:"التصوير"},{k:"news",n:"الأخبار والرصد"},{k:"game",n:"رحلة القيم"}];
+  const SECS=[{k:"all",n:"نظرة عامة"},{k:"tasks",n:"المهام"},{k:"photo",n:"التصوير"},{k:"news",n:"الأخبار والرصد"},{k:"game",n:"رحلة القيم"},{k:"adwaa",n:"أضواء"}];
   let h=`<div class="toolbar"><div class="grp"><h2 style="font-size:22px;font-weight:800">الإحصائيات</h2></div>
     <div class="grp"><div class="seg" role="group" aria-label="السنة">${years.map(y=>`<button type="button" data-act="sy" data-v="${y}" aria-pressed="${S.sy===y}">${y}</button>`).join("")}<button type="button" data-act="sy" data-v="all" aria-pressed="${S.sy==="all"}">الكل</button></div>
     ${xlBtn("stats")}<button class="btn" type="button" data-act="stats-report">${ic("report")}تصدير التقرير</button><button class="btn write-only" type="button" data-act="photo-new">${ic("plus")}<span data-en="Coverage">تغطية</span></button></div></div>
@@ -1965,7 +2033,8 @@ function renderStats(){
   const hbars=(rows,lim,unit,tot)=>{rows=rows.filter(x=>x[1]);if(!rows.length)return `<div class="empty-note">لا توجد بيانات.</div>`;let r=rows;if(rows.length>lim){const rest=rows.slice(lim-1).reduce((a,x)=>a+x[1],0);r=rows.slice(0,lim-1).concat([["أخرى",rest]])}
     const m=Math.max(...r.map(x=>x[1]));const T=tot||rows.reduce((a,x)=>a+x[1],0);return `<div class="hbars">`+r.map(([k,v,c])=>`<div class="hb" data-tip="${esc(k+": "+v+" "+unit+" ("+pct(v,T)+"%)")}"><div class="nm"><span>${esc(k)}</span><span class="num muted">${v}</span></div><div class="tr"><div class="fl" style="width:${v/m*100}%;${c?"background:"+c:""}"></div></div></div>`).join("")+`</div>`};
   const cnt=(arr,fn)=>{const c=new Map();arr.forEach(t=>fn(t).forEach(k=>{if(k)c.set(k,(c.get(k)||0)+1)}));return [...c.entries()].sort((a,b)=>b[1]-a[1])};
-  let kpiN=0;const heroArr=sec==="game"?((S.vg&&S.vg.runs)||[]).filter(r=>inY(r.d)):sec==="photo"?sel:sec==="news"?[...news,...posts]:tasks,heroDate=sec==="game"?(x=>x.d):sec==="news"?(x=>x.date):(x=>x.received);
+  let kpiN=0;const awDays=[];if(sec==="adwaa"&&S.aw&&S.aw.d)(S.aw.d.days||[]).forEach(x=>{if(inY(x.d))for(let i=0;i<x.n;i++)awDays.push({d:x.d})});
+  const heroArr=sec==="adwaa"?awDays:sec==="game"?((S.vg&&S.vg.runs)||[]).filter(r=>inY(r.d)):sec==="photo"?sel:sec==="news"?[...news,...posts]:tasks,heroDate=(sec==="game"||sec==="adwaa")?(x=>x.d):sec==="news"?(x=>x.date):(x=>x.received);
   const hmo=Array(12).fill(0);heroArr.forEach(x=>{const d=heroDate(x);if(validDate(d))hmo[+d.slice(5,7)-1]++});const hmm=Math.max(1,...hmo);
   const heroBg=`<div class="kpi-bg" aria-hidden="true"><div class="bg-spark">${hmo.map((v,i)=>`<i style="height:${Math.max(4,v/hmm*100)}%"${S.sy===String(now.getFullYear())&&i===now.getMonth()?' class="cur"':""}></i>`).join("")}</div><div class="sp-ml">${MONTHS.map((m,i)=>`<span>${mAbbr(m,i)}</span>`).join("")}</div></div>`;
   const kpi=(k,v,sub)=>{const hero=kpiN++===0;return `<div class="kpi${hero?" hero":""}">${hero?heroBg:""}<span class="k">${k}</span><span class="v num">${v}</span><span class="sub">${sub}</span></div>`};
@@ -1977,6 +2046,7 @@ function renderStats(){
     s+=`<div class="cols">`;for(let m=0;m<12;m++){const tip=MONTHS[m]+"\n"+cy.map((y,i)=>y+": "+serie[i][m]+" "+unit).join("\n");s+=`<div class="mcol" data-tip="${esc(tip)}">`+cy.map((y,i)=>`<div class="bar" style="height:${serie[i][m]/top*100}%;background:${cols[ci[i]]}"></div>`).join("")+`</div>`}
     return s+`</div></div><div class="mlabels">${MONTHS.map((x,i)=>`<span><b class="ml-f">${x}</b><b class="ml-s" data-noi18n>${mAbbr(x,i)}</b></span>`).join("")}</div></div>`};
   if(sec==="game"){el.innerHTML=h+vgStats({kpi,hbars,monthly,inY,ylabel,pct});return}
+  if(sec==="adwaa"){el.innerHTML=h+awStats({kpi,hbars,monthly,inY,ylabel,pct});return}
   // numbers
   const doneT=tasks.filter(t=>t.status==="مكتمل").length,openT=tasks.filter(t=>CURRENT.has(t.status||"لم يبدأ")).length;
   const delP=sel.filter(t=>validDate(t.delivered)&&t.delivered>=t.received);const avg=delP.length?delP.reduce((a,t)=>a+daysBetween(t.received,t.delivered),0)/delP.length:0;
@@ -3417,6 +3487,8 @@ document.addEventListener("click",async e=>{
     case "task-edit":{const t=S.tasks.find(x=>x.id===v);if(t)openTask(t);break}
     case "f-state":S.f.state=v;render();break;
     case "ss":S.ss=v;render();break;
+    case "aw-issue":S.ai=v;S.aw=null;render();break;
+    case "aw-qr":{const u=AW_URL+"?via=qr";const done=ok=>{a.innerHTML=ic(ok?"check":"close")+(ok?"تم النسخ":"تعذّر النسخ");setTimeout(()=>{a.innerHTML=ic("dup")+"نسخ رابط QR"},1800);if(!ok)prompt("انسخ الرابط:",u)};try{navigator.clipboard.writeText(u).then(()=>done(true),()=>done(false))}catch(err){done(false)}break}
     case "theme":{const n=themeNow()==="dark"?"light":"dark";document.documentElement.setAttribute("data-theme",n);try{localStorage.setItem("lmra-theme",n)}catch(err){}paintTheme();break}
     case "mmenu":{const m=document.querySelector(".mast");const o=!m.classList.contains("menu-open");m.classList.toggle("menu-open",o);a.setAttribute("aria-expanded",String(o));break}
     case "ldup-edit":{const x=S.leaves.find(z=>z.id===v);$("dlg-leave").close();if(x)openLeave(x);break}

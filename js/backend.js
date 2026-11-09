@@ -266,6 +266,14 @@
       },
       subscribe(cb) { return sb.channel("game-runs").on("postgres_changes", { event: "INSERT", schema: "public", table: "game_runs" }, () => cb()).subscribe(); }
     };
+    /* مجلة أضواء: الإحصائيات مجمّعة في قاعدة البيانات (adwaa_stats) */
+    window.lmraAdwaa = {
+      async stats(issue, year) {
+        const { data, error } = await sb.rpc("adwaa_stats", { p_issue: issue || null, p_year: year ? +year : null });
+        if (error) throw mapErr(error); return data;
+      },
+      subscribe(cb) { return sb.channel("adwaa-open").on("postgres_changes", { event: "INSERT", schema: "public", table: "adwaa_events", filter: "type=eq.open" }, () => cb()).subscribe(); }
+    };
     if (!booted) { booted = true; resolveReady(); addHeaderButtons(); }
   }
   function addHeaderButtons() {
