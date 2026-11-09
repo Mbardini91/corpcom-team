@@ -1180,7 +1180,7 @@ const I18N_DICT={"نتيجتك اليوم:":"Your score today:","أحسنت! س�
 "إعدادات الفريق":"Team Settings","صلاحيات الدخول":"Access Control","تسجيل الخروج":"Sign out","مرحبًا،":"Welcome,","مرحبًا":"Welcome","تبديل الوضع":"Toggle theme","القائمة":"Menu",
 "الوضع الليلي":"Dark mode","الوضع العادي":"Light mode","التبديل إلى الوضع العادي":"Switch to light mode","التبديل إلى الوضع الليلي":"Switch to dark mode",
 /* home */
-"أهلًا بك":"Welcome","في إجازة اليوم":"on leave today","مهمة جارية":"active tasks","مرصود اليوم":"monitored today","مهمة مكتملة في":"tasks completed in","لا أحد في إجازة اليوم":"No one on leave today","لا أخبار مرصودة اليوم بعد":"No stories monitored yet today",
+"أهلًا بك":"Welcome","في إجازة اليوم":"on leave today","مهمة جارية":"active tasks","مرصود اليوم":"monitored today","مرصود آخر 24 ساعة":"monitored in the last 24h","لا أخبار مرصودة خلال آخر 24 ساعة":"No news monitored in the last 24 hours","مهمة مكتملة في":"tasks completed in","لا أحد في إجازة اليوم":"No one on leave today","لا أخبار مرصودة اليوم بعد":"No stories monitored yet today",
 "كل خبر نرصده بدقة يحمي صورة الهيئة — شكرًا لعينكم الساهرة.":"Every story we track carefully protects the Authority's image — thank you for your watchful eyes.",
 "العمل الجماعي يجعل المستحيل ممكنًا، وأنتم الدليل.":"Teamwork makes the impossible possible — and you are the proof.",
 "التفاصيل الصغيرة هي ما يصنع التواصل العظيم.":"Small details are what make great communication.",
@@ -1844,7 +1844,7 @@ function renderHome(){
   const upcoming=S.leaves.filter(l=>validDate(l.from)&&l.from>td).sort((a,b)=>a.from.localeCompare(b.from)).slice(0,4);
   const onLeave=new Set(leavesToday.map(l=>l.name)).size;
   const open=S.tasks.filter(t=>CURRENT.has(t.status||"لم يبدأ"));
-  const todayNews=[...(S.monitor||[]).filter(x=>x.date===td).map(x=>L(x,"headline")),...(S.social||[]).filter(x=>x.date===td).map(x=>L(x,"summary")||L(x,"text"))].filter(Boolean);
+  const y24=addDays(td,-1);const todayNews=[...(S.monitor||[]).filter(x=>x.date>=y24&&x.date<=td).map(x=>L(x,"headline")),...(S.social||[]).filter(x=>x.date>=y24&&x.date<=td).map(x=>L(x,"summary")||L(x,"text"))].filter(Boolean);
   const yr=String(now.getFullYear());const done=S.tasks.filter(t=>t.status==="مكتمل"&&String(t.received||"").startsWith(yr)).length;
   if(S.qi===undefined)pickQuote();
   /* خلفيات البطاقات: معاينة حيّة خفيفة من البيانات */
@@ -1852,7 +1852,7 @@ function renderHome(){
   const bgCal=`<div class="bg-list">${names.length?names.slice(0,5).map(n=>`<span class="pill on">${esc(shortName(n))}</span>`).join(""):`<span class="pill">لا أحد في إجازة اليوم</span>`}${upcoming.map(l=>`<span class="pill">${esc(shortName(l.name))} · ${esc(l.from.slice(8))}/${esc(l.from.slice(5,7))}</span>`).join("")}</div>`;
   const stc=STATUS.filter(x=>CURRENT.has(x.k)).map(x=>[x.k,open.filter(t=>(t.status||"لم يبدأ")===x.k).length,x.c]);const stm=Math.max(1,...stc.map(x=>x[1]));
   const bgTasks=`<div class="bg-bars">${stc.map(([k,v,c])=>`<div><span>${esc(k)}</span><i><b style="width:${v/stm*100}%;background:${c}"></b></i><em>${v}</em></div>`).join("")}</div>`;
-  const bgNews=`<div class="bg-heads">${todayNews.length?todayNews.slice(0,3).map(h=>`<p>${esc(String(h).slice(0,90))}</p>`).join(""):`<p>لا أخبار مرصودة اليوم بعد</p>`}</div>`;
+  const bgNews=`<div class="bg-heads">${todayNews.length?todayNews.slice(0,3).map(h=>`<p>${esc(String(h).slice(0,90))}</p>`).join(""):`<p>لا أخبار مرصودة خلال آخر 24 ساعة</p>`}</div>`;
   const mo=Array(12).fill(0);S.tasks.forEach(t=>{if(t.status==="مكتمل"&&String(t.received||"").startsWith(yr))mo[+t.received.slice(5,7)-1]++});const mm=Math.max(1,...mo);
   const bgStats=`<div class="bg-spark">${mo.map((v,i)=>`<i style="height:${Math.max(4,v/mm*100)}%"${i===now.getMonth()?' class="cur"':""}></i>`).join("")}</div>`;
   const card=(v,cls,icon,title,sub,bg)=>`<button class="bento ${cls}" type="button" data-act="tab" data-v="${v}">
@@ -1864,7 +1864,7 @@ function renderHome(){
     <div class="bento-grid">
       ${card("calendar","b-cal","cal","التقويم السنوي",`<b class="num">${onLeave}</b> في إجازة اليوم`,bgCal)}
       ${card("tasks","b-tasks","list","المهام",`<b class="num">${open.length}</b> مهمة جارية`,bgTasks)}
-      ${card("monitor","b-news","news","الرصد الإعلامي",`<b class="num">${todayNews.length}</b> مرصود اليوم`,bgNews)}
+      ${card("monitor","b-news","news","الرصد الإعلامي",`<b class="num">${todayNews.length}</b> مرصود آخر 24 ساعة`,bgNews)}
       ${card("stats","b-stats","chart","الإحصائيات",`<b class="num">${done}</b> مهمة مكتملة في ${yr}`,bgStats)}
     </div>
     ${gHomeCard()}
