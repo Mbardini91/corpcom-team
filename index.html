@@ -981,29 +981,6 @@ dialog.cfm{max-width:440px;width:calc(100% - 32px);padding:22px;border-radius:16
 
 /* ---- العلامة + الساعة ---- */
 .brand{display:flex;align-items:center;gap:16px}
-.dclock{flex:none;display:grid;gap:2px;justify-items:center;padding:7px 14px 6px;border-radius:14px;background:var(--g-bg,rgba(255,255,255,.5));border:1px solid var(--g-bd,var(--mast-line));-webkit-backdrop-filter:var(--g-blur,blur(16px));backdrop-filter:var(--g-blur,blur(16px));box-shadow:var(--g-sh,0 6px 16px rgba(23,50,90,.12));color:var(--mast-ink);position:relative;overflow:hidden}
-.dclock::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.35),transparent 55%);pointer-events:none;mix-blend-mode:soft-light}
-.dc-t{display:flex;align-items:baseline;gap:5px;line-height:1;font-family:var(--font-display);font-variant-numeric:tabular-nums}
-.dc-hm{font-size:30px;font-weight:800;letter-spacing:.01em}
-.dc-col{display:inline-block;margin:0 1px;animation:dcblink 1s steps(1) infinite;opacity:.9}
-@keyframes dcblink{50%{opacity:.25}}
-.dc-s{display:inline-flex;font-size:17px;font-weight:800;color:var(--red,#de2827)}
-:root[data-theme="dark"] .dc-s{color:#ff6b66}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .dc-s{color:#ff6b66}}
-.dc-d{position:relative;display:inline-block;width:.62em;height:1.05em;overflow:hidden}
-.dc-d i{position:absolute;inset:0;font-style:normal;text-align:center;line-height:1.05em}
-.dc-d i.in{animation:dcin .38s cubic-bezier(.23,1,.32,1) both}
-.dc-d i.out{animation:dcout .38s cubic-bezier(.23,1,.32,1) both}
-@keyframes dcin{from{transform:translateY(100%);opacity:0;filter:blur(2px)}to{transform:none;opacity:1;filter:none}}
-@keyframes dcout{from{transform:none;opacity:1}to{transform:translateY(-100%);opacity:0;filter:blur(2px)}}
-.dc-ap{font-size:11px;font-weight:700;color:var(--mast-mute);align-self:flex-start;margin-top:2px}
-.dc-l{display:flex;align-items:center;gap:6px;font-size:10.5px;font-weight:700;color:var(--mast-eyebrow);letter-spacing:.02em}
-.dc-dot{width:3px;height:3px;border-radius:50%;background:currentColor;opacity:.6}
-@media (max-width:760px){.dclock{padding:5px 8px 4px;border-radius:10px}.dc-t{gap:3px}.dc-hm{font-size:17px}.dc-s{font-size:11.5px}.dc-ap,.dc-l{display:none}}
-@media (prefers-reduced-motion:reduce){.dc-col{animation:none}}
-.wclock{width:62px;height:62px;flex:none;border-radius:50%;filter:drop-shadow(0 6px 10px rgba(23,50,90,.22)) drop-shadow(0 1px 2px rgba(0,0,0,.18))}
-.wclock svg{width:100%;height:100%;display:block}
-.wc-brand{font:700 6.2px/1 "Frutiger","Segoe UI",sans-serif;letter-spacing:.18em;fill:#8a7350}
 .lang-btn{font-weight:700;gap:8px}.lang-btn .lg-a{display:inline-grid;place-items:center;min-width:24px;height:20px;padding:0 4px;border-radius:5px;background:var(--mast-ink);color:var(--mast-bg-solid,#efe9df);font-size:11px;letter-spacing:.04em}
 :root[data-theme="dark"] .lang-btn .lg-a{color:#17325a}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .lang-btn .lg-a{color:#17325a}}
@@ -1323,10 +1300,6 @@ function setLang(l){try{localStorage.setItem("lmra-lang",l)}catch(_){}location.r
       <div class="brand">
         <div class="brand-t"><div class="eyebrow">هيئة تنظيم سوق العمل</div>
         <h1>منصة فريق إدارة الاتصال</h1></div>
-        <div class="dclock" id="wclock" role="timer" aria-label="الساعة بتوقيت البحرين" data-noi18n>
-          <div class="dc-t" dir="ltr"><span class="dc-hm num"><span id="dc-h">--</span><span class="dc-col">:</span><span id="dc-m">--</span></span><span class="dc-s num"><span class="dc-d" id="dc-s1"><i>0</i></span><span class="dc-d" id="dc-s2"><i>0</i></span></span><span class="dc-ap" id="dc-ap"></span></div>
-          <div class="dc-l"><span id="dc-day"></span><span class="dc-dot"></span><span id="dc-zone"></span></div>
-        </div>
       </div>
       <div class="mast-tools"><button class="ghost-btn lang-btn" type="button" data-act="lang" data-noi18n id="lang-btn"></button><button class="ghost-btn icon" type="button" data-act="theme" id="theme-btn" aria-label="تبديل الوضع"></button><button class="ghost-btn icon mmenu" type="button" data-act="mmenu" aria-label="القائمة" aria-expanded="false"></button></div>
       <div class="mast-meta">
@@ -2607,18 +2580,7 @@ async function exportXlsx(scope){
 
 /* ---------- اللغة + الساعة + الانترو ---------- */
 (function(){const b=$("lang-btn");if(b){b.innerHTML=I18N_ON?`<span class="lg-a">ع</span><span>العربية</span>`:`<span class="lg-a">EN</span><span>English</span>`;b.title=I18N_ON?"التبديل إلى العربية":"Switch to English";b.setAttribute("aria-label",b.title)}})();
-(function(){const box=$("wclock");if(!box)return;const H=$("dc-h"),M=$("dc-m"),S1=$("dc-s1"),S2=$("dc-s2"),AP=$("dc-ap"),DY=$("dc-day"),ZN=$("dc-zone");
-  const rm=matchMedia("(prefers-reduced-motion: reduce)").matches;let last="";
-  const roll=(el,v)=>{const cur=el.lastElementChild;if(cur&&cur.textContent===v&&!cur.classList.contains("out"))return;if(rm||!cur){el.innerHTML=`<i>${v}</i>`;return}
-    cur.classList.add("out");const n=document.createElement("i");n.className="in";n.textContent=v;el.appendChild(n);setTimeout(()=>{if(cur.parentNode)cur.remove()},420)};
-  ZN.textContent=I18N_ON?"Bahrain":"البحرين";
-  function tick(){const d=new Date(Date.now()+3*36e5);const h24=d.getUTCHours(),mi=d.getUTCMinutes(),se=d.getUTCSeconds();const key=h24+":"+mi+":"+se;
-    if(key!==last){last=key;const h12=h24%12||12;H.textContent=String(h12).padStart(2,"0");M.textContent=String(mi).padStart(2,"0");
-      const ss=String(se).padStart(2,"0");roll(S1,ss[0]);roll(S2,ss[1]);AP.textContent=I18N_ON?(h24<12?"AM":"PM"):(h24<12?"ص":"م");
-      if(se===0||!DY.textContent){DY.textContent=new Intl.DateTimeFormat(I18N_ON?"en-GB":"ar",{weekday:"long",timeZone:"UTC"}).format(d)}
-      box.title=(I18N_ON?"Bahrain time ":"بتوقيت البحرين ")+String(h24).padStart(2,"0")+":"+M.textContent}
-    setTimeout(tick,1000-(Date.now()%1000)+5)}
-  tick()})();
+
 (function(){let seen=false;try{seen=sessionStorage.getItem("lmra-intro")==="1";sessionStorage.setItem("lmra-intro","1")}catch(_){}
   if(seen||/[?&]nointro/.test(location.search))return;
   const en=I18N_ON;const o=document.createElement("div");o.className="intro";o.setAttribute("role","presentation");
