@@ -258,3 +258,21 @@ exception when duplicate_object then null; end $$;
 -- العدد الحالي (10 · الربع الثاني 2026)
 insert into public.adwaa_issues (id, number, label, pages, topics) values ('2026-q2', 10, 'العدد 10 · الربع الثاني 2026', 58, '[{"id": "ceo-word", "s": 3, "e": 3, "t": "تطوير لا يتوقف"}, {"id": "events", "s": 4, "e": 6, "t": "أبرز الفعاليات والمستجدات"}, {"id": "departments", "s": 7, "e": 7, "t": "إدارات"}, {"id": "outstanding", "s": 8, "e": 12, "t": "متميزون"}, {"id": "twin-fame", "s": 13, "e": 13, "t": "توأم الشهرة"}, {"id": "inspiring", "s": 14, "e": 19, "t": "ملهمون ومبتكرون · سعود يتيم"}, {"id": "spotlight", "s": 20, "e": 23, "t": "Spotlight on · فاطمة الظاعن"}, {"id": "here-there", "s": 24, "e": 37, "t": "من هنا وهناك"}, {"id": "zanzibar", "s": 38, "e": 43, "t": "زنجبار.. حيث يصنع العطاء أجمل الرحلات"}, {"id": "severance", "s": 44, "e": 45, "t": "مراجعة مسلسل Severance"}, {"id": "calendar", "s": 46, "e": 47, "t": "التقويم الشهري"}, {"id": "memories", "s": 48, "e": 49, "t": "صور من ذاكرة الهيئة"}, {"id": "our-table", "s": 50, "e": 51, "t": "على سفرتنا.. رحلة بحرية"}, {"id": "legal", "s": 52, "e": 52, "t": "إضاءات قانونية"}, {"id": "positive", "s": 53, "e": 53, "t": "ومضة إيجابية"}, {"id": "values-game", "s": 54, "e": 55, "t": "لعبة رحلة القيم"}, {"id": "channels", "s": 56, "e": 57, "t": "قنوات التواصل والمشاركة"}]'::jsonb)
 on conflict (id) do update set number = excluded.number, label = excluded.label, pages = excluded.pages, topics = excluded.topics;
+
+-- ============================================================================
+-- Reader responses (applied 2026-11-16): «هل تستطيع التعرف على زميلك؟» + issue rating
+-- One editable row per visitor / issue / kind. Readers write only through
+-- adwaa_respond; team members read through adwaa_responses_list.
+-- ============================================================================
+create table if not exists public.adwaa_responses (
+  issue_id text not null, kind text not null check (kind in ('guess','rating')), visitor uuid not null,
+  answer text, score smallint check (score between 1 and 5),
+  created_at timestamptz not null default now(), updated_at timestamptz not null default now(),
+  primary key (issue_id, kind, visitor));
+alter table public.adwaa_responses enable row level security;
+-- policy adwaa_responses_team_read: select to authenticated using (is_member())
+-- functions: adwaa_respond(issue, visitor, kind, answer, score) → {n, avg}   (anon)
+--            adwaa_responses_list(issue) → {guesses, ratings, comments}       (members)
+--            adwaa_guess_reveal(issue, answer) → {n, correct}                (anon, aggregate only)
+--            adwaa_norm_ar(text) — Arabic normalisation used for matching names
+-- adwaa_track now also accepts event types: photo, video, archive

@@ -2263,6 +2263,18 @@ function awStats({kpi,hbars,monthly,inY,ylabel,pct}){
   if(PB.length)h+=`<div class="panel"><h3>إلى أي مدى تصفّحوا؟</h3><div class="cap">عدد الزيارات التي وصلت لكل مجموعة صفحات · <span class="num">${pct(T.bounced||0,ses)}</span>% اكتفوا بالغلاف</div>${hbars(PB,8,"زيارة",ses)}</div>`;
   if((d.search||[]).length)h+=`<div class="panel"><h3>أكثر الكلمات بحثًا</h3><div class="cap"><span class="num">${T.searches||0}</span> عملية بحث داخل المجلة</div>${hbars(d.search.map(x=>[x.k,x.n]),10,"بحث",T.searches)}</div>`;
   if((d.links||[]).length)h+=`<div class="panel"><h3>الروابط الخارجية الأكثر ضغطًا</h3><div class="cap">روابط داخل صفحات المجلة</div>${hbars(d.links.map(x=>[x.k==="mailto"?"إيميل":x.k==="tel"?"اتصال هاتفي":x.k,x.n]),10,"ضغطة",T.links)}</div>`;
+  // ردود القرّاء: «هل تستطيع التعرف على زميلك؟» + تقييم العدد
+  const rkey=(S.ai&&S.ai!=="all")?S.ai:"all";
+  if(!S.awR||S.awR.key!==rkey){if(S.awRL!==rkey&&window.lmraAdwaa&&window.lmraAdwaa.responses){S.awRL=rkey;window.lmraAdwaa.responses(rkey==="all"?null:rkey).then(r=>{S.awRL=null;S.awR={key:rkey,d:r};if(S.view==="stats"&&S.ss==="adwaa")render()},()=>{S.awRL=null;S.awR={key:rkey,d:null}})}}
+  const R=S.awR&&S.awR.key===rkey?S.awR.d:null;
+  if(R){
+    const gs=(R.guesses||[]),gn=gs.reduce((s,x)=>s+x.n,0);
+    h+=`<div class="panel"><h3>«هل تستطيع التعرف على زميلك؟»</h3><div class="cap"><span class="num">${gn}</span> تخمين من القرّاء${multi?" · كل الأعداد":""} · الأسماء مجمّعة كما كتبها القرّاء</div>${gs.length?hbars(gs.map(x=>[x.answer+(multi?` · ${x.issue}`:""),x.n]),15,"تخمين",gn):`<div class="empty-note">ما في تخمينات بعد.</div>`}</div>`;
+    const rt=(R.ratings||[]),rn=rt.reduce((s,x)=>s+x.n,0),ravg=rn?rt.reduce((s,x)=>s+x.avg*x.n,0)/rn:0,dist=[5,4,3,2,1].map(k=>["★".repeat(k),rt.reduce((s,x)=>s+((x.dist||{})[k]||0),0)]);
+    h+=`<div class="panel"><h3>تقييم العدد</h3><div class="cap">${rn?`متوسط <b class="num">${ravg.toFixed(1)}</b> من 5 · <span class="num">${rn}</span> تقييم`:"ما في تقييمات بعد"} · يظهر للقارئ عند آخر صفحة</div>${rn?hbars(dist,5,"تقييم",rn):""}</div>`;
+    const cm=(R.comments||[]).slice(0,12);
+    if(cm.length)h+=`<div class="panel wide" style="min-width:0"><h3>ملاحظات القرّاء</h3><div class="cap">مع التقييم · الأحدث أولًا</div>${cm.map(c=>`<div style="padding:10px 0;border-bottom:1px solid var(--line,rgba(0,0,0,.08))"><b style="color:#d9a21b">${"★".repeat(c.score||0)}</b> <span>${esc(c.text)}</span> <small class="muted num">${esc(String(c.at||"").slice(0,10))}</small></div>`).join("")}</div>`;
+  }
   h+=`<div class="panel"><h3>تفاعلات أخرى</h3><div class="cap">${esc(ylabel)}</div><div class="kpis" style="grid-template-columns:repeat(2,minmax(0,1fr));margin:0"><div class="kpi"><span class="k">فتح لعبة «رحلة القيم» من المجلة</span><span class="v num">${T.games||0}</span></div><div class="kpi"><span class="k">ضغط على روابط خارجية</span><span class="v num">${T.links||0}</span></div><div class="kpi"><span class="k">ثبّتوا المجلة على الجهاز</span><span class="v num">${T.installs||0}</span></div><div class="kpi"><span class="k">زيارات اكتفت بالغلاف</span><span class="v num">${pct(T.bounced||0,ses)}<small>%</small></span></div></div></div>`;
   return h+`</div>`;
 }

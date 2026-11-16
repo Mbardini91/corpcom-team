@@ -272,6 +272,10 @@
         const { data, error } = await sb.rpc("adwaa_stats", { p_issue: issue || null, p_year: year ? +year : null });
         if (error) throw mapErr(error); return data;
       },
+      async responses(issue) {   // guess-the-colleague answers + ratings (team members only)
+        const { data, error } = await sb.rpc("adwaa_responses_list", { p_issue: issue || null });
+        if (error) throw mapErr(error); return data;
+      },
       subscribe(cb) { return sb.channel("adwaa-open").on("postgres_changes", { event: "INSERT", schema: "public", table: "adwaa_events", filter: "type=eq.open" }, () => cb()).subscribe(); }
     };
     if (!booted) { booted = true; resolveReady(); addHeaderButtons(); }
