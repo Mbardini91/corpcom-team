@@ -1395,6 +1395,56 @@ html[dir=ltr] .g-time i{transform-origin:left center}
 @media (max-width:640px){.gwk{margin-inline:-6px}.gw-pw{min-height:140px}.gw-main{padding:18px 12px 20px;border-radius:20px}.gw-r3{grid-template-columns:1fr}.gw-p,#view-stats .panel{padding:17px;border-radius:15px}
   .gw-head{align-items:flex-start}.gw-bv{font-size:60px}.gw-sv{font-size:42px}.gw-sum strong{font-size:28px}.gw-tr{min-width:0}.gw-ts{display:none}}
 @media (prefers-reduced-motion:reduce){#view-stats *{animation:none!important;transition:none!important}}
+/* ===== لوحة المهام (Kanban) ===== */
+.sr-only{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.kb{margin-bottom:14px}
+.kb-hint{display:inline-flex;align-items:center;gap:6px;font-size:11.5px}.kb-hint .ic{width:14px;height:14px}
+.kb-board{display:flex;gap:12px;overflow-x:auto;padding:2px 2px 8px;scroll-snap-type:x proximity;scrollbar-width:thin;overscroll-behavior-x:contain}
+.kb-col{flex:0 0 236px;min-width:0;display:flex;flex-direction:column;scroll-snap-align:start;border-radius:16px;padding:10px;background:color-mix(in srgb,var(--ink) 3.5%,transparent);border:1px solid transparent;transition:background .18s,border-color .18s,box-shadow .18s}
+.kb-ch{display:flex;align-items:center;gap:8px;padding:2px 4px 8px}
+.kb-ch i{width:8px;height:8px;border-radius:50%;background:var(--sc);flex:none}
+.kb-ch h4{font-size:13px;font-weight:800;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kb-ch .num{font-size:11px;font-weight:800;padding:2px 8px;border-radius:999px;background:color-mix(in srgb,var(--sc) 14%,transparent);color:var(--ink)}
+.kb-note{font-size:10.5px;color:var(--mute);margin:-4px 4px 8px}
+.kb-list{list-style:none;margin:0 -4px;padding:2px 4px 10px;display:flex;flex-direction:column;gap:8px;min-height:72px;flex:1;max-height:min(560px,62vh);overflow-y:auto;scrollbar-width:thin;overscroll-behavior:contain}
+.kb-empty{flex:1;display:grid;place-items:center;min-height:72px;border:1.5px dashed var(--line-2);border-radius:12px;font-size:11.5px;color:var(--mute);text-align:center;padding:10px}
+.kb-more button{appearance:none;width:100%;border:0;background:none;font:inherit;font-size:11.5px;font-weight:700;color:var(--mute);padding:6px;border-radius:8px;cursor:pointer}.kb-more button:hover{color:var(--accent);background:color-mix(in srgb,var(--accent) 8%,transparent)}
+.kb-li{position:relative}
+.kb-card{position:relative;display:grid;gap:5px;padding:11px 12px 10px;padding-inline-end:38px;border-radius:12px;background:var(--surface);border:1px solid var(--line);box-shadow:0 1px 2px rgba(23,50,90,.05);cursor:grab;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;outline:none;transition:border-color .18s,box-shadow .18s,transform .18s}
+.kb-card.ro{cursor:pointer}
+.kb-card::before{content:"";position:absolute;inset-block:10px;inset-inline-start:0;width:3px;border-radius:0 3px 3px 0;background:var(--tc)}
+html[dir=rtl] .kb-card::before{left:auto;right:0;border-radius:3px 0 0 3px}html[dir=ltr] .kb-card::before{right:auto;left:0}
+@media (hover:hover){.kb-card:hover{border-color:color-mix(in srgb,var(--accent) 45%,var(--line));box-shadow:0 6px 16px -8px rgba(23,50,90,.25)}}
+.kb-card:focus-visible{box-shadow:0 0 0 2px var(--accent)}
+.kb-ty{font-size:10.5px;font-weight:800;color:var(--tc)}
+.kb-t{font-size:13px;font-weight:600;line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.kb-m{display:flex;justify-content:space-between;gap:8px;font-size:10.5px;color:var(--mute)}.kb-o{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kb-mv{position:absolute;top:6px;inset-inline-end:6px;width:28px;height:28px;border-radius:8px;border:0;background:none;color:var(--mute);display:grid;place-items:center;cursor:pointer;transition:background .15s,color .15s}
+.kb-mv .ic{width:14px;height:14px}
+.kb-mv:hover,.kb-mv[aria-expanded=true]{background:color-mix(in srgb,var(--ink) 7%,transparent);color:var(--ink)}
+.kb-mv:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+/* drag states */
+.kb-src .kb-card{opacity:.35;border-style:dashed;box-shadow:none}.kb-src .kb-mv{visibility:hidden}
+.kb-ghost{position:fixed;z-index:200;margin:0;pointer-events:none;cursor:grabbing;box-shadow:0 22px 44px -12px rgba(10,20,40,.38),0 0 0 1.5px var(--accent);transform-origin:50% 50%;will-change:transform}
+.kb-ghost.kb-drop{opacity:0;transition:opacity .12s}
+body.kb-dragging,body.kb-dragging *{cursor:grabbing!important}
+body.kb-dragging{user-select:none;-webkit-user-select:none}
+.kb-col.kb-over.kb-x{background:color-mix(in srgb,var(--sc) 12%,transparent);border-color:color-mix(in srgb,var(--sc) 55%,transparent);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--sc) 35%,transparent)}
+.kb-col.kb-over.kb-x .kb-list::before{content:"";display:block;height:4px;border-radius:4px;background:var(--sc);order:-1}
+.kb-col.kb-over:not(.kb-same):not(.kb-x){background:color-mix(in srgb,var(--sc) 12%,transparent);border-color:color-mix(in srgb,var(--sc) 55%,transparent)}
+.kb-card.kb-armed{transform:scale(1.03);box-shadow:0 10px 24px -10px rgba(10,20,40,.35),0 0 0 1.5px var(--accent)}
+.kb-card.kb-grab{box-shadow:0 0 0 2px var(--accent),0 14px 28px -12px rgba(10,20,40,.35);transform:translateY(-2px)}
+.kb-card.kb-grab::after{content:"جارٍ النقل… ← →";position:absolute;bottom:-9px;inset-inline-start:10px;font-size:10px;font-weight:800;color:var(--accent-ink,#fff);background:var(--accent);padding:1px 7px;border-radius:999px}
+.kb-card.kb-land{animation:kbland .6s cubic-bezier(.22,1,.36,1)}
+@keyframes kbland{0%{transform:scale(.96);box-shadow:0 0 0 2px var(--accent)}60%{box-shadow:0 0 0 2px var(--accent)}100%{transform:none}}
+/* move menu */
+.kb-menu{position:fixed;z-index:210;list-style:none;margin:0;padding:6px;min-width:184px;border-radius:14px;background:var(--g-strong,var(--surface));-webkit-backdrop-filter:blur(24px) saturate(160%);backdrop-filter:blur(24px) saturate(160%);border:1px solid var(--g-bd,var(--line));box-shadow:0 18px 44px -10px rgba(10,20,40,.3);animation:gaIn .18s cubic-bezier(.22,1,.36,1)}
+.kb-mh{font-size:10.5px;font-weight:700;color:var(--mute);padding:4px 10px 6px}
+.kb-menu button{appearance:none;width:100%;display:flex;align-items:center;gap:9px;border:0;background:none;font:inherit;font-size:13px;font-weight:600;color:var(--ink);padding:8px 10px;border-radius:9px;cursor:pointer;text-align:start}
+.kb-menu button i{width:8px;height:8px;border-radius:50%;background:var(--sc)}
+.kb-menu button:hover,.kb-menu button:focus-visible{background:color-mix(in srgb,var(--sc) 14%,transparent);outline:none}
+@media (max-width:640px){.kb-col{flex-basis:68vw}.kb-hint{display:none}}
+@media (prefers-reduced-motion:reduce){.kb-card,.kb-col,.kb-ghost{transition:none!important;animation:none!important}.kb-card.kb-armed,.kb-card.kb-grab{transform:none}}
 /* ===== Glass appearance (platform-wide, per browser) ===== */
 :root.ga{--ga-base:#ffffff;--ga-bk:1.25;--ga-hk:1.4;--ga-dsh:0 10px 30px -8px rgba(23,50,90,.16),0 2px 6px rgba(23,50,90,.05);
   --ga-s:color-mix(in srgb,var(--ga-base) calc(100% - var(--ga-tw,0%)),var(--ga-tint,#fff));
@@ -1442,7 +1492,7 @@ html[dir=ltr] .g-time i{transform-origin:left center}
 <script>
 /* ---------- English translation layer ---------- */
 const I18N_EXACT={"من":"of","إلى":"to","الكل":"All","عام":"Year","حذف":"Delete","تعديل":"Edit","حفظ":"Save","إلغاء":"Cancel","إغلاق":"Close","بحث":"Search","ابحث":"Search","افتح":"Open","خبر":"stories","العدد":"Count","النسبة":"Share","الاسم":"Name","تأكيد":"Confirm","دخول":"Sign in","تغيير":"Change","عضو":"Member","مسؤول":"Admin","مشاهد":"Viewer","الرقم":"Number","ع":"AR","عرض":"View","فقط":"only","حتى":"until","صدر":"Published","رُصد:":"Covered:","مرصود":"monitored","منشور":"post","مهمة":"task","مهام":"tasks","صحف":"press","سوشيال":"social","تغطية":"coverage","يوم":"day","أيام":"days"};
-const I18N_DICT={"منصات التواصل الاجتماعي":"Social media","رصد منصات التواصل الاجتماعي":"Social media monitoring","تقرير رصد منصات التواصل الاجتماعي":"Social media monitoring report","منشورات منصات التواصل":"Social posts","منصات التواصل حسب المنصة والنبرة":"Social by platform & tone","رصد منصات التواصل":"Social monitoring","نبرة منصات التواصل":"Social tone","أضف كلمة بحث جديدة":"Add a new search word","إضافة":"Add","حذف الكلمة":"Remove word","آخر 30 يومًا مقارنة بالـ30 السابقة":"last 30 days vs. previous 30","عند المؤشر":"At cursor","يوميًا":"per day","التفاصيل":"Details","الإحصائيات":"Statistics","أقسام الإحصائيات":"Statistics sections","مظهر الزجاج":"Glass appearance","عدّل خامة الزجاج في المنصة كلها. يُحفظ الإعداد على هذا المتصفح.":"Adjust the glass material across the platform. Saved in this browser.","معاينة مباشرة":"Live preview","شفاف":"Clear","مثلّج":"Frosted","صلب":"Solid","الضبابية":"Blur","العتامة":"Opacity","التشبّع":"Saturation","لمعة الحواف":"Edge light","لون الزجاج":"Glass tint","بدون":"None","رملي":"Sand","كحلي":"Navy","أحمر":"Red","ذهبي":"Gold","إرجاع الافتراضي":"Reset to default","ستظهر آخر التحديثات هنا.":"Latest updates will appear here.","لا توجد بيانات":"No data","نظرة عامة":"Overview","رحلة القيم":"Values Journey","أضواء":"Adhwa","التصوير":"Photography","الأخبار":"News","الرصد":"Monitoring","متوسط آخر 42 يومًا":"42-day average","صباح الخير":"Good morning","مساء الخير":"Good evening","آخر 30 يومًا":"last 30 days","أسبوع":"Week","شهر":"Month","سنة":"Year","30 يوم":"30 days","متصدّر":"Leader","مباشر":"Live","حسب النوع":"By type","حسب الحالة":"By status","نسبة الإنجاز":"Completion rate","المهام المستلمة":"Tasks received","أحدث المهام":"Latest tasks","المهام الجارية":"Current tasks","آخر التحديثات":"Latest updates","الرصد اليومي":"Daily monitoring","تدفّق المهام":"Task flow","أكثر جهة طالبة":"Top requesting dept","الأكثر إنجازًا في الفريق":"Top performer","سرعة تسليم التصوير":"Photo delivery speed","متوسط مدة الإنجاز":"Avg. completion time","سرعة التسليم":"Delivery speed","أحدث التغطيات":"Latest coverage","استخدام الصور":"Photo usage","تسليم في نفس اليوم":"Same-day delivery","أكثر جهة طالبة للتصوير":"Top requester","تدفّق التغطيات":"Coverage flow","آخر التغطيات":"Latest coverage","الأخبار الصادرة":"Published news","أحدث الأخبار":"Latest news","قنوات النشر لكل خبر":"Channels per story","الأخبار المنشورة":"Published news","حسب قناة النشر":"By channel","نسبة الأخبار المرصودة":"Coverage rate","أكثر وسيلة غطّت أخبارنا":"Top covering outlet","تدفّق الأخبار":"News flow","تتبّع التغطية":"Coverage tracking","المرصود":"Monitored","أبرز المرصود":"Top monitored","الأخبار عالية المستوى":"High-level news","حسب الموضوع":"By topic","صادرة عن الهيئة":"Issued by LMRA","أكثر وسيلة نشرًا":"Top outlet","آخر المرصود":"Latest monitored","أبطال اللعبة":"Game champions","متوسط النقاط":"Average score","من أين يلعبون؟":"Where they play","أعلى نتيجة":"High score","الأكثر لعبًا":"Most active","نشاط اللعب":"Play activity","آخر الجولات":"Latest runs","الأكثر قراءة":"Most read","متوسط وقت القراءة":"Avg. reading time","الأجهزة":"Devices","أكملوا العدد":"Finished the issue","أكثر مصدر للزيارات":"Top traffic source","نشاط القرّاء":"Reader activity","من وين وصلوا؟":"Where they came from","تصدير التقرير":"Export report","عرض المهام":"View tasks","فتح الرصد":"Open monitoring","فتح اللعبة":"Open game","فتح المجلة":"Open magazine","المتوسط اليومي":"Daily average","أعلى يوم":"Best day","أيام نشطة":"Active days","متوسط البقية":"Others' avg.","لا توجد عناصر بعد":"No items yet","لا يوجد نشاط بعد":"No activity yet","رُصد":"Covered","قيد المتابعة":"Tracking","لم يُرصد":"Not covered","سُلّمت":"Delivered","بانتظار التسليم":"Awaiting delivery","الوسائل التي غطّت أخبارنا":"Outlets covering our news","حالة الرصد":"Coverage status","الأخبار المنشورة حسب الشهر":"Published news by month","شبكة الهيئة فقط":"LMRA network only","داخل شبكة الهيئة فقط":"LMRA network only","عرض كل المهام":"Show all tasks","كل الأنواع":"All types","لا مهام حالية":"No current tasks","روابط سريعة":"Quick links","موقع الهيئة":"LMRA website","الشبكة الداخلية":"Intranet","من داخل شبكة الهيئة فقط":"LMRA network only","مجلة أضواء":"Adhwa magazine","النسخة الرقمية":"Digital edition","مكتبة الصور":"Photo library","مكتبة الملفات":"File library","SharePoint · إدارة الاتصال":"SharePoint · Communications","نتيجتك اليوم:":"Your score today:","أحسنت! سجّلت":"Well done! You scored","تحدي اليوم:":"Today's challenge:","عُد غدًا لتحدٍّ جديد وحافظ على سلسلتك 🔥":"Come back tomorrow and keep your streak 🔥","الترتيب —":"Ranking —","دقة":"Accuracy","محاولة":"attempts","من 3":"of 3","نقطة اليوم":"pts today","تحدي الصباح":"Morning Challenge","أسئلة اليوم":"Daily Quiz","رتّب العنوان":"Unscramble the Headline","اكتشف الخطأ":"Spot the Errors","جاهز لتحدي اليوم؟":"Ready for today's challenge?","محاولة واحدة فقط في اليوم":"One attempt per day","لاحقًا":"Later","ابدأ التحدي":"Start challenge","يوم":"day","أيام":"days","متتالية 🔥":"in a row 🔥","نقطة":"pts","السؤال":"Question","رتّب كلمات العنوان":"Put the headline words in order","اضغط الكلمات بالترتيب. اضغط كلمة في السطر الأعلى لإرجاعها.":"Tap the words in order. Tap a word in the top row to put it back.","مسح":"Clear","تحقق":"Check","إجابة صحيحة":"Correct!","انتهى الوقت · العنوان الصحيح":"Time's up · the correct headline","اكتشف الأخطاء الثلاثة":"Find the three errors","اضغط على الكلمة الخاطئة. الضغط الخاطئ يخصم 20 نقطة.":"Tap each wrong word. A wrong tap costs 20 points.","نتيجتك اليوم":"Your score today","صحيحة":"correct","ثانية":"sec","الترتيب اليوم":"Today's rank","لوحة اليوم":"Today's board","التحدي القادم غدًا صباحًا":"Next challenge tomorrow morning","لوحة الصدارة":"Leaderboard","لا توجد نتائج بعد. كن أول من يلعب!":"No scores yet. Be the first to play!","الموظف":"Employee","النقاط":"Points","مرات اللعب":"Played","الدقة":"Accuracy","هذا الأسبوع":"This week","هذا الشهر":"This month","منذ البداية":"All time","للمشرفين":"Admins only","شاركوا اليوم":"played today","تصدير النتائج Excel":"Export results to Excel","لعبت تحدي اليوم ✓":"You've played today ✓","العب تحدي اليوم":"Play today's challenge","أبطال الأسبوع":"This week's champions","لا توجد نتائج بعد هذا الأسبوع":"No scores yet this week","3 أسئلة عن الهيئة والبحرين: تاريخها وفنها ورياضتها ومعالمها. لكل سؤال 30 ثانية.":"3 questions about LMRA and Bahrain: history, art, sport and landmarks. 30 seconds each.","عنوان خبر حقيقي نشرته الهيئة، كلماته مبعثرة. رتّبها بالضغط على الكلمات بالترتيب الصحيح خلال 90 ثانية.":"A real LMRA news headline with its words shuffled. Tap them in the right order within 90 seconds.","فقرة خبر فيها 3 أخطاء: إملائي، ورقم أو تاريخ، ومعلومة. اضغط على الكلمات الخاطئة خلال 90 ثانية.":"A news paragraph with 3 errors: a spelling mistake, a wrong number or date, and a wrong fact. Tap the wrong words within 90 seconds.",
+const I18N_DICT={"لوحة المهام":"Task board","نقل إلى":"Move to","أفلت البطاقات هنا":"Drop cards here","اسحب البطاقة لتغيير حالتها، أو استخدم زر النقل":"Drag a card to change its status, or use the move button","عرض فقط":"View only","أخرى في صفحة المهام":"more in Tasks","منصات التواصل الاجتماعي":"Social media","رصد منصات التواصل الاجتماعي":"Social media monitoring","تقرير رصد منصات التواصل الاجتماعي":"Social media monitoring report","منشورات منصات التواصل":"Social posts","منصات التواصل حسب المنصة والنبرة":"Social by platform & tone","رصد منصات التواصل":"Social monitoring","نبرة منصات التواصل":"Social tone","أضف كلمة بحث جديدة":"Add a new search word","إضافة":"Add","حذف الكلمة":"Remove word","آخر 30 يومًا مقارنة بالـ30 السابقة":"last 30 days vs. previous 30","عند المؤشر":"At cursor","يوميًا":"per day","التفاصيل":"Details","الإحصائيات":"Statistics","أقسام الإحصائيات":"Statistics sections","مظهر الزجاج":"Glass appearance","عدّل خامة الزجاج في المنصة كلها. يُحفظ الإعداد على هذا المتصفح.":"Adjust the glass material across the platform. Saved in this browser.","معاينة مباشرة":"Live preview","شفاف":"Clear","مثلّج":"Frosted","صلب":"Solid","الضبابية":"Blur","العتامة":"Opacity","التشبّع":"Saturation","لمعة الحواف":"Edge light","لون الزجاج":"Glass tint","بدون":"None","رملي":"Sand","كحلي":"Navy","أحمر":"Red","ذهبي":"Gold","إرجاع الافتراضي":"Reset to default","ستظهر آخر التحديثات هنا.":"Latest updates will appear here.","لا توجد بيانات":"No data","نظرة عامة":"Overview","رحلة القيم":"Values Journey","أضواء":"Adhwa","التصوير":"Photography","الأخبار":"News","الرصد":"Monitoring","متوسط آخر 42 يومًا":"42-day average","صباح الخير":"Good morning","مساء الخير":"Good evening","آخر 30 يومًا":"last 30 days","أسبوع":"Week","شهر":"Month","سنة":"Year","30 يوم":"30 days","متصدّر":"Leader","مباشر":"Live","حسب النوع":"By type","حسب الحالة":"By status","نسبة الإنجاز":"Completion rate","المهام المستلمة":"Tasks received","أحدث المهام":"Latest tasks","المهام الجارية":"Current tasks","آخر التحديثات":"Latest updates","الرصد اليومي":"Daily monitoring","تدفّق المهام":"Task flow","أكثر جهة طالبة":"Top requesting dept","الأكثر إنجازًا في الفريق":"Top performer","سرعة تسليم التصوير":"Photo delivery speed","متوسط مدة الإنجاز":"Avg. completion time","سرعة التسليم":"Delivery speed","أحدث التغطيات":"Latest coverage","استخدام الصور":"Photo usage","تسليم في نفس اليوم":"Same-day delivery","أكثر جهة طالبة للتصوير":"Top requester","تدفّق التغطيات":"Coverage flow","آخر التغطيات":"Latest coverage","الأخبار الصادرة":"Published news","أحدث الأخبار":"Latest news","قنوات النشر لكل خبر":"Channels per story","الأخبار المنشورة":"Published news","حسب قناة النشر":"By channel","نسبة الأخبار المرصودة":"Coverage rate","أكثر وسيلة غطّت أخبارنا":"Top covering outlet","تدفّق الأخبار":"News flow","تتبّع التغطية":"Coverage tracking","المرصود":"Monitored","أبرز المرصود":"Top monitored","الأخبار عالية المستوى":"High-level news","حسب الموضوع":"By topic","صادرة عن الهيئة":"Issued by LMRA","أكثر وسيلة نشرًا":"Top outlet","آخر المرصود":"Latest monitored","أبطال اللعبة":"Game champions","متوسط النقاط":"Average score","من أين يلعبون؟":"Where they play","أعلى نتيجة":"High score","الأكثر لعبًا":"Most active","نشاط اللعب":"Play activity","آخر الجولات":"Latest runs","الأكثر قراءة":"Most read","متوسط وقت القراءة":"Avg. reading time","الأجهزة":"Devices","أكملوا العدد":"Finished the issue","أكثر مصدر للزيارات":"Top traffic source","نشاط القرّاء":"Reader activity","من وين وصلوا؟":"Where they came from","تصدير التقرير":"Export report","عرض المهام":"View tasks","فتح الرصد":"Open monitoring","فتح اللعبة":"Open game","فتح المجلة":"Open magazine","المتوسط اليومي":"Daily average","أعلى يوم":"Best day","أيام نشطة":"Active days","متوسط البقية":"Others' avg.","لا توجد عناصر بعد":"No items yet","لا يوجد نشاط بعد":"No activity yet","رُصد":"Covered","قيد المتابعة":"Tracking","لم يُرصد":"Not covered","سُلّمت":"Delivered","بانتظار التسليم":"Awaiting delivery","الوسائل التي غطّت أخبارنا":"Outlets covering our news","حالة الرصد":"Coverage status","الأخبار المنشورة حسب الشهر":"Published news by month","شبكة الهيئة فقط":"LMRA network only","داخل شبكة الهيئة فقط":"LMRA network only","عرض كل المهام":"Show all tasks","كل الأنواع":"All types","لا مهام حالية":"No current tasks","روابط سريعة":"Quick links","موقع الهيئة":"LMRA website","الشبكة الداخلية":"Intranet","من داخل شبكة الهيئة فقط":"LMRA network only","مجلة أضواء":"Adhwa magazine","النسخة الرقمية":"Digital edition","مكتبة الصور":"Photo library","مكتبة الملفات":"File library","SharePoint · إدارة الاتصال":"SharePoint · Communications","نتيجتك اليوم:":"Your score today:","أحسنت! سجّلت":"Well done! You scored","تحدي اليوم:":"Today's challenge:","عُد غدًا لتحدٍّ جديد وحافظ على سلسلتك 🔥":"Come back tomorrow and keep your streak 🔥","الترتيب —":"Ranking —","دقة":"Accuracy","محاولة":"attempts","من 3":"of 3","نقطة اليوم":"pts today","تحدي الصباح":"Morning Challenge","أسئلة اليوم":"Daily Quiz","رتّب العنوان":"Unscramble the Headline","اكتشف الخطأ":"Spot the Errors","جاهز لتحدي اليوم؟":"Ready for today's challenge?","محاولة واحدة فقط في اليوم":"One attempt per day","لاحقًا":"Later","ابدأ التحدي":"Start challenge","يوم":"day","أيام":"days","متتالية 🔥":"in a row 🔥","نقطة":"pts","السؤال":"Question","رتّب كلمات العنوان":"Put the headline words in order","اضغط الكلمات بالترتيب. اضغط كلمة في السطر الأعلى لإرجاعها.":"Tap the words in order. Tap a word in the top row to put it back.","مسح":"Clear","تحقق":"Check","إجابة صحيحة":"Correct!","انتهى الوقت · العنوان الصحيح":"Time's up · the correct headline","اكتشف الأخطاء الثلاثة":"Find the three errors","اضغط على الكلمة الخاطئة. الضغط الخاطئ يخصم 20 نقطة.":"Tap each wrong word. A wrong tap costs 20 points.","نتيجتك اليوم":"Your score today","صحيحة":"correct","ثانية":"sec","الترتيب اليوم":"Today's rank","لوحة اليوم":"Today's board","التحدي القادم غدًا صباحًا":"Next challenge tomorrow morning","لوحة الصدارة":"Leaderboard","لا توجد نتائج بعد. كن أول من يلعب!":"No scores yet. Be the first to play!","الموظف":"Employee","النقاط":"Points","مرات اللعب":"Played","الدقة":"Accuracy","هذا الأسبوع":"This week","هذا الشهر":"This month","منذ البداية":"All time","للمشرفين":"Admins only","شاركوا اليوم":"played today","تصدير النتائج Excel":"Export results to Excel","لعبت تحدي اليوم ✓":"You've played today ✓","العب تحدي اليوم":"Play today's challenge","أبطال الأسبوع":"This week's champions","لا توجد نتائج بعد هذا الأسبوع":"No scores yet this week","3 أسئلة عن الهيئة والبحرين: تاريخها وفنها ورياضتها ومعالمها. لكل سؤال 30 ثانية.":"3 questions about LMRA and Bahrain: history, art, sport and landmarks. 30 seconds each.","عنوان خبر حقيقي نشرته الهيئة، كلماته مبعثرة. رتّبها بالضغط على الكلمات بالترتيب الصحيح خلال 90 ثانية.":"A real LMRA news headline with its words shuffled. Tap them in the right order within 90 seconds.","فقرة خبر فيها 3 أخطاء: إملائي، ورقم أو تاريخ، ومعلومة. اضغط على الكلمات الخاطئة خلال 90 ثانية.":"A news paragraph with 3 errors: a spelling mistake, a wrong number or date, and a wrong fact. Tap the wrong words within 90 seconds.",
 /* masthead & nav */
 "هيئة تنظيم سوق العمل":"Labour Market Regulatory Authority","منصة فريق إدارة الاتصال":"Communications Team Platform","فريق إدارة الاتصال":"Communications Team","إدارة الاتصال":"Communications Department",
 "الرئيسية":"Home","التقويم السنوي":"Annual Calendar","التقويم":"Calendar","المهام":"Tasks","الإحصائيات":"Statistics","الرصد الإعلامي":"Media Monitoring","الرصد":"Monitoring",
@@ -2508,6 +2558,102 @@ function sbCfgTasks(sec,X){
   return null}
 let inYsb=()=>true;
 
+/* ---------- لوحة المهام: نقل البطاقات بين الحالات (سحب بالماوس/اللمس، لوحة المفاتيح، قائمة «نقل إلى») ---------- */
+const KB_RECENT={"مكتمل":14,"متوقف":30};const KB_CAP=30;
+function kbTasks(){const lim=k=>KB_RECENT[k]?addDays(TODAY,-KB_RECENT[k]):"";
+  return S.tasks.filter(t=>{const k=t.status||"لم يبدأ";if(!KB_RECENT[k])return true;const d=String(t.delivered||t.updatedAt||t.received||"").slice(0,10);return d>=lim(k)})}
+function kbCard(t,cols){const ty=typeOf(t.type),st=t.status||"لم يبدأ",own=(t.owners||[]).map(shortName),ro=!S.canWrite;
+  return `<li class="kb-li" data-kb-li="${esc(t.id)}"><div class="kb-card${ro?" ro":""}" data-kb-card="${esc(t.id)}" role="button" tabindex="0" aria-roledescription="بطاقة قابلة للنقل"
+    aria-label="${esc(t.title||"مهمة")}. ${esc(st)}.${ro?"":" اضغط مسافة أو Enter لالتقاطها ونقلها."}" style="--tc:${ty.c}">
+    <span class="kb-ty">${esc(ty.n)}</span><p class="kb-t" dir="auto">${esc(t.title||"(بدون عنوان)")}</p>
+    <span class="kb-m">${own.length?`<span class="kb-o">${esc(own.slice(0,2).join("، "))}${own.length>2?` +<span class="num">${own.length-2}</span>`:""}</span>`:""}${validDate(t.received)?`<span class="num">${esc(fmtShort(t.received))}</span>`:""}</span></div>
+    ${ro?"":`<button type="button" class="kb-mv" data-kb-menu="${esc(t.id)}" aria-haspopup="menu" aria-expanded="false" aria-label="نقل «${esc(t.title||"المهمة")}» إلى حالة أخرى" title="نقل إلى">${ic("arrow")}</button>`}</li>`}
+function kbBoard(){const all=kbTasks();
+  const cols=STATUS.map(s=>{const L=all.filter(t=>(t.status||"لم يبدأ")===s.k).sort((a,b)=>String(b.updatedAt||b.received||"").localeCompare(String(a.updatedAt||a.received||"")));
+    return `<div class="kb-col" data-kb-col="${esc(s.k)}" style="--sc:${s.c}"><header class="kb-ch"><i></i><h4>${esc(s.k)}</h4><span class="num">${L.length}</span></header>
+      ${KB_RECENT[s.k]?`<p class="kb-note">آخر <span class="num">${KB_RECENT[s.k]}</span> يومًا</p>`:""}
+      <ul class="kb-list" aria-label="${esc(s.k)}، ${L.length} مهمة">${L.length?L.slice(0,KB_CAP).map(t=>kbCard(t)).join(""):`<li class="kb-empty" aria-hidden="true">${S.canWrite?"أفلت البطاقات هنا":"لا توجد مهام"}</li>`}
+      ${L.length>KB_CAP?`<li class="kb-more"><button type="button" data-act="tab" data-v="tasks">+<span class="num">${L.length-KB_CAP}</span> أخرى في صفحة المهام</button></li>`:""}</ul></div>`}).join("");
+  return `<section class="gw-p kb gw-r" aria-label="لوحة المهام"><header class="gw-pt"><h2>لوحة المهام</h2><span class="kb-hint">${S.canWrite?`${ic("info")} اسحب البطاقة لتغيير حالتها، أو استخدم زر النقل`:"عرض فقط"}</span></header>
+    <div class="kb-board" role="list">${cols}</div></section>`}
+function kbLive(msg){let r=$("kb-live");if(!r){r=document.createElement("div");r.id="kb-live";r.className="sr-only";r.setAttribute("role","status");r.setAttribute("aria-live","polite");document.body.appendChild(r)}r.textContent="";setTimeout(()=>{r.textContent=msg},30)}
+function kbAfter(){let id=S._kbFocus,land=!!id;if(id){S._kbFocus=null;S._kbKeep={id,until:Date.now()+4000}}
+  else if(S._kbKeep&&Date.now()<S._kbKeep.until&&(document.activeElement===document.body||!document.activeElement))id=S._kbKeep.id;
+  if(!id)return;const c=document.querySelector(`[data-kb-card="${CSS.escape(id)}"]`);if(c){c.focus({preventScroll:true});if(land){c.scrollIntoView({block:"nearest",inline:"nearest"});c.classList.add("kb-land");setTimeout(()=>c.classList.remove("kb-land"),700)}}}
+async function kbCommit(id,to){const t=S.tasks.find(x=>x.id===id);if(!t)return;const from=t.status||"لم يبدأ";
+  if(to===from){S._kbFocus=id;render();return}
+  if(!S.canWrite){kbLive("لا تملك صلاحية تعديل المهام.");render();return}
+  const prev=Object.assign({},t);const d=Object.assign({},t);delete d.id;d.status=to;d.updatedAt=new Date().toISOString();if(S.meName)d.updatedBy=S.meName;if(to==="مكتمل"&&!d.delivered)d.delivered=TODAY;
+  Object.assign(t,d);S._kbFocus=id;render();kbLive(`نُقلت «${t.title||"المهمة"}» من ${from} إلى ${to}.`);
+  try{await save("tasks",id,d)}catch(err){const i=S.tasks.findIndex(x=>x.id===id);if(i>=0)S.tasks[i]=prev;S._kbFocus=id;render();kbLive(`تعذّر النقل. أُعيدت «${prev.title||"المهمة"}» إلى ${from}.`);banner(errText(err),true)}}
+/* --- سحب بالماوس واللمس --- */
+let KBD=null;
+function kbDropCol(x,y){const e=document.elementFromPoint(x,y);const c=e&&e.closest&&e.closest("[data-kb-col]");return c}
+function kbStart(){const d=KBD;d.on=true;try{getSelection().removeAllRanges()}catch(_){}kbMenuClose();const r=d.el.getBoundingClientRect();d.dx=d.x0-r.left;d.dy=d.y0-r.top;
+  const g=d.el.cloneNode(true);g.classList.add("kb-ghost");g.removeAttribute("tabindex");g.style.width=r.width+"px";g.style.left=r.left+"px";g.style.top=r.top+"px";document.body.appendChild(g);d.g=g;
+  d.el.closest(".kb-li").classList.add("kb-src");document.body.classList.add("kb-dragging");d.board=d.el.closest(".kb-board")}
+function kbMove(e){const d=KBD;if(!d||e.pointerId!==d.pid)return;
+  if(!d.on){if(Math.hypot(e.clientX-d.x0,e.clientY-d.y0)<(d.touch?10:5))return;if(d.touch&&!d.armed){kbCancel();return}kbStart()}
+  d.x=e.clientX;d.y=e.clientY;if(d.raf)return;d.raf=requestAnimationFrame(()=>{d.raf=0;if(!KBD)return;
+    d.g.style.transform=`translate(${d.x-d.x0}px,${d.y-d.y0}px) rotate(${Math.max(-4,Math.min(4,(d.x-d.x0)/40))}deg)`;
+    const c=kbDropCol(d.x,d.y);if(c!==d.over){d.over&&d.over.classList.remove("kb-over","kb-same");d.over=c;if(c)c.classList.add("kb-over",c.dataset.kbCol===d.from?"kb-same":"kb-x")}
+    const b=d.board;if(b){const r=b.getBoundingClientRect(),m=60;if(d.x<r.left+m)b.scrollLeft-=12;else if(d.x>r.right-m)b.scrollLeft+=12}})}
+function kbEnd(e,commit){const d=KBD;if(!d||(e&&e.pointerId!==d.pid))return;clearTimeout(d.lp);document.removeEventListener("pointermove",kbMove);document.removeEventListener("pointerup",kbUp);document.removeEventListener("pointercancel",kbCx);
+  if(d.raf)cancelAnimationFrame(d.raf);KBD=null;document.body.classList.remove("kb-dragging");d.el.classList.remove("kb-armed");
+  if(!d.on){if(commit&&!d.touchCancelled){const t=S.tasks.find(x=>x.id===d.id);if(t)openTask(t)}return}
+  S._kbJust=Date.now();const to=d.over&&d.over.dataset.kbCol;d.over&&d.over.classList.remove("kb-over","kb-same","kb-x");
+  const fin=()=>{d.g.remove();const li=d.el.closest(".kb-li");li&&li.classList.remove("kb-src");if(commit&&to&&to!==d.from)kbCommit(d.id,to);else{d.el.focus({preventScroll:true});if(commit&&!to)kbLive("أُلغي النقل.")}};
+  if(commit&&to&&to!==d.from&&!RM()){d.g.classList.add("kb-drop");setTimeout(fin,120)}
+  else if(!RM()){const r=d.el.getBoundingClientRect();d.g.style.transition="transform .28s cubic-bezier(.22,1,.36,1),opacity .28s";d.g.style.transform=`translate(${r.left-parseFloat(d.g.style.left)}px,${r.top-parseFloat(d.g.style.top)}px)`;setTimeout(fin,260)}
+  else fin()}
+const kbUp=e=>kbEnd(e,true),kbCx=e=>kbEnd(e,false);
+const RM=()=>matchMedia("(prefers-reduced-motion: reduce)").matches;
+function kbCancel(){const d=KBD;if(!d)return;d.touchCancelled=true;clearTimeout(d.lp);d.el.classList.remove("kb-armed");document.removeEventListener("pointermove",kbMove);document.removeEventListener("pointerup",kbUp);document.removeEventListener("pointercancel",kbCx);KBD=null}
+document.addEventListener("pointerdown",e=>{const el=e.target.closest&&e.target.closest("[data-kb-card]");if(!el||KBG)return;
+  if(e.pointerType==="mouse"&&e.button!==0)return;
+  const id=el.dataset.kbCard,t=S.tasks.find(x=>x.id===id);if(!t)return;
+  if(e.pointerType==="mouse"){e.preventDefault();el.focus({preventScroll:true})}
+  KBD={id,el,pid:e.pointerId,x0:e.clientX,y0:e.clientY,from:t.status||"لم يبدأ",touch:e.pointerType!=="mouse",on:false};
+  if(!S.canWrite){KBD.touch=false;KBD.ro=true}
+  if(KBD.touch){KBD.lp=setTimeout(()=>{if(!KBD)return;KBD.armed=true;el.classList.add("kb-armed");navigator.vibrate&&navigator.vibrate(12)},260)}
+  document.addEventListener("pointermove",kbMove);document.addEventListener("pointerup",kbUp);document.addEventListener("pointercancel",kbCx)});
+document.addEventListener("pointermove",e=>{if(KBD&&KBD.ro&&Math.hypot(e.clientX-KBD.x0,e.clientY-KBD.y0)>5)kbCancel()},true);
+document.addEventListener("touchmove",e=>{if(KBD&&(KBD.on||KBD.armed))e.preventDefault()},{passive:false});
+document.addEventListener("contextmenu",e=>{if(KBD&&KBD.armed)e.preventDefault()});
+/* --- لوحة المفاتيح: التقاط ثم أسهم ثم إفلات --- */
+let KBG=null;
+function kbColEls(){return [...document.querySelectorAll("[data-kb-col]")]}
+function kbPlace(col){const li=KBG.li;const ul=col.querySelector(".kb-list");const em=ul.querySelector(".kb-empty");ul.insertBefore(li,ul.firstChild);if(em)em.hidden=true;
+  kbColEls().forEach(c=>{const e=c.querySelector(".kb-empty");if(e&&c!==col)e.hidden=!!c.querySelector(".kb-li")});
+  kbColEls().forEach(c=>c.classList.toggle("kb-over",c===col&&KBG.col!==KBG.from));li.scrollIntoView({block:"nearest",inline:"nearest"});KBG.el.focus()}
+document.addEventListener("keydown",e=>{const el=e.target.closest&&e.target.closest("[data-kb-card]");if(!el)return;const id=el.dataset.kbCard;const t=S.tasks.find(x=>x.id===id);if(!t)return;
+  const act=e.key===" "||e.key==="Enter"||e.key==="Spacebar";
+  if(!KBG||KBG.id!==id){if(!act)return;e.preventDefault();
+    if(!S.canWrite||e.key==="Enter"&&e.shiftKey){openTask(t);return}
+    KBG={id,el,li:el.closest(".kb-li"),from:t.status||"لم يبدأ",col:t.status||"لم يبدأ"};el.classList.add("kb-grab");
+    kbLive(`التقطت «${t.title||"المهمة"}». استخدم الأسهم يمين ويسار للتنقل بين الحالات، ثم Enter أو مسافة للإفلات، أو Escape للإلغاء.`);return}
+  if(e.key==="Escape"){e.preventDefault();const g=KBG;KBG=null;g.el.classList.remove("kb-grab");kbColEls().forEach(c=>c.classList.remove("kb-over"));S._kbFocus=id;render();kbLive(`أُلغي النقل. بقيت «${t.title||"المهمة"}» في ${g.from}.`);return}
+  if(act){e.preventDefault();const g=KBG;KBG=null;g.el.classList.remove("kb-grab");kbColEls().forEach(c=>c.classList.remove("kb-over"));kbCommit(id,g.col);return}
+  const rtl=getComputedStyle(el).direction==="rtl";const dir=e.key==="ArrowLeft"?(rtl?1:-1):e.key==="ArrowRight"?(rtl?-1:1):e.key==="ArrowDown"?1:e.key==="ArrowUp"?-1:0;if(!dir)return;e.preventDefault();
+  const i=STATUS.findIndex(s=>s.k===KBG.col),j=Math.max(0,Math.min(STATUS.length-1,i+dir));if(i===j)return;KBG.col=STATUS[j].k;
+  kbPlace(document.querySelector(`[data-kb-col="${CSS.escape(KBG.col)}"]`));kbLive(`${STATUS[j].k}، ${j+1} من ${STATUS.length}.`)});
+document.addEventListener("focusout",e=>{if(KBG&&e.target===KBG.el&&!document.hasFocus())return;setTimeout(()=>{if(KBG&&document.activeElement!==KBG.el){const g=KBG;KBG=null;g.el.classList.remove("kb-grab");S._kbFocus=null;render()}},0)});
+/* --- قائمة «نقل إلى» --- */
+function kbMenuClose(){const m=$("kb-menu");if(m){const b=document.querySelector(`[data-kb-menu="${CSS.escape(m.dataset.for)}"]`);b&&b.setAttribute("aria-expanded","false");m.remove();return b}}
+document.addEventListener("click",e=>{const it=e.target.closest&&e.target.closest("[data-kb-to]");if(it){const m=$("kb-menu");const id=m.dataset.for;kbMenuClose();kbCommit(id,it.dataset.kbTo);return}
+  const b=e.target.closest&&e.target.closest("[data-kb-menu]");if(!b){if(!(e.target.closest&&e.target.closest("#kb-menu")))kbMenuClose();return}
+  const was=$("kb-menu")&&$("kb-menu").dataset.for===b.dataset.kbMenu;kbMenuClose();if(was)return;
+  const id=b.dataset.kbMenu,t=S.tasks.find(x=>x.id===id);if(!t)return;const cur=t.status||"لم يبدأ";
+  const m=document.createElement("ul");m.id="kb-menu";m.className="kb-menu";m.setAttribute("role","menu");m.dataset.for=id;m.setAttribute("aria-label","نقل إلى");
+  m.innerHTML=`<li role="presentation" class="kb-mh">نقل إلى</li>`+STATUS.filter(s=>s.k!==cur).map(s=>`<li role="none"><button type="button" role="menuitem" data-kb-to="${esc(s.k)}" style="--sc:${s.c}"><i></i>${esc(s.k)}</button></li>`).join("");
+  document.body.appendChild(m);const r=b.getBoundingClientRect(),mw=m.offsetWidth,mh=m.offsetHeight;
+  let x=document.documentElement.dir==="ltr"?r.right-mw:r.left;x=Math.max(8,Math.min(innerWidth-mw-8,x));let y=r.bottom+6;if(y+mh>innerHeight-8)y=Math.max(8,r.top-mh-6);
+  m.style.left=x+"px";m.style.top=y+"px";b.setAttribute("aria-expanded","true");m.querySelector("button").focus()});
+document.addEventListener("keydown",e=>{const m=$("kb-menu");if(!m)return;
+  if(e.key==="Escape"){e.preventDefault();const b=kbMenuClose();b&&b.focus();return}
+  if(e.key==="ArrowDown"||e.key==="ArrowUp"){e.preventDefault();const bs=[...m.querySelectorAll("button")];const i=bs.indexOf(document.activeElement);bs[(i+(e.key==="ArrowDown"?1:-1)+bs.length)%bs.length].focus()}
+  if(e.key==="Tab")kbMenuClose()});
+addEventListener("scroll",()=>kbMenuClose(),true);
 function renderStats(){
   const el=$("view-stats");
   const yOf=d=>validDate(d)?d.slice(0,4):"";
@@ -2553,6 +2699,7 @@ function renderStats(){
   const issued=news.filter(x=>newsCat(x)==="issued").length+posts.filter(x=>smCat(x)==="issued").length;
   const high=news.filter(x=>lvlOf(x,false)==="high").length+posts.filter(x=>lvlOf(x,true)==="high").length;
   {const cfg=sbCfgTasks(sec,{tasks,sel,photos,news,posts,doneT,openT,avg,same,delP,ext,issued,high,ylabel,pct,cnt});if(cfg)h+=sbBento(cfg)}
+  if(sec==="tasks")h+=kbBoard();
   h+=`<p class="gw-sec">التفاصيل · ${esc(ylabel)}</p><div class="st-grid">`;
   if(sec==="all"||sec==="tasks"){
     if(sec==="tasks")h+=monthly("المهام حسب الشهر","بحسب تاريخ الاستلام",S.tasks,t=>t.received,"مهمة");
@@ -2579,7 +2726,7 @@ function renderStats(){
       h+=`<div class="panel"><h3>منصات التواصل حسب المنصة والنبرة</h3><div class="cap">منشورات مرصودة</div>${hbars(SM_PF.map(p=>[p.n,posts.filter(x=>x.platform===p.k).length]).concat(SM_TONE.map(t=>["نبرة "+t.n,posts.filter(x=>(x.tone||"neu")===t.k).length,t.c])),8,"منشور",posts.length)}</div>`;
       h+=`<div class="panel"><h3>حسب الموضوع</h3><div class="cap">صحف وسوشيال</div>${hbars(MTOPICS.map(t=>[t.n,news.filter(x=>x.topic===t.k).length+posts.filter(x=>x.topic===t.k).length]),8,"خبر")}</div>`}}
   h+=`</div>`;
-  el.innerHTML=h+GWE;sbAfter();
+  el.innerHTML=h+GWE;sbAfter();kbAfter();
 }
 const FINE=matchMedia("(hover:hover) and (pointer:fine)");
 document.addEventListener("mouseover",e=>{if(!FINE.matches)return;const t=e.target.closest("[data-tip]"),tip=$("tip");if(!t){tip.hidden=true;return}tip.textContent=t.dataset.tip;tip.hidden=false});
