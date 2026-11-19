@@ -904,6 +904,8 @@ dialog[data-closing]::backdrop{opacity:0}
 
 /* ---- bento: المهام والإحصائيات ---- */
 /* share dialog */
+.sh-url{display:flex;gap:6px;align-items:center}.sh-url input{flex:1;min-width:0;height:38px;border:1px solid var(--line-2);border-radius:10px;padding:0 12px;font:inherit;font-size:12.5px;background:var(--surface);color:var(--ink)}
+.sh-url a[aria-disabled=true]{opacity:.5;pointer-events:none}
 .rowshare{color:var(--mute)}.rowshare .ic{width:17px;height:17px}.rowshare:hover{color:var(--accent)}
 table.ttbl td.act .popw{display:inline-flex;align-items:center;gap:2px}
 #dlg-share{width:min(520px,calc(100vw - 24px))}
@@ -2133,64 +2135,39 @@ async function taskXlsx(t){await loadLib("lib/exceljs.min.js");
     b.alignment={horizontal:isUrl?"left":"right",vertical:"top",wrapText:true,readingOrder:isUrl?"ltr":"rtl"};
     [a,b].forEach(c=>c.border={bottom:{style:"thin",color:{argb:"FFE3DED5"}}});if(String(v).length>60)r.height=Math.min(120,18*Math.ceil(String(v).length/60))});
   const buf=await wb.xlsx.writeBuffer();return new Blob([buf],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"})}
-function shareOpen(id){const t=S.tasks.find(x=>x.id===id);if(!t)return;S.shareId=id;S.shareFmt=S.shareFmt||"link";if(S.shareFmt!=="link")setTimeout(sharePrep,0);S.pop=null;
+function shareOpen(id){const t=S.tasks.find(x=>x.id===id);if(!t)return;S.shareId=id;S.pop=null;
   let d=$("dlg-share");if(!d){d=document.createElement("dialog");d.id="dlg-share";document.body.appendChild(d);d.addEventListener("click",e=>{if(e.target===d)d.close()})}
-  shareRender();if(!d.open)d.showModal();setTimeout(()=>{const b=d.querySelector(`[data-act=share-fmt][aria-checked=true]`);b&&b.focus()},30)}
-function shareRender(){const d=$("dlg-share"),t=S.tasks.find(x=>x.id===S.shareId);if(!d||!t)return;const f=S.shareFmt,ty=typeOf(t.type);
-  const canFiles=(()=>{try{return !!(navigator.canShare&&navigator.canShare({files:[new File(["x"],"x.pdf",{type:"application/pdf"})]}))}catch(_){return false}})();
-  const FM=[["link","رابط","lnk","رابط يفتح المهمة في المنصة مع ملخص تفاصيلها"],["pdf","PDF","paper","ملف PDF بتفاصيل المهمة"],["xlsx","Excel","list","ملف Excel بتفاصيل المهمة"]];
-  const CH=[["mail","البريد الإلكتروني","mail"],["teams","Microsoft Teams","teams"],["wa","واتساب","wa"]];
+  S.shareUrl=(S._shTok&&S._shTok[id])||null;shareRender();if(!d.open)d.showModal();
+  if(!S.shareUrl){const ask=window.lmraShare?window.lmraShare.ensure(id):Promise.reject(new Error("offline"));
+    ask.then(tok=>{if(!/^[0-9a-f]{36}$/.test(String(tok||"")))throw new Error("bad token");(S._shTok=S._shTok||{})[id]=APP_URL+"t?k="+tok;if(S.shareId===id){S.shareUrl=S._shTok[id];shareRender()}})
+       .catch(e=>{console.error(e);if(S.shareId===id){S.shareErr=true;shareRender()}})}}
+function shareText(t){return `نوع المهمة: ${typeOf(t.type).n}\nعنوان المهمة: ${t.title||"—"}\nصاحب المهمة: ${(t.owners||[]).join("، ")||"—"}`}
+function shareRender(){const d=$("dlg-share"),t=S.tasks.find(x=>x.id===S.shareId);if(!d||!t)return;const ty=typeOf(t.type),u=S.shareUrl,err=S.shareErr&&!u;S.shareErr=false;
+  const CH=[["mail","Outlook"],["teams","Microsoft Teams"],["wa","واتساب"]];
   d.innerHTML=`<div class="dlg-h"><h3>مشاركة المهمة</h3><button class="btn icon" type="button" data-act="close" aria-label="إغلاق">✕</button></div>
   <div class="dlg-b sh-b">
     <div class="sh-task" style="--c:${ty.c}"><span>${esc(ty.n)}</span><strong dir="auto">${esc(t.title||"—")}</strong><small>${esc(t.status||"لم يبدأ")} · ${esc((t.owners||[]).map(shortName).join("، ")||"بدون مسؤول")}</small></div>
-    <div class="field"><span>صيغة المشاركة</span><div class="sh-fmt" role="radiogroup" aria-label="صيغة المشاركة">${FM.map(([k,n,i,s])=>`<button type="button" role="radio" data-act="share-fmt" data-v="${k}" aria-checked="${f===k}">${ic(i)}<b>${n}</b><small>${s}</small></button>`).join("")}</div></div>
-    <div class="field"><span>مشاركة عبر</span><div class="sh-ch">${CH.map(([k,n,i])=>`<button type="button" class="sh-c sh-${k}" data-act="share-go" data-v="${k}">${SH_IC[i]}<span>${n}</span></button>`).join("")}
-      ${canFiles||(f==="link"&&navigator.share)?`<button type="button" class="sh-c sh-dev" data-act="share-go" data-v="device">${ic("ext")}<span>تطبيقات الجهاز</span></button>`:""}</div></div>
-    <div class="sh-tools"><button type="button" class="btn small" data-act="share-copy">${ic("dup")}${f==="link"?"نسخ الرابط والنص":"نسخ النص"}</button>${f!=="link"?`<button type="button" class="btn small" data-act="share-dl">${ic("download")}تحميل الملف</button>`:""}</div>
-    <p class="sh-note" id="sh-note">${f==="link"?"الرابط يفتح المهمة مباشرة لأعضاء الفريق بعد تسجيل الدخول. القناة تُفتح في التطبيق المثبّت على جهازك.":S._shF&&S._shF.k===shareKey()&&S._shF.file?shReadyNote():"جارٍ تجهيز الملف…"}</p>
+    <div class="field"><span>رابط المهمة</span><div class="sh-url"><input type="text" readonly dir="ltr" id="sh-url" value="${esc(u||"")}" placeholder="${err?"تعذّر إنشاء الرابط":"جارٍ إنشاء الرابط…"}" aria-label="رابط المهمة"><button type="button" class="btn small" data-act="share-copy" ${u?"":"disabled"}>${ic("dup")}نسخ</button><a class="btn small" href="${esc(u||"#")}" target="_blank" rel="noopener" ${u?"":'aria-disabled="true" tabindex="-1"'} data-act="noop">${ic("ext")}معاينة</a></div></div>
+    <div class="field"><span>مشاركة عبر</span><div class="sh-ch">${CH.map(([k,n])=>`<button type="button" class="sh-c sh-${k}" data-act="share-go" data-v="${k}" ${u?"":"disabled"}>${SH_IC[k]}<span>${n}</span></button>`).join("")}
+      ${navigator.share?`<button type="button" class="sh-c sh-dev" data-act="share-go" data-v="device" ${u?"":"disabled"}>${ic("ext")}<span>تطبيقات الجهاز</span></button>`:""}</div></div>
+    <p class="sh-note${err?" err":""}" id="sh-note">${err?"تعذّر إنشاء رابط المشاركة. تحقق من الاتصال وأعد فتح النافذة.":"يفتح المستلم المهمة بصفحة بنفس شكل ملف PDF، ويقدر يحمّلها PDF أو يطبعها، بدون تسجيل دخول. الصفحة للعرض فقط وتعرض آخر تحديث للمهمة."}</p>
   </div>`}
 const SH_IC={get mail(){return ic("mail")},teams:'<svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><path fill="currentColor" stroke="none" d="M14.5 7.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Zm5.5.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4ZM3 7h10a1 1 0 0 1 1 1v8a5 5 0 0 1-5 5 5 5 0 0 1-5-5V8a1 1 0 0 1 1-1Zm2.5 3v1.4h1.7V17h1.6v-5.6h1.7V10Zm10 0h5a1 1 0 0 1 1 1v4.5a3.5 3.5 0 0 1-5.2 3A6.5 6.5 0 0 0 16 16V10.5a.5.5 0 0 0-.5-.5Z"/></svg>',
   wa:'<svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><path fill="currentColor" stroke="none" d="M12 2.2a9.8 9.8 0 0 0-8.4 14.8L2.3 21.7l4.8-1.3A9.8 9.8 0 1 0 12 2.2Zm0 17.8a8 8 0 0 1-4.1-1.1l-.3-.2-2.9.8.8-2.8-.2-.3A8 8 0 1 1 12 20Zm4.4-6c-.2-.1-1.4-.7-1.6-.8-.2-.1-.4-.1-.5.1l-.7.9c-.1.2-.3.2-.5.1a6.5 6.5 0 0 1-3.2-2.8c-.2-.4.2-.4.7-1.2.1-.2 0-.3 0-.4l-.7-1.7c-.2-.4-.4-.4-.5-.4h-.5a.9.9 0 0 0-.7.3 2.8 2.8 0 0 0-.9 2.1 4.9 4.9 0 0 0 1 2.6 11.2 11.2 0 0 0 4.3 3.8c1.6.7 2.2.7 3 .6a2.5 2.5 0 0 0 1.7-1.2 2 2 0 0 0 .1-1.2c-.1-.1-.2-.2-.5-.3Z"/></svg>'};
 function shNote(m,err){const n=$("sh-note");if(n){n.textContent=m;n.classList.toggle("err",!!err)}}
-/* الملف يُجهَّز مسبقًا عند اختيار الصيغة، كي تبقى المشاركة ضمن نقرة المستخدم (تشترطها المتصفحات) */
-function shareKey(){return S.shareId+"|"+S.shareFmt}
-function sharePrep(){const t=S.tasks.find(x=>x.id===S.shareId);if(!t||S.shareFmt==="link")return null;const k=shareKey();
-  if(S._shF&&S._shF.k===k)return S._shF.p;shNote(S.shareFmt==="pdf"?"جارٍ تجهيز ملف PDF…":"جارٍ تجهيز ملف Excel…");
-  const p=(S.shareFmt==="pdf"?taskPdf(t):taskXlsx(t)).then(blob=>{const f=new File([blob],taskFileName(t,S.shareFmt==="pdf"?"pdf":"xlsx"),{type:blob.type||(S.shareFmt==="pdf"?"application/pdf":"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")});if(S._shF&&S._shF.k===k){S._shF.file=f;shNote(shReadyNote())}return f});
-  S._shF={k,p,file:null};p.catch(e=>{console.error(e);if(S._shF&&S._shF.k===k)S._shF=null;shNote("تعذّر تجهيز الملف. اختر الصيغة مرة أخرى.",true)});return p}
-async function shareMake(){return sharePrep()}
+function shNoteH(h){const n=$("sh-note");if(n){n.innerHTML=h;n.classList.remove("err")}}
 const shTouch=()=>matchMedia("(pointer:coarse)").matches;
-function shCanFiles(f){try{return !!(navigator.canShare&&navigator.canShare({files:[f||new File(["x"],"x.pdf",{type:"application/pdf"})]}))}catch(_){return false}}
-function shReadyNote(){return "الملف جاهز. اختر القناة: يُفتح التطبيق المثبّت برسالة جديدة فيها النص، ويُحمَّل الملف لتسحبه إلى الرسالة."}
-function b64u(str){return btoa(unescape(encodeURIComponent(str)))}
-function mimeWord(s){return "=?UTF-8?B?"+b64u(s)+"?="}
-async function emlFor(t,file){const buf=new Uint8Array(await file.arrayBuffer());let bin="";for(let i=0;i<buf.length;i+=0x8000)bin+=String.fromCharCode.apply(null,buf.subarray(i,i+0x8000));
-  const wrap=x=>x.replace(/.{1,76}/g,"$&\r\n"),B="----lmra"+Date.now().toString(36);
-  const eml=["X-Unsent: 1","To: ","Subject: "+mimeWord("مهمة: "+(t.title||"")),"MIME-Version: 1.0",`Content-Type: multipart/mixed; boundary="${B}"`,"",
-    "--"+B,"Content-Type: text/plain; charset=UTF-8","Content-Transfer-Encoding: base64","",wrap(b64u(taskText(t,false))),
-    "--"+B,`Content-Type: ${file.type}; name="${mimeWord(file.name)}"`,"Content-Transfer-Encoding: base64",`Content-Disposition: attachment; filename="${mimeWord(file.name)}"`,"",wrap(btoa(bin)),"--"+B+"--",""].join("\r\n");
-  return new File([eml],file.name.replace(/\.\w+$/,"")+".eml",{type:"message/rfc822"})}
-function shTab(){const w=window.open("about:blank","_blank");if(w){try{w.opener=null;w.document.title="جارٍ الفتح…"}catch(_){}}return w}
-function shNav(w,u){if(w&&!w.closed){w.location.href=u}else{const x=window.open(u,"_blank");if(x)try{x.opener=null}catch(_){}else shNote("المتصفح منع فتح تبويب جديد. اسمح بالنوافذ المنبثقة لهذا الموقع ثم أعد المحاولة.",true)}}
 function shApp(u){const a=document.createElement("a");a.href=u;a.rel="noopener";document.body.appendChild(a);a.click();a.remove()}
-async function shareGo(ch){const t=S.tasks.find(x=>x.id===S.shareId);if(!t)return;const isLink=S.shareFmt==="link";
-  const subj="مهمة: "+(t.title||""),txt=taskText(t,isLink),E=encodeURIComponent;
+async function shareGo(ch){const t=S.tasks.find(x=>x.id===S.shareId),u=S.shareUrl;if(!t||!u)return;
+  const subj="مهمة: "+(t.title||""),txt=shareText(t)+"\n\n"+u,E=encodeURIComponent;
   const macLike=/Mac|iPhone|iPad|Android/i.test(navigator.userAgent);
   const APP={mail:macLike?`ms-outlook://compose?subject=${E(subj)}&body=${E(txt)}`:`mailto:?subject=${E(subj)}&body=${E(txt)}`,teams:`msteams:/l/chat/0/0?message=${E(txt)}`,wa:shTouch()?`https://wa.me/?text=${E(txt)}`:`whatsapp://send?text=${E(txt)}`};
   const WEB={mail:`https://outlook.office.com/mail/deeplink/compose?subject=${E(subj)}&body=${E(txt)}`,teams:`https://teams.microsoft.com/l/chat/0/0?message=${E(txt)}`,wa:`https://web.whatsapp.com/send?text=${E(txt)}`};
   const NM={mail:"Outlook",teams:"Teams",wa:"واتساب"};
-  const fb=`<a href="${esc(WEB[ch]||"")}" target="_blank" rel="noopener">افتح نسخة الويب</a>`;
-  try{
-    if(isLink){if(ch==="device"){await navigator.share({title:subj,text:taskText(t,false),url:taskUrl(t)});shNote("تمت المشاركة.");return}
-      shApp(APP[ch]);shNoteH(`فُتح ${NM[ch]} المثبّت على جهازك والرسالة جاهزة. لم يفتح؟ ${fb}`);return}
-    const F=S._shF&&S._shF.k===shareKey()?S._shF:null;const file=F&&F.file;
-    if(!file){shNote("جارٍ تجهيز الملف… اضغط القناة مرة أخرى بعد ثوانٍ.");sharePrep();return}
-    if(ch==="device"){await navigator.share({files:[file],title:subj,text:taskText(t,false)});shNote("تمت المشاركة مع إرفاق الملف ✓");return}
-    shApp(APP[ch]);await offerFile(file.name,file);shNoteH(`فُتح ${NM[ch]} برسالة جديدة فيها النص، وحُمّل الملف «${esc(file.name)}» في التنزيلات. اسحبه إلى الرسالة لإرفاقه. لم يفتح التطبيق؟ ${fb}`)}
-  catch(err){if(err&&err.name==="AbortError"){shNote("أُلغيت المشاركة.");return}console.error(err);shNote("تعذّرت المشاركة. استخدم «تحميل الملف» ثم أرفقه يدويًا.",true)}}
-function shNoteH(h){const n=$("sh-note");if(n){n.innerHTML=h;n.classList.remove("err")}}
-async function shareCopy(){const t=S.tasks.find(x=>x.id===S.shareId);if(!t)return;try{await navigator.clipboard.writeText(taskText(t,S.shareFmt==="link"));shNote("نُسخ ✓")}catch(_){shNote("تعذّر النسخ.",true)}}
-async function shareDl(){const t=S.tasks.find(x=>x.id===S.shareId);if(!t)return;try{const f=await sharePrep();await offerFile(f.name,f);shNote(`حُمّل «${f.name}» ✓`)}catch(err){console.error(err);shNote("تعذّر إنشاء الملف.",true)}}
+  try{if(ch==="device"){await navigator.share({title:subj,text:shareText(t),url:u});shNote("تمت المشاركة ✓");return}
+    shApp(APP[ch]);shNoteH(`فُتح ${NM[ch]} برسالة جاهزة فيها النص والرابط. لم يفتح؟ <a href="${esc(WEB[ch])}" target="_blank" rel="noopener">افتح نسخة الويب</a>`)}
+  catch(err){if(err&&err.name==="AbortError"){shNote("أُلغيت المشاركة.");return}console.error(err);shNote("تعذّرت المشاركة. انسخ الرابط وأرسله يدويًا.",true)}}
+async function shareCopy(){const t=S.tasks.find(x=>x.id===S.shareId);if(!t||!S.shareUrl)return;try{await navigator.clipboard.writeText(shareText(t)+"\n\n"+S.shareUrl);shNote("نُسخ النص والرابط ✓")}catch(_){const i=$("sh-url");i&&i.select();shNote("حدّد الرابط وانسخه يدويًا.",true)}}
 function renderTasks(){if(S._openTaskId)setTimeout(openPendingTask,0);
   const el=$("view-tasks");const f=S.f;
   const scope=S.tasks.filter(t=>f.year==="all"||String(t.received||"").startsWith(f.year));
@@ -4274,10 +4251,9 @@ document.addEventListener("click",async e=>{
     case "close":a.closest("dialog").close();break;
     case "share":shareOpen(v);render();break;
     case "share-cur":if(S.editTask){const id=S.editTask.id;$("dlg-task").close();shareOpen(id)}break;
-    case "share-fmt":S.shareFmt=v;shareRender();sharePrep();{const b=document.querySelector(`#dlg-share [data-act=share-fmt][data-v="${v}"]`);b&&b.focus()}break;
     case "share-go":a.disabled=true;try{await shareGo(v)}finally{a.disabled=false}break;
     case "share-copy":shareCopy();break;
-    case "share-dl":a.disabled=true;try{await shareDl()}finally{a.disabled=false}break;
+
     case "copy-tsv":copyTSV(a);break;
     case "hol-add":{
       const name=$("h-name").value.trim(),from=$("h-from").value,to=$("h-to").value||from;

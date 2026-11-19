@@ -266,6 +266,10 @@
       },
       subscribe(cb) { return sb.channel("game-runs").on("postgres_changes", { event: "INSERT", schema: "public", table: "game_runs" }, () => cb()).subscribe(); }
     };
+    /* مشاركة مهمة: رابط عام للعرض فقط (رمز عشوائي لكل مهمة) */
+    window.lmraShare = {
+      async ensure(taskId) { const { data, error } = await sb.rpc("ensure_task_share", { p_task: taskId }); if (error) throw mapErr(error); return data; }
+    };
     /* مجلة أضواء: الإحصائيات مجمّعة في قاعدة البيانات (adwaa_stats) */
     window.lmraAdwaa = {
       async stats(issue, year) {

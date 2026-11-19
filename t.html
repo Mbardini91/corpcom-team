@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<title>تفاصيل مهمة · إدارة الاتصال</title>
+<link rel="icon" href="favicon.ico">
+<style>
+@font-face{font-family:"LMRA Frutiger";src:url("fonts/frutiger-ar-400.woff2") format("woff2");font-weight:400 500;font-display:swap}
+@font-face{font-family:"LMRA Frutiger";src:url("fonts/frutiger-ar-700.woff2") format("woff2");font-weight:600 900;font-display:swap}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:"LMRA Frutiger",system-ui,"Segoe UI",Tahoma,sans-serif;background:#ece7de;color:#1d2433;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:28px 14px 40px}
+.bar{width:min(794px,100%);display:flex;gap:8px;justify-content:flex-end;margin-bottom:14px}
+.bar button{font:inherit;font-size:14px;font-weight:700;display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:12px;border:1px solid #d9d2c5;background:#fff;color:#17325a;cursor:pointer}
+.bar button.pri{background:#17325a;color:#fff;border-color:#17325a}
+.bar button:disabled{opacity:.6;cursor:progress}
+.bar svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.page{width:min(794px,100%);background:#fff;padding:56px 60px 44px;border-radius:6px;box-shadow:0 20px 50px -20px rgba(23,50,90,.35);direction:rtl}
+header{display:flex;align-items:center;gap:18px;padding-bottom:22px;border-bottom:2px solid #17325a}
+header img{height:64px}
+header p{font-size:14px;color:#7d8184;margin:0}
+header h1{font-size:30px;font-weight:800;color:#17325a;margin:4px 0 0}
+.tt{margin:28px 0 22px;padding:18px 22px;border-radius:14px;border-right:6px solid #17325a;display:grid;gap:6px}
+.tt span{font-size:14px;font-weight:800}
+.tt h2{font-size:24px;font-weight:800;margin:0;line-height:1.4}
+.tt b{justify-self:start;font-size:13px;padding:4px 12px;border-radius:999px}
+table{width:100%;border-collapse:collapse;font-size:15px}
+th{width:30%;text-align:right;vertical-align:top;padding:12px 14px;background:#f4f2ee;color:#17325a;font-weight:800;border-bottom:1px solid #e3ded5}
+td{padding:12px 14px;border-bottom:1px solid #e3ded5;line-height:1.7;white-space:pre-wrap;word-break:break-word}
+td a{color:#2f5d9a;direction:ltr;unicode-bidi:embed}
+footer{display:flex;justify-content:space-between;gap:12px;margin-top:30px;padding-top:14px;border-top:1px solid #e3ded5;font-size:12px;color:#7d8184;flex-wrap:wrap}
+.msg{width:min(560px,100%);background:#fff;border-radius:16px;padding:40px 28px;text-align:center;box-shadow:0 20px 50px -20px rgba(23,50,90,.3)}
+.msg img{height:56px;margin-bottom:18px}.msg h1{font-size:22px;color:#17325a;margin:0 0 8px}.msg p{color:#7d8184;margin:0;line-height:1.7}
+.ld{width:34px;height:34px;border-radius:50%;border:3px solid #d9d2c5;border-top-color:#17325a;animation:sp 1s linear infinite;margin:0 auto 16px}
+@keyframes sp{to{transform:rotate(360deg)}}
+@media (max-width:640px){body{padding:14px 8px 28px}.page{padding:26px 18px 24px}header img{height:44px}header h1{font-size:22px}.tt h2{font-size:19px}table{font-size:14px}th{width:36%;padding:10px}td{padding:10px}.bar button{flex:1;justify-content:center}}
+@media print{body{background:#fff;padding:0}.bar{display:none}.page{box-shadow:none;width:100%;border-radius:0}@page{size:A4;margin:10mm}}
+</style>
+</head>
+<body>
+<div id="app"><div class="msg"><div class="ld"></div><p>جارٍ تحميل المهمة…</p></div></div>
+<script src="config.js"></script>
+<script>
+(function(){
+"use strict";
+const TYPES={design:["تصميم","#2f5d9a"],video:["إنتاج فيديو","#7d5aa0"],photo:["تصوير","#2b8577"],news:["الأخبار","#b7832a"],form:["استمارات","#b4466a"],other:["أخرى","#7d8184"]};
+const STATUS={"لم يبدأ":"#7d8184","قيد التنفيذ":"#2f5d9a","بانتظار المراجعة":"#b7832a","معلق":"#c0632b","مكتمل":"#2e7d4f","متوقف":"#a8211f"};
+const MONTHS=["يناير","فبراير","مارس","أبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"];
+const esc=v=>String(v==null?"":v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmt=d=>{const m=/^(\d{4})-(\d{2})-(\d{2})/.exec(d||"");return m?`${+m[3]} ${MONTHS[+m[2]-1]} ${m[1]}`:"—"};
+const tint=(hex,a)=>{const n=parseInt(hex.slice(1),16),r=n>>16,g=n>>8&255,b=n&255,f=c=>Math.round(c*a+255*(1-a));return `rgb(${f(r)},${f(g)},${f(b)})`};
+const safeUrl=u=>{u=String(u||"").trim();if(!u)return "";if(!/^[a-z][a-z0-9+.-]*:/i.test(u))u="https://"+u;return /^https?:/i.test(u)?u:""};
+const app=document.getElementById("app");
+const fail=(h,p)=>{app.innerHTML=`<div class="msg"><img src="rpt/logo.png" alt=""><h1>${h}</h1><p>${p}</p></div>`};
+const k=new URLSearchParams(location.search).get("k")||"";
+if(!/^[0-9a-f]{36}$/.test(k)){fail("الرابط غير صالح","تأكد من نسخ الرابط كاملًا كما وصلك.");return}
+const C=window.LMRA_CONFIG||{};
+fetch(C.supabaseUrl+"/rest/v1/rpc/get_shared_task",{method:"POST",headers:{"Content-Type":"application/json",apikey:C.supabaseAnonKey},body:JSON.stringify({p_token:k})})
+ .then(r=>{if(!r.ok)throw new Error(r.status);return r.json()})
+ .then(t=>{if(!t){fail("المهمة غير متاحة","ربما حُذفت المهمة أو أُلغيت مشاركتها.");return}render(t)})
+ .catch(()=>fail("تعذّر تحميل المهمة","تحقق من اتصالك بالإنترنت ثم أعد فتح الرابط."));
+function render(t){
+  const ty=TYPES[t.type]||TYPES.other,st=t.status||"لم يبدأ",sc=STATUS[st]||"#7d8184";
+  const ch=[...(t.channels||[]),...(t.pub||[])],lk=safeUrl(t.link);
+  const rows=[["الإدارة المعنية",t.dept||"—"],["المسؤول",(t.owners||[]).join("، ")||"—"],["تاريخ الاستلام",fmt(t.received)],["تاريخ التسليم",fmt(t.delivered)],
+    ["مدة الإنجاز المتوقعة",t.duration||"—"],...(ch.length?[[t.type==="news"?"قنوات النشر":"استخدام الصور",ch.join("، ")]]:[]),["رابط الملف",lk||"—"],["ملاحظات",t.notes||"—"]];
+  document.title="مهمة: "+(t.title||"")+" · إدارة الاتصال";
+  const ico=p=>`<svg viewBox="0 0 24 24" aria-hidden="true">${p}</svg>`;
+  app.innerHTML=`<div class="bar"><button type="button" class="pri" id="dl">${ico('<path d="M12 4v11M7 10l5 5 5-5M5 20h14"/>')}تحميل PDF</button><button type="button" id="pr">${ico('<path d="M7 9V4h10v5M7 17H5a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2M7 14h10v6H7z"/>')}طباعة</button></div>
+  <article class="page" id="pg">
+    <header><img src="rpt/logo.png" alt="هيئة تنظيم سوق العمل"><div><p>هيئة تنظيم سوق العمل · إدارة الاتصال</p><h1>تفاصيل مهمة</h1></div></header>
+    <div class="tt" style="background:${tint(ty[1],.09)};border-right-color:${ty[1]}"><span style="color:${ty[1]}">${esc(ty[0])}</span><h2>${esc(t.title||"—")}</h2><b style="background:${tint(sc,.16)}">${esc(st)}</b></div>
+    <table>${rows.map(([a,b])=>`<tr><th>${esc(a)}</th><td>${a==="رابط الملف"&&b!=="—"?`<a href="${esc(b)}" target="_blank" rel="noopener">${esc(b)}</a>`:esc(b)}</td></tr>`).join("")}</table>
+    <footer><span>منصة فريق إدارة الاتصال</span><span>${t.updatedAt?"آخر تحديث: "+fmt(String(t.updatedAt).slice(0,10)):""}</span></footer>
+  </article>`;
+  document.getElementById("pr").onclick=()=>print();
+  const btn=document.getElementById("dl");btn.onclick=async()=>{btn.disabled=true;const old=btn.innerHTML;btn.lastChild.textContent="جارٍ التجهيز…";
+    try{await load("lib/html2canvas.min.js");await load("lib/jspdf.umd.min.js");try{await document.fonts.ready}catch(_){}
+      const el=document.getElementById("pg"),w0=el.style.width;el.style.width="794px";
+      const cv=await html2canvas(el,{scale:2,backgroundColor:"#fff",useCORS:true,logging:false});el.style.width=w0;
+      const {jsPDF}=window.jspdf,W=595,H=Math.max(842,W*cv.height/cv.width),doc=new jsPDF({unit:"pt",format:[W,H],compress:true});
+      doc.addImage(cv.toDataURL("image/jpeg",.92),"JPEG",0,0,W,W*cv.height/cv.width);
+      if(lk){const a=el.querySelector("td a");if(a){const r0=el.getBoundingClientRect(),r=a.getBoundingClientRect(),s=W/r0.width;doc.link((r.left-r0.left)*s,(r.top-r0.top)*s,r.width*s,r.height*s,{url:lk})}}
+      const name="مهمة - "+String(t.title||"").replace(/[\\/:*?"<>|#%]+/g," ").trim().slice(0,60)+".pdf";
+      const u=URL.createObjectURL(doc.output("blob")),a=document.createElement("a");a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),3e4)}
+    catch(e){console.error(e);alert("تعذّر إنشاء ملف PDF. استخدم «طباعة» ثم «حفظ كـ PDF».")}
+    finally{btn.disabled=false;btn.innerHTML=old}}}
+function load(src){return new Promise((res,rej)=>{if(document.querySelector(`script[src="${src}"]`))return res();const s=document.createElement("script");s.src=src;s.onload=res;s.onerror=rej;document.head.appendChild(s)})}
+})();
+</script>
+</body>
+</html>
