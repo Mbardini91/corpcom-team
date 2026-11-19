@@ -2161,7 +2161,7 @@ function sharePrep(){const t=S.tasks.find(x=>x.id===S.shareId);if(!t||S.shareFmt
 async function shareMake(){return sharePrep()}
 const shTouch=()=>matchMedia("(pointer:coarse)").matches;
 function shCanFiles(f){try{return !!(navigator.canShare&&navigator.canShare({files:[f||new File(["x"],"x.pdf",{type:"application/pdf"})]}))}catch(_){return false}}
-function shReadyNote(){return shCanFiles()?"الملف جاهز. اختر القناة ثم اختر التطبيق المثبّت من قائمة المشاركة، وسيُرفق الملف مباشرة.":"الملف جاهز. البريد: تُحمَّل رسالة تفتح في Outlook المثبّت والملف مرفق. Teams وواتساب: يُفتح التطبيق المثبّت ويُحمَّل الملف لإرفاقه."}
+function shReadyNote(){return "الملف جاهز. اختر القناة: يُفتح التطبيق المثبّت برسالة جديدة فيها النص، ويُحمَّل الملف لتسحبه إلى الرسالة."}
 function b64u(str){return btoa(unescape(encodeURIComponent(str)))}
 function mimeWord(s){return "=?UTF-8?B?"+b64u(s)+"?="}
 async function emlFor(t,file){const buf=new Uint8Array(await file.arrayBuffer());let bin="";for(let i=0;i<buf.length;i+=0x8000)bin+=String.fromCharCode.apply(null,buf.subarray(i,i+0x8000));
@@ -2175,7 +2175,8 @@ function shNav(w,u){if(w&&!w.closed){w.location.href=u}else{const x=window.open(
 function shApp(u){const a=document.createElement("a");a.href=u;a.rel="noopener";document.body.appendChild(a);a.click();a.remove()}
 async function shareGo(ch){const t=S.tasks.find(x=>x.id===S.shareId);if(!t)return;const isLink=S.shareFmt==="link";
   const subj="مهمة: "+(t.title||""),txt=taskText(t,isLink),E=encodeURIComponent;
-  const APP={mail:`mailto:?subject=${E(subj)}&body=${E(txt)}`,teams:`msteams:/l/chat/0/0?message=${E(txt)}`,wa:shTouch()?`https://wa.me/?text=${E(txt)}`:`whatsapp://send?text=${E(txt)}`};
+  const macLike=/Mac|iPhone|iPad|Android/i.test(navigator.userAgent);
+  const APP={mail:macLike?`ms-outlook://compose?subject=${E(subj)}&body=${E(txt)}`:`mailto:?subject=${E(subj)}&body=${E(txt)}`,teams:`msteams:/l/chat/0/0?message=${E(txt)}`,wa:shTouch()?`https://wa.me/?text=${E(txt)}`:`whatsapp://send?text=${E(txt)}`};
   const WEB={mail:`https://outlook.office.com/mail/deeplink/compose?subject=${E(subj)}&body=${E(txt)}`,teams:`https://teams.microsoft.com/l/chat/0/0?message=${E(txt)}`,wa:`https://web.whatsapp.com/send?text=${E(txt)}`};
   const NM={mail:"Outlook",teams:"Teams",wa:"واتساب"};
   const fb=`<a href="${esc(WEB[ch]||"")}" target="_blank" rel="noopener">افتح نسخة الويب</a>`;
@@ -2184,10 +2185,8 @@ async function shareGo(ch){const t=S.tasks.find(x=>x.id===S.shareId);if(!t)retur
       shApp(APP[ch]);shNoteH(`فُتح ${NM[ch]} المثبّت على جهازك والرسالة جاهزة. لم يفتح؟ ${fb}`);return}
     const F=S._shF&&S._shF.k===shareKey()?S._shF:null;const file=F&&F.file;
     if(!file){shNote("جارٍ تجهيز الملف… اضغط القناة مرة أخرى بعد ثوانٍ.");sharePrep();return}
-    if(shCanFiles(file)){shNote(ch==="device"?"اختر التطبيق من قائمة المشاركة.":`اختر «${NM[ch]||"التطبيق"}» من قائمة المشاركة، وسيُرفق الملف فيه مباشرة.`);
-      await navigator.share({files:[file],title:subj,text:taskText(t,false)});shNote("تمت المشاركة مع إرفاق الملف ✓");return}
-    if(ch==="mail"){const e=await emlFor(t,file);await offerFile(e.name,e);shNote(`حُمّلت الرسالة «${e.name}» والملف مرفق فيها. افتحها وتظهر في Outlook المثبّت جاهزة للإرسال.`);return}
-    await offerFile(file.name,file);shApp(APP[ch]);shNoteH(`فُتح ${NM[ch]} المثبّت والرسالة جاهزة، وحُمّل الملف «${esc(file.name)}». اسحبه إلى المحادثة لإرفاقه (هذا المتصفح لا يسمح بإرفاقه تلقائيًا). لم يفتح التطبيق؟ ${fb}`)}
+    if(ch==="device"){await navigator.share({files:[file],title:subj,text:taskText(t,false)});shNote("تمت المشاركة مع إرفاق الملف ✓");return}
+    shApp(APP[ch]);await offerFile(file.name,file);shNoteH(`فُتح ${NM[ch]} برسالة جديدة فيها النص، وحُمّل الملف «${esc(file.name)}» في التنزيلات. اسحبه إلى الرسالة لإرفاقه. لم يفتح التطبيق؟ ${fb}`)}
   catch(err){if(err&&err.name==="AbortError"){shNote("أُلغيت المشاركة.");return}console.error(err);shNote("تعذّرت المشاركة. استخدم «تحميل الملف» ثم أرفقه يدويًا.",true)}}
 function shNoteH(h){const n=$("sh-note");if(n){n.innerHTML=h;n.classList.remove("err")}}
 async function shareCopy(){const t=S.tasks.find(x=>x.id===S.shareId);if(!t)return;try{await navigator.clipboard.writeText(taskText(t,S.shareFmt==="link"));shNote("نُسخ ✓")}catch(_){shNote("تعذّر النسخ.",true)}}
