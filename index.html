@@ -173,6 +173,12 @@ table.lsum-t{min-width:0;width:100%;border-collapse:separate;border-spacing:0;fo
 .li .sw{width:10px;height:10px;border-radius:3px;margin-top:6px}
 .li .t{font-weight:700;font-size:14px}
 .li .s{font-size:12.5px;color:var(--mute)}
+.lvp-row{cursor:pointer;align-items:center}.lvp-row:hover{background:var(--accent-soft)}.lvp-row .sw{margin-top:0}.lvp-go{color:var(--mute);font-size:20px;line-height:1;padding:0 4px}
+#dlg-lvp{width:min(460px,calc(100% - 24px))}#dlg-lvp h3{margin:0}
+.lvp-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px}
+.lvp-i{display:grid;grid-template-columns:10px minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px 8px;border-bottom:1px solid var(--line)}.lvp-i:last-child{border-bottom:0}
+.lvp-i .sw{width:10px;height:10px;border-radius:3px}.lvp-i .t{font-weight:600}.lvp-i .s{font-size:13px;color:var(--mute)}.lvp-i .s.n{margin-top:2px}
+.lt-leg{margin-top:-8px}
 .li button{appearance:none;border:0;background:none;color:var(--mute);cursor:pointer;padding:2px 6px;border-radius:6px;font-size:13px}
 .li button:hover{color:var(--accent);background:var(--accent-soft)}
 .tag{display:inline-block;font-size:11px;padding:0 6px;border-radius:4px;background:var(--surface-2);color:var(--mute);border:1px solid var(--line);margin-inline-start:6px;font-weight:500}
@@ -1681,6 +1687,10 @@ function setLang(l){try{localStorage.setItem("lmra-lang",l)}catch(_){}location.r
 </main>
 
 <!-- leave dialog -->
+<dialog id="dlg-lvp" class="dlg-sm">
+  <div class="dlg-h"><div><h3 id="lvp-h"></h3><div class="small muted" id="lvp-sub"></div></div><button class="btn icon" type="button" data-act="close" aria-label="إغلاق">✕</button></div>
+  <div class="dlg-b"><ul class="lvp-list" id="lvp-list"></ul></div>
+</dialog>
 <dialog id="dlg-leave">
   <form id="f-leave" method="dialog">
     <div class="dlg-h"><h3 id="leave-h">تسجيل إجازة</h3><button class="btn icon" type="button" data-act="close" aria-label="إغلاق">✕</button></div>
@@ -1858,11 +1868,13 @@ const PUBCH=["الإنترانت","السوشيال ميديا","الصحافة"
 const LEAVE_TYPES=["سنوية","مرضية","طارئة","أمومة / أبوة","عزاء","عمل عن بُعد","مهمة رسمية / تدريب","أخرى"];
 const NOT_LEAVE=new Set(["عمل عن بُعد"]);
 const LT_COL={"سنوية":"#2f6fb0","مرضية":"#c2553f","طارئة":"#d08a1f","أمومة / أبوة":"#b0508a","عزاء":"#6b6f7a","عمل عن بُعد":"#7a68c4","مهمة رسمية / تدريب":"#3d8fb5","أخرى":"#8a7a5c"};
+function ltcol(t){return LT_COL[t]||LT_COL["أخرى"]}
 function hrsLabel(h){h=+h;return h===1?"ساعة":h===2?"ساعتان":h+" ساعات"}
 function isHrs(l){return +l.hours>0&&+l.hours<8}
 /* work-day value of a leave inside [lo,hi]; hour leaves count hours/8 */
 function lvValue(l,lo,hi){if(!validDate(l.from))return 0;const end=validDate(l.to)&&l.to>=l.from?l.to:l.from;const a=l.from<lo?lo:l.from,b=end>hi?hi:end;if(b<a)return 0;
   if(isHrs(l))return workdays(l.from,l.from)?(+l.hours)/8:0;return workdays(a,b)}
+function daysTxt(v){const {d,h}=fmtDays(v);if(!d&&!h)return "0 يوم عمل";return (d?`<span class="num">${d}</span> يوم عمل`:"")+(h?`${d?" و":""}<span class="num">${esc(hrsLabel(h))}</span>`:"")}
 function fmtDays(v){const d=Math.floor(v+1e-9),h=Math.round((v-d)*8);return {d,h}}
 const PCOL=["#17325a","#2b8577","#b7832a","#7d5aa0","#c0632b","#2f5d9a","#8a3b52","#4f6b2e","#5a6772","#a8211f"];
 const FALLBACK_MEMBERS=[{name:"حسين علي محمد رسول",title:"مدير إدارة الاتصال"},{name:"حسين أحمد خميس",title:"مستشار شؤون الإعلام"},{name:"صديقة جاسم كاظم",title:"رئيس علاقات عامة"},{name:"خولة نجيب بوخماس",title:"أخصائي علاقات عامة أول"},{name:"فاطمة جاسم الهاشلي",title:"أخصائي إعلام أول"},{name:"معاذ محمد البرديني",title:"أخصائي إعلام أول"},{name:"محمد رضي",title:"أخصائي علاقات عامة"},{name:"طاهرة عبدالمجيد حسين",title:"إداري محتوى إلكتروني"}];
@@ -2022,7 +2034,7 @@ function renderCalendar(){
       ${xlBtn("calendar")}<button class="btn primary write-only" data-act="leave-new" type="button">+ تسجيل إجازة</button>
     </div>
   </div>
-  <div class="legend"><span><i style="background:var(--hol-bg);border:1px solid var(--hol-ink)"></i>إجازة رسمية</span><span><i style="background:var(--wknd);border:1px solid var(--line-2)"></i>عطلة نهاية الأسبوع (الجمعة والسبت)</span><span><i style="border:2px solid var(--today)"></i>اليوم</span><span>النقاط الملوّنة: موظفون في إجازة</span></div>
+  <div class="legend"><span><i style="background:var(--hol-bg);border:1px solid var(--hol-ink)"></i>إجازة رسمية</span><span><i style="background:var(--wknd);border:1px solid var(--line-2)"></i>عطلة نهاية الأسبوع (الجمعة والسبت)</span><span><i style="border:2px solid var(--today)"></i>اليوم</span></div><div class="legend lt-leg">${LEAVE_TYPES.map(t=>`<span><i style="background:${ltcol(t)}"></i>${esc(t)}</span>`).join("")}</div>
   <div class="cal-layout"><div>`;
   h+=isYear?yearGrid(y,hmap,lmap):monthGrid(y,S.month,hmap,lmap);
   h+=`</div><aside class="side">${sidePanel(y,hmap,lmap)}</aside></div>`;
@@ -2061,7 +2073,7 @@ function yearGrid(y,hmap,lmap){
       const s=iso(y,m,d),hol=hmap.get(s),lv=lmap.get(s)||[];
       const cls=["md",isWeekend(s)?"we":"",hol?"hol":"",s===TODAY?"today":""].join(" ");
       const tip=[fmt(s),...(hol||[]).map(x=>x.name),...lv.map(l=>l.name+" — إجازة "+(l.type||"")+(isHrs(l)?" ("+hrsLabel(l.hours)+")":""))].join("\n");
-      let dots="";if(lv.length){dots=`<span class="dots">`+lv.slice(0,4).map(l=>`<i style="background:${pcolor(l.name)}"></i>`).join("")+`</span>`}
+      let dots="";if(lv.length){dots=`<span class="dots">`+lv.slice(0,4).map(l=>`<i style="background:${ltcol(l.type)}"></i>`).join("")+`</span>`}
       h+=`<button type="button" class="${cls}" data-act="day" data-v="${s}" title="${esc(tip)}"><span class="num">${d}</span>${dots}</button>`;
     }
     h+=`</div><div class="mini-foot">${esc(hnames.join(" · "))}</div></div>`;
@@ -2080,7 +2092,7 @@ function monthGrid(y,m,hmap,lmap){
     h+=`<div class="${cls}" data-act="day" data-v="${s}" role="button" tabindex="0" aria-label="${esc(fmt(s))}"><div class="top"><span class="dn num">${d}</span><span class="hj">${esc(hj(s))}</span></div>`;
     hol.forEach(x=>h+=`<div class="hpill">${esc(x.name)}${x.tentative?" (تقديري)":""}</div>`);
     const show=lv;
-    show.forEach(l=>h+=`<div class="lchip" style="background:${pcolor(l.name)}" data-act="leave-edit" data-v="${esc(l.id)}" title="${esc(l.name+" — "+(l.type||"")+(isHrs(l)?" · "+hrsLabel(l.hours):"")+(l.notes?"\n"+l.notes:""))}">${esc(shortName(l.name))}${isHrs(l)?` <small class="num">${+l.hours}س</small>`:""}</div>`);
+    show.forEach(l=>h+=`<div class="lchip" style="background:${ltcol(l.type)}" data-act="leave-edit" data-v="${esc(l.id)}" title="${esc(l.name+" — "+(l.type||"")+(isHrs(l)?" · "+hrsLabel(l.hours):"")+(l.notes?"\n"+l.notes:""))}">${esc(shortName(l.name))}${isHrs(l)?` <small class="num">${+l.hours}س</small>`:""}</div>`);
     h+=`</div>`;
   }
   const tail=(7-((off+n)%7))%7;for(let i=0;i<tail;i++)h+=`<div class="bd out"></div>`;
@@ -2092,12 +2104,15 @@ function sidePanel(y,hmap,lmap){
   let lo,hi,label;
   if(isYear){lo=TODAY>y+"-01-01"&&TODAY<=y+"-12-31"?TODAY:y+"-01-01";hi=y+"-12-31";label="الإجازات القادمة"}
   else{lo=iso(y,S.month,1);hi=iso(y,S.month,daysIn(y,S.month));label="الإجازات في "+MONTHS[S.month-1]}
-  const ls=S.leaves.filter(l=>validDate(l.from)&&(l.to||l.from)>=lo&&l.from<=hi).sort((a,b)=>a.from.localeCompare(b.from)).slice(0,isYear?14:40);
-  let h=`<div class="card"><h3>${esc(label)}<span class="muted small num">${ls.length||""}</span></h3>`;
+  const ls=S.leaves.filter(l=>validDate(l.from)&&(l.to||l.from)>=lo&&l.from<=hi).sort((a,b)=>a.from.localeCompare(b.from));
+  S.lvRange={lo,hi,label};
+  const grp=new Map();for(const l of ls){if(!grp.has(l.name))grp.set(l.name,[]);grp.get(l.name).push(l)}
+  let h=`<div class="card"><h3>${esc(label)}<span class="muted small num">${grp.size||""}</span></h3>`;
   if(!S.ready.leaves&&S.db)h+=`<div class="empty-note">جارٍ التحميل…</div>`;
   else if(!ls.length)h+=`<div class="empty-note">لا توجد إجازات مسجلة${isYear?" قادمة":" في هذا الشهر"}.${S.canWrite?" اضغط «تسجيل إجازة» لإضافة إجازتك.":""}</div>`;
-  else{h+=`<ul class="list">`;for(const l of ls){const wd=workdays(l.from,l.to||l.from);
-    h+=`<li class="li"><span class="sw" style="background:${pcolor(l.name)}"></span><div><div class="t">${esc(l.name)}</div><div class="s">${esc(fmtShort(l.from))}${l.to&&l.to!==l.from?" – "+esc(fmtShort(l.to)):""} · ${esc(l.type||"")} · ${isHrs(l)?`<span class="num">${esc(hrsLabel(l.hours))}</span>`:`<span class="num">${wd}</span> يوم عمل`}</div></div><button type="button" data-act="leave-edit" data-v="${esc(l.id)}">${S.canWrite?"تعديل":"عرض"}</button></li>`}
+  else{h+=`<ul class="list">`;for(const [n,arr] of grp){const tot=arr.reduce((a,l)=>a+lvValue(l,lo,hi),0);const types=[...new Set(arr.map(l=>l.type||"أخرى"))];
+    const last=arr.reduce((m,l)=>{const e=validDate(l.to)&&l.to>=l.from?l.to:l.from;return e>m?e:m},arr[0].from);
+    h+=`<li class="li lvp-row" data-act="lv-person" data-v="${esc(n)}" role="button" tabindex="0"><span class="sw" style="background:${ltcol(types[0])}"></span><div><div class="t">${esc(n)}</div><div class="s">${esc(fmtShort(arr[0].from))}${last!==arr[0].from?" – "+esc(fmtShort(last)):""} · ${esc(types.join("، "))} · ${daysTxt(tot)}${arr.length>1?` · <span class="num">${arr.length}</span> إجازات`:""}</div></div><span class="lvp-go" aria-hidden="true">‹</span></li>`}
     h+=`</ul>`}
   h+=`</div>`;
   // holidays list
@@ -3929,6 +3944,15 @@ $("m-del").addEventListener("click",async()=>{const x=S.editMon;if(!x)return;con
   try{await remove("monitor",x.id);$("dlg-mon").close()}catch(err){$("m-err").textContent=errText(err)}finally{b.dataset.confirm="";b.textContent="حذف الخبر"}});
 
 /* ---------- dialogs ---------- */
+function openLvPerson(n){
+  const r=S.lvRange||{lo:TODAY,hi:"9999-12-31",label:""};
+  const arr=S.leaves.filter(l=>l.name===n&&validDate(l.from)&&(l.to||l.from)>=r.lo&&l.from<=r.hi).sort((a,b)=>a.from.localeCompare(b.from));
+  const tot=arr.reduce((a,l)=>a+lvValue(l,r.lo,r.hi),0);
+  $("lvp-h").textContent=n;$("lvp-sub").innerHTML=`${esc(r.label)} · ${daysTxt(tot)}`;
+  $("lvp-list").innerHTML=arr.length?arr.map(l=>{const e=validDate(l.to)&&l.to>=l.from?l.to:l.from;
+    return `<li class="lvp-i"><span class="sw" style="background:${ltcol(l.type)}"></span><div><div class="t">${esc(l.type||"إجازة")}</div><div class="s">${esc(fmt(l.from))}${e!==l.from?" – "+esc(fmt(e)):""} · ${isHrs(l)?esc(hrsLabel(l.hours)):`<span class="num">${workdays(l.from,e)}</span> يوم عمل`}</div>${l.notes?`<div class="s n">${esc(l.notes)}</div>`:""}</div><button type="button" class="btn small" data-act="lvp-edit" data-v="${esc(l.id)}">${S.canWrite?"تعديل":"عرض"}</button></li>`}).join(""):`<li class="empty-note">لا توجد إجازات.</li>`;
+  $("dlg-lvp").showModal();
+}
 function openLeave(l,date){
   S.editLeave=l||null;
   const names=memberNames();const cur=l?l.name:(remembered()||names[0]||"");
@@ -4207,6 +4231,8 @@ document.addEventListener("click",async e=>{
       if(S.calMode==="year"){const p=parts(v);S.month=p.m;S.calMode="month";render();}
       else if(S.canWrite)openLeave(null,v);break}
     case "leave-new":openLeave(null,S.calMode==="month"?(TODAY.startsWith(S.year+"-"+pad(S.month))?TODAY:iso(S.year,S.month,1)):TODAY);break;
+    case "lv-person":openLvPerson(v);break;
+    case "lvp-edit":{$("dlg-lvp").close();const l=S.leaves.find(x=>x.id===v);if(l)openLeave(l);break}
     case "leave-edit":{e.stopPropagation();const l=S.leaves.find(x=>x.id===v);if(l)openLeave(l);break}
     case "task-new":openTask(null);break;
     case "task-edit":{const t=S.tasks.find(x=>x.id===v);if(t)openTask(t);break}
