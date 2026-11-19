@@ -149,6 +149,17 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);outline-
 .bd.today .dn{background:var(--today);color:var(--accent-ink);border-radius:6px;padding:0 7px}
 .hj{font-size:11px;color:var(--mute)}
 .hpill{font-size:11.5px;line-height:1.35;background:var(--hol-bg);color:var(--hol-ink);border-radius:5px;padding:2px 6px;font-weight:700}
+.lsum{margin-top:20px}.lsum-h{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px;margin-bottom:12px}.lsum-h h3{margin:0}
+.lsum-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table.lsum-t{min-width:0;width:100%;border-collapse:separate;border-spacing:0;font-size:14px}
+.lsum-t th,.lsum-t td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:center;white-space:nowrap}
+.lsum-t th,.lsum-t td{background:transparent}.lsum-t thead th{font-size:12.5px;font-weight:600;color:var(--mute)}
+.lsum-t thead th i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-inline-end:6px;vertical-align:middle}
+.lsum-t tbody th{text-align:start;font-weight:600}.lsum-t tbody th .sw{display:inline-block;width:9px;height:9px;border-radius:50%;margin-inline-end:8px;vertical-align:middle}
+.lsum-t td b{font-size:17px;font-weight:700}.lsum-t td small{font-size:11.5px;color:var(--mute);margin-inline-start:3px}
+.lsum-t td.z{color:var(--line-2)}.lsum-t .tot{background:rgba(127,127,127,.07)}.lsum-t td.tot b{color:var(--ink)}
+.lsum-t tbody tr:last-child th,.lsum-t tbody tr:last-child td{border-bottom:0}
+.lchip small{opacity:.85;font-size:.85em}
 .lchip{font-size:12px;line-height:1.35;border-radius:5px;padding:2px 6px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .more{font-size:11.5px;color:var(--mute)}
 @media (max-width:640px){.bd{min-height:70px;padding:4px}.lchip{font-size:10.5px;padding:1px 4px}.hpill{font-size:10px}.hj{display:none}}
@@ -1676,9 +1687,11 @@ function setLang(l){try{localStorage.setItem("lmra-lang",l)}catch(_){}location.r
     <div class="dlg-b">
       <label class="field"><span>الاسم</span><select id="l-name" required></select></label>
       <label class="field"><span>نوع الإجازة</span><select id="l-type"></select></label>
+      <div class="field"><span>مدة الإجازة</span><div class="seg l-mode" role="group" aria-label="مدة الإجازة"><button type="button" data-act="l-mode" data-v="days" aria-pressed="true">أيام كاملة</button><button type="button" data-act="l-mode" data-v="hours" aria-pressed="false">إجازة بالساعات</button></div></div>
       <div class="row2">
-        <label class="field"><span data-en="From">من</span><input type="date" id="l-from" required></label>
-        <label class="field"><span data-en="To">إلى</span><input type="date" id="l-to" required></label>
+        <label class="field"><span id="l-from-lb">من</span><input type="date" id="l-from" required></label>
+        <label class="field" id="l-to-w"><span data-en="To">إلى</span><input type="date" id="l-to" required></label>
+        <label class="field" id="l-hours-w" hidden><span>عدد الساعات</span><select id="l-hours"><option value="1">ساعة</option><option value="2">ساعتان</option><option value="3">3 ساعات</option><option value="4">4 ساعات</option><option value="5">5 ساعات</option><option value="6">6 ساعات</option><option value="7">7 ساعات</option><option value="8">8 ساعات (يوم عمل كامل)</option></select></label>
       </div>
       <div class="hint" id="l-calc">اختر التاريخين لحساب أيام العمل.</div>
       <label class="field"><span>ملاحظات</span><textarea id="l-notes" placeholder="مثال: البديل خلال الإجازة"></textarea></label>
@@ -1842,7 +1855,15 @@ const CURRENT=new Set(["لم يبدأ","قيد التنفيذ","بانتظار �
 const DURATIONS=["","½ - 1 يوم عمل","2 - 4 أيام عمل","1 - 2 أسبوع عمل","3 - 4 أسابيع عمل","2 - 3 أشهر عمل"];
 const CHANNELS=["نشر داخلي","نشر خارجي","أرشفة"];
 const PUBCH=["الإنترانت","السوشيال ميديا","الصحافة","المركز الإعلامي","التلفزيون والإذاعة"];
-const LEAVE_TYPES=["سنوية","مرضية","طارئة","مهمة رسمية / تدريب","أخرى"];
+const LEAVE_TYPES=["سنوية","مرضية","طارئة","أمومة / أبوة","عزاء","بدل عمل إضافي","عمل عن بُعد","مهمة رسمية / تدريب","أخرى"];
+const NOT_LEAVE=new Set(["عمل عن بُعد"]);
+const LT_COL={"سنوية":"#2f6fb0","مرضية":"#c2553f","طارئة":"#d08a1f","أمومة / أبوة":"#b0508a","عزاء":"#6b6f7a","بدل عمل إضافي":"#2f9a7a","عمل عن بُعد":"#7a68c4","مهمة رسمية / تدريب":"#3d8fb5","أخرى":"#8a7a5c"};
+function hrsLabel(h){h=+h;return h===1?"ساعة":h===2?"ساعتان":h+" ساعات"}
+function isHrs(l){return +l.hours>0&&+l.hours<8}
+/* work-day value of a leave inside [lo,hi]; hour leaves count hours/8 */
+function lvValue(l,lo,hi){if(!validDate(l.from))return 0;const end=validDate(l.to)&&l.to>=l.from?l.to:l.from;const a=l.from<lo?lo:l.from,b=end>hi?hi:end;if(b<a)return 0;
+  if(isHrs(l))return workdays(l.from,l.from)?(+l.hours)/8:0;return workdays(a,b)}
+function fmtDays(v){const d=Math.floor(v+1e-9),h=Math.round((v-d)*8);return {d,h}}
 const PCOL=["#17325a","#2b8577","#b7832a","#7d5aa0","#c0632b","#2f5d9a","#8a3b52","#4f6b2e","#5a6772","#a8211f"];
 const FALLBACK_MEMBERS=[{name:"حسين علي محمد رسول",title:"مدير إدارة الاتصال"},{name:"حسين أحمد خميس",title:"مستشار شؤون الإعلام"},{name:"صديقة جاسم كاظم",title:"رئيس علاقات عامة"},{name:"خولة نجيب بوخماس",title:"أخصائي علاقات عامة أول"},{name:"فاطمة جاسم الهاشلي",title:"أخصائي إعلام أول"},{name:"معاذ محمد البرديني",title:"أخصائي إعلام أول"},{name:"محمد رضي",title:"أخصائي علاقات عامة"},{name:"طاهرة عبدالمجيد حسين",title:"إداري محتوى إلكتروني"}];
 
@@ -2005,7 +2026,26 @@ function renderCalendar(){
   <div class="cal-layout"><div>`;
   h+=isYear?yearGrid(y,hmap,lmap):monthGrid(y,S.month,hmap,lmap);
   h+=`</div><aside class="side">${sidePanel(y,hmap,lmap)}</aside></div>`;
+  h+=leaveSummary(y);
   el.innerHTML=h;
+}
+
+function leaveSummary(y){
+  const lo=y+"-01-01",hi=TODAY<y+"-12-31"?TODAY:y+"-12-31";
+  const head=`<div class="card lsum"><div class="lsum-h"><h3>رصيد الإجازات المأخوذة ${y}</h3><span class="muted small">من 1 يناير حتى ${hi===TODAY?"اليوم":"نهاية السنة"} · بأيام العمل (اليوم = 8 ساعات)</span></div>`;
+  if(lo>TODAY)return head+`<div class="empty-note">لم تبدأ هذه السنة بعد.</div></div>`;
+  const names=[...new Set([...memberNames(),...S.leaves.filter(l=>validDate(l.from)&&l.from<=hi&&(l.to||l.from)>=lo).map(l=>l.name)])];
+  const tot={},used=new Set();
+  for(const l of S.leaves){const v=lvValue(l,lo,hi);if(!v)continue;const t=LEAVE_TYPES.includes(l.type)?l.type:"أخرى";used.add(t);(tot[l.name]=tot[l.name]||{})[t]=((tot[l.name]||{})[t]||0)+v}
+  const cols=LEAVE_TYPES.filter(t=>used.has(t));
+  if(!cols.length)return head+`<div class="empty-note">لا توجد إجازات مسجلة حتى الآن هذه السنة.</div></div>`;
+  const cell=v=>{if(!v)return `<td class="z">—</td>`;const {d,h}=fmtDays(v);return `<td title="${d} يوم${h?" و"+hrsLabel(h):""}">${d?`<b class="num">${d}</b>`:""}${h?`<small class="num">${d?"و":""}${h} س</small>`:""}</td>`};
+  let r=`<div class="lsum-wrap"><table class="lsum-t"><thead><tr><th>الموظف</th>${cols.map(t=>`<th><i style="background:${LT_COL[t]||"#888"}"></i>${esc(t)}</th>`).join("")}<th class="tot">مجموع الإجازات</th></tr></thead><tbody>`;
+  for(const n of names){const o=tot[n]||{};const sum=cols.filter(t=>!NOT_LEAVE.has(t)).reduce((a,t)=>a+(o[t]||0),0);
+    r+=`<tr><th><span class="sw" style="background:${pcolor(n)}"></span>${esc(shortName(n))}</th>${cols.map(t=>cell(o[t])).join("")}${cell(sum).replace("<td","<td class=\"tot\"")}</tr>`}
+  r+=`</tbody></table></div>`;
+  const note=cols.some(t=>NOT_LEAVE.has(t))?`<div class="small muted" style="margin-top:8px">«عمل عن بُعد» معروض للاطلاع ولا يُحتسب ضمن مجموع الإجازات.</div>`:"";
+  return head+r+note+`</div>`;
 }
 
 function yearGrid(y,hmap,lmap){
@@ -2020,7 +2060,7 @@ function yearGrid(y,hmap,lmap){
     for(let d=1;d<=n;d++){
       const s=iso(y,m,d),hol=hmap.get(s),lv=lmap.get(s)||[];
       const cls=["md",isWeekend(s)?"we":"",hol?"hol":"",s===TODAY?"today":""].join(" ");
-      const tip=[fmt(s),...(hol||[]).map(x=>x.name),...lv.map(l=>l.name+" — إجازة "+(l.type||""))].join("\n");
+      const tip=[fmt(s),...(hol||[]).map(x=>x.name),...lv.map(l=>l.name+" — إجازة "+(l.type||"")+(isHrs(l)?" ("+hrsLabel(l.hours)+")":""))].join("\n");
       let dots="";if(lv.length){dots=`<span class="dots">`+lv.slice(0,4).map(l=>`<i style="background:${pcolor(l.name)}"></i>`).join("")+`</span>`}
       h+=`<button type="button" class="${cls}" data-act="day" data-v="${s}" title="${esc(tip)}"><span class="num">${d}</span>${dots}</button>`;
     }
@@ -2040,7 +2080,7 @@ function monthGrid(y,m,hmap,lmap){
     h+=`<div class="${cls}" data-act="day" data-v="${s}" role="button" tabindex="0" aria-label="${esc(fmt(s))}"><div class="top"><span class="dn num">${d}</span><span class="hj">${esc(hj(s))}</span></div>`;
     hol.forEach(x=>h+=`<div class="hpill">${esc(x.name)}${x.tentative?" (تقديري)":""}</div>`);
     const show=lv.slice(0,3);
-    show.forEach(l=>h+=`<div class="lchip" style="background:${pcolor(l.name)}" data-act="leave-edit" data-v="${esc(l.id)}" title="${esc(l.name+" — "+(l.type||"")+(l.notes?"\n"+l.notes:""))}">${esc(shortName(l.name))}</div>`);
+    show.forEach(l=>h+=`<div class="lchip" style="background:${pcolor(l.name)}" data-act="leave-edit" data-v="${esc(l.id)}" title="${esc(l.name+" — "+(l.type||"")+(isHrs(l)?" · "+hrsLabel(l.hours):"")+(l.notes?"\n"+l.notes:""))}">${esc(shortName(l.name))}${isHrs(l)?` <small class="num">${+l.hours}س</small>`:""}</div>`);
     if(lv.length>3)h+=`<div class="more">+${lv.length-3} آخرين</div>`;
     h+=`</div>`;
   }
@@ -2058,7 +2098,7 @@ function sidePanel(y,hmap,lmap){
   if(!S.ready.leaves&&S.db)h+=`<div class="empty-note">جارٍ التحميل…</div>`;
   else if(!ls.length)h+=`<div class="empty-note">لا توجد إجازات مسجلة${isYear?" قادمة":" في هذا الشهر"}.${S.canWrite?" اضغط «تسجيل إجازة» لإضافة إجازتك.":""}</div>`;
   else{h+=`<ul class="list">`;for(const l of ls){const wd=workdays(l.from,l.to||l.from);
-    h+=`<li class="li"><span class="sw" style="background:${pcolor(l.name)}"></span><div><div class="t">${esc(l.name)}</div><div class="s">${esc(fmtShort(l.from))}${l.to&&l.to!==l.from?" – "+esc(fmtShort(l.to)):""} · ${esc(l.type||"")} · <span class="num">${wd}</span> يوم عمل</div></div><button type="button" data-act="leave-edit" data-v="${esc(l.id)}">${S.canWrite?"تعديل":"عرض"}</button></li>`}
+    h+=`<li class="li"><span class="sw" style="background:${pcolor(l.name)}"></span><div><div class="t">${esc(l.name)}</div><div class="s">${esc(fmtShort(l.from))}${l.to&&l.to!==l.from?" – "+esc(fmtShort(l.to)):""} · ${esc(l.type||"")} · ${isHrs(l)?`<span class="num">${esc(hrsLabel(l.hours))}</span>`:`<span class="num">${wd}</span> يوم عمل`}</div></div><button type="button" data-act="leave-edit" data-v="${esc(l.id)}">${S.canWrite?"تعديل":"عرض"}</button></li>`}
     h+=`</ul>`}
   h+=`</div>`;
   // holidays list
@@ -2286,7 +2326,7 @@ const QLINKS=[
 function qLinks(){return `<section class="qlinks"><div class="ql-h"><span class="g-eyebrow">روابط سريعة</span></div><div class="ql-g">${QLINKS.map(l=>`<a class="ql" href="${l.u}" target="_blank" rel="noopener">${ic(l.ic,"ql-ic")}<span class="ql-t"><b>${l.n}</b><small>${l.d}</small></span>${ic("ext","ql-x")}</a>`).join("")}</div></section>`}
 function renderHome(){
   const el=$("view-home");const bh=bhNow();const td=bh.date;
-  const leavesToday=S.leaves.filter(l=>validDate(l.from)&&l.from<=td&&(validDate(l.to)?l.to:l.from)>=td);
+  const leavesToday=S.leaves.filter(l=>!NOT_LEAVE.has(l.type)&&validDate(l.from)&&l.from<=td&&(validDate(l.to)?l.to:l.from)>=td);
   const upcoming=S.leaves.filter(l=>validDate(l.from)&&l.from>td).sort((a,b)=>a.from.localeCompare(b.from)).slice(0,4);
   const onLeave=new Set(leavesToday.map(l=>l.name)).size;
   const open=S.tasks.filter(t=>CURRENT.has(t.status||"لم يبدأ"));
@@ -3339,7 +3379,7 @@ function xlBtn(page){return `<div class="popw admin-only"><button type="button" 
   <button type="button" class="pop-i" data-act="xl" data-v="all" role="menuitem">${ic("report")}<span><b>ملف كامل</b><small>كل الأقسام وكل البيانات</small></span></button></div>`:""}</div>`}
 function xlDate(d){if(!validDate(d))return null;const [y,m,dd]=d.split("-").map(Number);return new Date(Date.UTC(y,m-1,dd))}
 function leaveDays(l){if(!validDate(l.from))return [0,0];const to=validDate(l.to)?l.to:l.from;let cal=0,work=0;const hol=new Set();S.holidays.forEach(h=>{if(!validDate(h.from))return;for(let d=h.from;d<=(validDate(h.to)?h.to:h.from);d=addDays(d,1))hol.add(d)});
-  for(let d=l.from;d<=to&&cal<400;d=addDays(d,1)){cal++;const wd=new Date(d+"T12:00:00Z").getUTCDay();if(wd!==5&&wd!==6&&!hol.has(d))work++}return [cal,work]}
+  for(let d=l.from;d<=to&&cal<400;d=addDays(d,1)){cal++;const wd=new Date(d+"T12:00:00Z").getUTCDay();if(wd!==5&&wd!==6&&!hol.has(d))work++}if(isHrs(l)&&work)work=(+l.hours)/8;return [cal,work]}
 async function exportXlsx(scope){
   if(!S.isAdmin)return;
   const st=$("xl-st")||(()=>{const t=document.createElement("div");t.id="xl-st";t.className="xl-toast";document.body.appendChild(t);return t})();st.textContent="جارٍ تجهيز ملف Excel…";st.hidden=false;
@@ -3897,14 +3937,23 @@ function openLeave(l,date){
   $("l-name").innerHTML=opts.map(n=>`<option ${n===cur?"selected":""}>${esc(n)}</option>`).join("");
   $("l-type").innerHTML=LEAVE_TYPES.map(n=>`<option ${l&&l.type===n?"selected":""}>${esc(n)}</option>`).join("");
   $("l-from").value=l?l.from:(date||TODAY);$("l-to").value=l?(l.to||l.from):(date||TODAY);
+  $("l-hours").value=l&&isHrs(l)?String(+l.hours):"4";setLMode(l&&isHrs(l)?"hours":"days");
   $("l-notes").value=l?(l.notes||""):"";$("l-err").textContent="";$("l-dup").hidden=true;S.leaveDup="";
   $("leave-h").textContent=l?(S.canWrite?"تعديل الإجازة":"تفاصيل الإجازة"):"تسجيل إجازة";
   $("l-del").style.visibility=l?"visible":"hidden";
   leaveCalc();$("dlg-leave").showModal();
 }
 ["l-name","l-from","l-to"].forEach(id=>$(id).addEventListener("change",()=>{$("l-dup").hidden=true}));
+function setLMode(m){S.lMode=m;document.querySelectorAll('[data-act="l-mode"]').forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.v===m)));
+  const hr=m==="hours";$("l-to-w").hidden=hr;$("l-hours-w").hidden=!hr;$("l-from-lb").textContent=hr?"التاريخ":"من";if(hr)$("l-to").value=$("l-from").value;leaveCalc()}
+$("l-from").addEventListener("change",()=>{if(S.lMode==="hours")$("l-to").value=$("l-from").value});
+$("l-hours").addEventListener("change",()=>leaveCalc());
 function leaveCalc(){
-  const f=$("l-from").value,t=$("l-to").value,box=$("l-calc"),me=$("l-name").value;
+  const f=$("l-from").value,box=$("l-calc"),me=$("l-name").value;
+  if(S.lMode==="hours"){$("l-to").value=f;if(!validDate(f)){box.className="hint";box.textContent="اختر التاريخ.";return}
+    const h=+$("l-hours").value;box.className=workdays(f,f)?"hint":"hint warn";
+    box.textContent=workdays(f,f)?(h>=8?"8 ساعات = يوم عمل كامل.":`${hrsLabel(h)} = ${(h/8).toLocaleString("en",{maximumFractionDigits:3})} من يوم العمل (اليوم الكامل 8 ساعات).`):"التاريخ المختار عطلة — لن تُحتسب الساعات.";return}
+  const t=$("l-to").value;
   if(!validDate(f)||!validDate(t)){box.className="hint";box.textContent="اختر التاريخين لحساب أيام العمل.";return}
   if(t<f){box.className="hint warn";box.textContent="تاريخ النهاية قبل تاريخ البداية.";return}
   const total=Math.round((toUTC(t)-toUTC(f))/864e5)+1,wd=workdays(f,t);
@@ -4175,10 +4224,11 @@ document.addEventListener("click",async e=>{
     case "ga-reset":gaSet(Object.assign({},GA_DEF));break;
     case "theme":{const n=themeNow()==="dark"?"light":"dark";document.documentElement.setAttribute("data-theme",n);try{localStorage.setItem("lmra-theme",n)}catch(err){}paintTheme();break}
     case "mmenu":{const m=document.querySelector(".mast");const o=!m.classList.contains("menu-open");m.classList.toggle("menu-open",o);a.setAttribute("aria-expanded",String(o));break}
+    case "l-mode":setLMode(v);break;
     case "ldup-edit":{const x=S.leaves.find(z=>z.id===v);$("dlg-leave").close();if(x)openLeave(x);break}
     case "ldup-keep":{S.leaveDup=$("l-from").value+$("l-to").value+$("l-name").value;$("l-dup").hidden=true;$("f-leave").requestSubmit();break}
     case "ldup-replace":{const x=S.leaves.find(z=>z.id===v);if(!x)break;const cur=S.editLeave;
-      const data={name:$("l-name").value,type:$("l-type").value,from:$("l-from").value,to:$("l-to").value,notes:$("l-notes").value.trim(),createdAt:x.createdAt||"",updatedAt:new Date().toISOString()};if(x.by)data.by=x.by;
+      if(S.lMode==="hours")$("l-to").value=$("l-from").value;const data={name:$("l-name").value,type:$("l-type").value,from:$("l-from").value,to:$("l-to").value,notes:$("l-notes").value.trim(),createdAt:x.createdAt||"",updatedAt:new Date().toISOString()};if(x.by)data.by=x.by;{const hh=S.lMode==="hours"?+$("l-hours").value:0;if(hh>0&&hh<8)data.hours=hh}
       try{await save("leaves",x.id,data);if(cur&&cur.id!==x.id)await remove("leaves",cur.id);$("dlg-leave").close()}catch(err){$("l-err").textContent=errText(err)}break}
     case "sy":S.sy=v;render();break;
     case "mon-add":openMon(null);break;
@@ -4269,7 +4319,7 @@ document.addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&e.tar
 $("t-type").addEventListener("change",taskDyn);$("t-status").addEventListener("change",()=>{taskDyn();if($("t-status").value==="مكتمل"&&!$("t-delivered").value)$("t-delivered").value=TODAY});
 
 $("f-leave").addEventListener("submit",async e=>{
-  e.preventDefault();const name=$("l-name").value,from=$("l-from").value,to=$("l-to").value;
+  e.preventDefault();const hrMode=S.lMode==="hours";if(hrMode)$("l-to").value=$("l-from").value;const name=$("l-name").value,from=$("l-from").value,to=$("l-to").value,hrs=hrMode?+$("l-hours").value:0;
   if(!validDate(from)||!validDate(to)||to<from){$("l-err").textContent="تحقق من التاريخين.";return}
   const l=S.editLeave;
   const clash=S.leaves.filter(x=>(!l||x.id!==l.id)&&String(x.name||"").trim()===String(name).trim()&&validDate(x.from)&&x.from<=to&&(validDate(x.to)&&x.to>=x.from?x.to:x.from)>=from);
@@ -4278,6 +4328,7 @@ $("f-leave").addEventListener("submit",async e=>{
       <div class="grp"><button class="btn small" type="button" data-act="ldup-edit" data-v="${esc(c.id)}">تعديل الإجازة السابقة</button><button class="btn small primary" type="button" data-act="ldup-replace" data-v="${esc(c.id)}">استبدالها بهذه</button><button class="btn small" type="button" data-act="ldup-keep">الإبقاء على الاثنتين</button></div>`;
     $("l-dup").hidden=false;$("l-err").textContent="";try{$("l-dup").scrollIntoView({block:"nearest",behavior:"smooth"})}catch(_){}return}
   const data={name,type:$("l-type").value,from,to,notes:$("l-notes").value.trim(),createdAt:l?l.createdAt||"":new Date().toISOString(),updatedAt:new Date().toISOString()};
+  if(hrs>0&&hrs<8)data.hours=hrs;if(l&&l.src)data.src=l.src;
   if(l&&l.by)data.by=l.by;else if(S.me)data.by=S.me;
   try{await save("leaves",l?l.id:uid("l"),data);remember(name);$("dlg-leave").close();if(!l){S.year=parts(from).y}}catch(err){$("l-err").textContent=errText(err)}
 });
