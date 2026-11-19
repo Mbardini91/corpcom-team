@@ -904,6 +904,8 @@ dialog[data-closing]::backdrop{opacity:0}
 
 /* ---- bento: المهام والإحصائيات ---- */
 /* share dialog */
+.rowshare{color:var(--mute)}.rowshare .ic{width:17px;height:17px}.rowshare:hover{color:var(--accent)}
+table.ttbl td.act .popw{display:inline-flex;align-items:center;gap:2px}
 #dlg-share{width:min(520px,calc(100vw - 24px))}
 .sh-b{display:grid;gap:16px}
 .sh-task{display:grid;gap:3px;padding:14px 16px;border-radius:14px;background:color-mix(in srgb,var(--c) 9%,transparent);border-inline-start:4px solid var(--c)}
@@ -1027,7 +1029,7 @@ a.flink:hover{background:color-mix(in srgb,var(--c) 24%,transparent);transform:t
 a.flink:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .flink.off{color:var(--mute);background:none;opacity:.35}
 table.ttbl th.sel,table.ttbl td.sel{width:40px;padding-inline-end:0;text-align:center}
-table.ttbl th.act,table.ttbl td.act{width:48px;text-align:center;padding-inline:4px}
+table.ttbl th.act,table.ttbl td.act{width:88px;text-align:center;padding-inline:4px;white-space:nowrap}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 .sortb{appearance:none;border:0;background:none;font:inherit;color:inherit;font-weight:inherit;display:inline-flex;align-items:center;gap:4px;cursor:pointer;padding:0;white-space:nowrap}
 .sortb .si{display:inline-grid;width:14px}.sortb .si .ic{width:14px;height:14px;opacity:.7}
@@ -2101,8 +2103,7 @@ function taskFields(t){const ty=typeOf(t.type),st=t.status||"لم يبدأ";
   return [["النوع",ty.n],["اسم المهمة",t.title||"—"],["الإدارة المعنية",t.dept||"—"],["المسؤول",(t.owners||[]).join("، ")||"—"],
     ["تاريخ الاستلام",fmt(t.received)],["تاريخ التسليم",fmt(t.delivered)],["الحالة",st],["مدة الإنجاز المتوقعة",t.duration||"—"],
     ...(ch.length?[[t.type==="news"?"قنوات النشر":"استخدام الصور",ch.join("، ")]]:[]),["رابط الملف",safeUrl(t.link)||"—"],["ملاحظات",t.notes||"—"]]}
-function taskText(t,withLink){const f=taskFields(t).filter(([k,v])=>v&&v!=="—"&&k!=="اسم المهمة");
-  return `مهمة: ${t.title||"—"}\n`+f.map(([k,v])=>`• ${k}: ${v}`).join("\n")+(withLink?`\n\nفتح المهمة في المنصة:\n${taskUrl(t)}`:"")}
+function taskText(t,withLink){return `نوع المهمة: ${typeOf(t.type).n}\nعنوان المهمة: ${t.title||"—"}\nصاحب المهمة: ${(t.owners||[]).join("، ")||"—"}`+(withLink?`\n\n${taskUrl(t)}`:"")}
 function taskFileName(t,ext){const s=String(t.title||"مهمة").replace(/[\\/:*?"<>|#%]+/g," ").replace(/\s+/g," ").trim().slice(0,60);return `مهمة - ${s}.${ext}`}
 function pdfColor(expr,tint){const e=document.createElement("i");e.style.color=expr;document.body.appendChild(e);const c=getComputedStyle(e).color;e.remove();
   const m=c.match(/[\d.]+/g)||[0,0,0];let [r,g,b]=m.map(Number);if(tint!=null){r=Math.round(r*tint+255*(1-tint));g=Math.round(g*tint+255*(1-tint));b=Math.round(b*tint+255*(1-tint))}return `rgb(${r},${g},${b})`}
@@ -2145,7 +2146,7 @@ function shareRender(){const d=$("dlg-share"),t=S.tasks.find(x=>x.id===S.shareId
     <div class="field"><span>صيغة المشاركة</span><div class="sh-fmt" role="radiogroup" aria-label="صيغة المشاركة">${FM.map(([k,n,i,s])=>`<button type="button" role="radio" data-act="share-fmt" data-v="${k}" aria-checked="${f===k}">${ic(i)}<b>${n}</b><small>${s}</small></button>`).join("")}</div></div>
     <div class="field"><span>مشاركة عبر</span><div class="sh-ch">${CH.map(([k,n,i])=>`<button type="button" class="sh-c sh-${k}" data-act="share-go" data-v="${k}">${SH_IC[i]}<span>${n}</span></button>`).join("")}
       ${canFiles||(f==="link"&&navigator.share)?`<button type="button" class="sh-c sh-dev" data-act="share-go" data-v="device">${ic("ext")}<span>تطبيقات الجهاز</span></button>`:""}</div></div>
-    <div class="sh-tools"><button type="button" class="btn small" data-act="share-copy">${ic("dup")}${f==="link"?"نسخ الرابط والتفاصيل":"نسخ التفاصيل"}</button>${f!=="link"?`<button type="button" class="btn small" data-act="share-dl">${ic("download")}تحميل الملف</button>`:""}</div>
+    <div class="sh-tools"><button type="button" class="btn small" data-act="share-copy">${ic("dup")}${f==="link"?"نسخ الرابط والنص":"نسخ النص"}</button>${f!=="link"?`<button type="button" class="btn small" data-act="share-dl">${ic("download")}تحميل الملف</button>`:""}</div>
     <p class="sh-note" id="sh-note">${f==="link"?"الرابط يفتح المهمة مباشرة لأعضاء الفريق بعد تسجيل الدخول.":canFiles?"اختر «تطبيقات الجهاز» لإرفاق الملف مباشرة في واتساب أو Teams أو البريد. باقي الخيارات تحمّل الملف وتفتح الرسالة لترفقه بنفسك.":"البريد وTeams وواتساب لا تسمح بإرفاق ملف تلقائيًا من المتصفح: سيُحمَّل الملف وتُفتح الرسالة جاهزة، ثم أرفق الملف المحمَّل."}</p>
   </div>`}
 const SH_IC={get mail(){return ic("mail")},teams:'<svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><path fill="currentColor" stroke="none" d="M14.5 7.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Zm5.5.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4ZM3 7h10a1 1 0 0 1 1 1v8a5 5 0 0 1-5 5 5 5 0 0 1-5-5V8a1 1 0 0 1 1-1Zm2.5 3v1.4h1.7V17h1.6v-5.6h1.7V10Zm10 0h5a1 1 0 0 1 1 1v4.5a3.5 3.5 0 0 1-5.2 3A6.5 6.5 0 0 0 16 16V10.5a.5.5 0 0 0-.5-.5Z"/></svg>',
@@ -2154,18 +2155,18 @@ function shNote(m,err){const n=$("sh-note");if(n){n.textContent=m;n.classList.to
 async function shareMake(t){const f=S.shareFmt;shNote(f==="pdf"?"جارٍ إنشاء ملف PDF…":"جارٍ إنشاء ملف Excel…");
   const blob=f==="pdf"?await taskPdf(t):await taskXlsx(t);return new File([blob],taskFileName(t,f),{type:blob.type||(f==="pdf"?"application/pdf":"application/octet-stream")})}
 async function shareGo(ch){const t=S.tasks.find(x=>x.id===S.shareId);if(!t)return;const f=S.shareFmt,isLink=f==="link";
-  const subj="مهمة: "+(t.title||"");const body=isLink?taskText(t,true):taskText(t,true)+`\n\n(مرفق ملف ${f==="pdf"?"PDF":"Excel"} بتفاصيل المهمة)`;
+  const subj="مهمة: "+(t.title||"");const body=isLink?taskText(t,true):taskText(t,false);
   const open=u=>{const w=window.open(u,"_blank","noopener");if(!w)location.href=u};
   try{
     if(ch==="device"){if(isLink){await navigator.share({title:subj,text:taskText(t,false),url:taskUrl(t)});shNote("تمت المشاركة.");return}
-      const file=await shareMake(t);await navigator.share({files:[file],title:subj,text:taskText(t,true)});shNote("تمت المشاركة.");return}
+      const file=await shareMake(t);await navigator.share({files:[file],title:subj,text:taskText(t,false)});shNote("تمت المشاركة.");return}
     let file=null;if(!isLink){file=await shareMake(t);await offerFile(file.name,file)}
     if(ch==="mail")location.href=`mailto:?subject=${encodeURIComponent(subj)}&body=${encodeURIComponent(body)}`;
-    else if(ch==="teams")open(`https://teams.microsoft.com/share?href=${encodeURIComponent(taskUrl(t))}&msgText=${encodeURIComponent(body)}&preview=false`);
+    else if(ch==="teams")open(`https://teams.microsoft.com/share?href=${encodeURIComponent(taskUrl(t))}&msgText=${encodeURIComponent(taskText(t,false))}&preview=false`);
     else if(ch==="wa")open(`https://wa.me/?text=${encodeURIComponent(body)}`);
     shNote(isLink?"فُتحت الرسالة جاهزة للإرسال.":`حُمّل الملف «${file.name}» وفُتحت الرسالة. أرفق الملف المحمَّل ثم أرسل.`)}
   catch(err){if(err&&err.name==="AbortError"){shNote("أُلغيت المشاركة.");return}console.error(err);shNote("تعذّرت المشاركة. حاول مرة أخرى أو استخدم «تحميل الملف».",true)}}
-async function shareCopy(){const t=S.tasks.find(x=>x.id===S.shareId);if(!t)return;try{await navigator.clipboard.writeText(taskText(t,true));shNote("نُسخ الرابط والتفاصيل ✓")}catch(_){shNote("تعذّر النسخ.",true)}}
+async function shareCopy(){const t=S.tasks.find(x=>x.id===S.shareId);if(!t)return;try{await navigator.clipboard.writeText(taskText(t,S.shareFmt==="link"));shNote("نُسخ ✓")}catch(_){shNote("تعذّر النسخ.",true)}}
 async function shareDl(){const t=S.tasks.find(x=>x.id===S.shareId);if(!t)return;try{const f=await shareMake(t);await offerFile(f.name,f);shNote(`حُمّل «${f.name}» ✓`)}catch(err){console.error(err);shNote("تعذّر إنشاء الملف.",true)}}
 function renderTasks(){if(S._openTaskId)setTimeout(openPendingTask,0);
   const el=$("view-tasks");const f=S.f;
@@ -2244,7 +2245,7 @@ function renderTaskList(el,h,scope,years,owners,hid){const f=S.f;
       file:fileCell(t),
       notes:`<td class="notes"><span class="ntx">${esc(t.notes||"")}</span>${t.duration?`<div class="small">المدة المتوقعة: ${esc(t.duration)}</div>`:""}</td>`};
     h+=`<tr data-act="task-edit" data-v="${esc(t.id)}" tabindex="0"${on?' class="selected"':""}><td class="sel write-only"><button type="button" class="cbx${on?" on":""}" data-act="t-sel" data-v="${esc(t.id)}" role="checkbox" aria-checked="${on}" aria-label="تحديد المهمة">${on?ic("check"):""}</button></td>${vis.map(c=>cell[c.k]).join("")}
-      <td class="act"><div class="popw"><button type="button" class="ghost-btn rowmore" data-act="pop" data-v="row:${esc(t.id)}" aria-label="إجراءات المهمة">${ic("more")}</button>${S.pop==="row:"+t.id?`<div class="pop pop-end" role="menu"><button type="button" class="pop-i" data-act="task-edit" data-v="${esc(t.id)}" role="menuitem">${ic("edit")}${S.canWrite?"تعديل":"عرض التفاصيل"}</button><button type="button" class="pop-i" data-act="share" data-v="${esc(t.id)}" role="menuitem">${ic("share")}مشاركة</button>${S.canWrite?`<button type="button" class="pop-i" data-act="t-dup" data-v="${esc(t.id)}" role="menuitem">${ic("dup")}نسخ كمهمة جديدة</button><div class="pop-sep"></div><button type="button" class="pop-i danger" data-act="t-delone" data-v="${esc(t.id)}" role="menuitem">${ic("trash")}حذف</button>`:""}</div>`:""}</div></td></tr>`}
+      <td class="act"><div class="popw"><button type="button" class="ghost-btn rowshare" data-act="share" data-v="${esc(t.id)}" aria-label="مشاركة «${esc(t.title||"المهمة")}»" title="مشاركة">${ic("share")}</button><button type="button" class="ghost-btn rowmore" data-act="pop" data-v="row:${esc(t.id)}" aria-label="إجراءات المهمة">${ic("more")}</button>${S.pop==="row:"+t.id?`<div class="pop pop-end" role="menu"><button type="button" class="pop-i" data-act="task-edit" data-v="${esc(t.id)}" role="menuitem">${ic("edit")}${S.canWrite?"تعديل":"عرض التفاصيل"}</button>${S.canWrite?`<button type="button" class="pop-i" data-act="t-dup" data-v="${esc(t.id)}" role="menuitem">${ic("dup")}نسخ كمهمة جديدة</button><div class="pop-sep"></div><button type="button" class="pop-i danger" data-act="t-delone" data-v="${esc(t.id)}" role="menuitem">${ic("trash")}حذف</button>`:""}</div>`:""}</div></td></tr>`}
   const from=rows.length?pg*ps+1:0,to=Math.min(rows.length,pg*ps+ps);
   h+=`</tbody></table></div><div class="pager"><label class="pp">عدد الصفوف <select id="t-ps">${[10,25,50,100].map(n=>`<option ${n===ps?"selected":""}>${n}</option>`).join("")}</select></label>
     <span class="pinfo" aria-live="polite"><b class="num">${from}–${to}</b> من <b class="num">${rows.length}</b></span>
