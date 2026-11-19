@@ -36,8 +36,14 @@ footer{display:flex;justify-content:space-between;gap:12px;margin-top:30px;paddi
 .msg img{height:56px;margin-bottom:18px}.msg h1{font-size:22px;color:#17325a;margin:0 0 8px}.msg p{color:#7d8184;margin:0;line-height:1.7}
 .ld{width:34px;height:34px;border-radius:50%;border:3px solid #d9d2c5;border-top-color:#17325a;animation:sp 1s linear infinite;margin:0 auto 16px}
 @keyframes sp{to{transform:rotate(360deg)}}
+.edit{width:min(794px,100%);margin-top:18px;display:flex;flex-direction:column;align-items:center;gap:8px}
+.edit a{display:inline-flex;align-items:center;justify-content:center;gap:10px;width:min(360px,100%);padding:15px 22px;border-radius:14px;background:#17325a;color:#fff;font-size:16px;font-weight:800;text-decoration:none;box-shadow:0 12px 26px -12px rgba(23,50,90,.6);transition:transform .15s,box-shadow .15s}
+.edit a:hover{transform:translateY(-2px);box-shadow:0 16px 30px -12px rgba(23,50,90,.7)}
+.edit a:focus-visible{outline:3px solid #b7832a;outline-offset:3px}
+.edit a svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.edit small{font-size:12px;color:#7d8184}
 @media (max-width:640px){body{padding:14px 8px 28px}.page{padding:26px 18px 24px}header img{height:44px}header h1{font-size:22px}.tt h2{font-size:19px}table{font-size:14px}th{width:36%;padding:10px}td{padding:10px}.bar button{flex:1;justify-content:center}}
-@media print{body{background:#fff;padding:0}.bar{display:none}.page{box-shadow:none;width:100%;border-radius:0}@page{size:A4;margin:10mm}}
+@media print{body{background:#fff;padding:0}.bar,.edit{display:none}.page{box-shadow:none;width:100%;border-radius:0}@page{size:A4;margin:10mm}}
 </style>
 </head>
 <body>
@@ -75,7 +81,8 @@ function render(t){
     <div class="tt" style="background:${tint(ty[1],.09)};border-right-color:${ty[1]}"><span style="color:${ty[1]}">${esc(ty[0])}</span><h2>${esc(t.title||"—")}</h2><b style="background:${tint(sc,.16)}">${esc(st)}</b></div>
     <table>${rows.map(([a,b])=>`<tr><th>${esc(a)}</th><td>${a==="رابط الملف"&&b!=="—"?`<a href="${esc(b)}" target="_blank" rel="noopener">${esc(b)}</a>`:esc(b)}</td></tr>`).join("")}</table>
     <footer><span>منصة فريق إدارة الاتصال</span><span>${t.updatedAt?"آخر تحديث: "+fmt(String(t.updatedAt).slice(0,10)):""}</span></footer>
-  </article>`;
+  </article>
+  <div class="edit"><a href="./#task=${encodeURIComponent(t.id)}">${ico('<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>')}تعديل المهمة</a><small>لأعضاء فريق إدارة الاتصال بعد تسجيل الدخول</small></div>`;
   document.getElementById("pr").onclick=()=>print();
   const btn=document.getElementById("dl");btn.onclick=async()=>{btn.disabled=true;const old=btn.innerHTML;btn.lastChild.textContent="جارٍ التجهيز…";
     try{await load("lib/html2canvas.min.js");await load("lib/jspdf.umd.min.js");try{await document.fonts.ready}catch(_){}
