@@ -1853,7 +1853,7 @@ const S={
   db:null,user:null,canWrite:false,live:false,
   tasks:[],leaves:[],holidays:[],settings:{members:FALLBACK_MEMBERS,departments:[]},
   view:"home",calMode:"year",year:now.getFullYear(),month:now.getMonth()+1,
-  f:{state:"current",type:"all",owner:"all",year:"all",q:""},
+  f:{state:"all",type:"all",owner:"all",year:"all",q:""},
   editTask:null,editLeave:null,ready:{tasks:false,leaves:false,holidays:false,monitor:false,game:false},game:[],monitor:[],checks:[]
 };
 
@@ -2207,9 +2207,9 @@ function renderTaskList(el,h,scope,years,owners,hid){const f=S.f;
   h+=`<div class="toolbar">
     <div class="grp">
       <div class="seg" role="group" aria-label="الحالة">
+        <button type="button" data-act="f-state" data-v="all" aria-pressed="${f.state==="all"}">الكل <span class="num">(${scope.length})</span></button>
         <button type="button" data-act="f-state" data-v="current" aria-pressed="${f.state==="current"}">الحالية <span class="num">(${scope.filter(x=>CURRENT.has(x.status)).length})</span></button>
         <button type="button" data-act="f-state" data-v="done" aria-pressed="${f.state==="done"}">المنجزة <span class="num">(${scope.filter(x=>x.status==="مكتمل").length})</span></button>
-        <button type="button" data-act="f-state" data-v="all" aria-pressed="${f.state==="all"}">الكل <span class="num">(${scope.length})</span></button>
       </div>
       <select id="f-owner" aria-label="الموظف" style="width:auto"><option value="all">كل الفريق</option>${owners.map(o=>`<option ${f.owner===o?"selected":""}>${esc(o)}</option>`).join("")}</select>
       <select id="f-year" aria-label="السنة" style="width:auto"><option value="all">كل السنوات</option>${years.map(o=>`<option ${f.year===o?"selected":""}>${o}</option>`).join("")}</select>
