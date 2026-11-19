@@ -1283,6 +1283,9 @@ html[dir=ltr] .g-time i{transform-origin:left center}
 .gcard::before{content:"";position:absolute;inset:auto auto -60px -40px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--t-news) 30%,transparent),transparent 70%);pointer-events:none}
 .gc-main{display:grid;gap:6px;position:relative}
 .gc-main h3{font-size:20px}
+.g-off{text-align:center;padding:18px 8px 8px;display:grid;justify-items:center;gap:8px}.g-off h3{font-size:22px;margin:0}
+.g-smile{display:grid;place-items:center;width:84px;height:84px;border-radius:50%;font-size:46px;line-height:1;background:linear-gradient(145deg,rgba(242,194,80,.28),rgba(242,194,80,.08));box-shadow:inset 0 0 0 1px rgba(242,194,80,.35);font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif}
+.g-smile.sm{width:56px;height:56px;font-size:30px;flex:none}.g-offrow{display:flex;align-items:center;gap:14px}.g-offrow h3{margin:0}
 .gc-main p{margin:0}
 .gc-act{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
 .gc-act .ic{width:16px;height:16px}
@@ -4137,7 +4140,8 @@ function gToday(){return bhNow().date}
 function gTypeOf(d){return GORDER[((gDayN(d)%3)+3)%3]}
 function gMine(){return (S.game||[]).filter(g=>g.uid===S.me)}
 function gPlayed(d){return gMine().find(g=>g.date===d)}
-function gIsWork(d){const w=new Date(d+"T12:00:00Z").getUTCDay();return w!==5&&w!==6}
+function gIsWork(d){const w=new Date(d+"T12:00:00Z").getUTCDay();if(w===5||w===6)return false;try{return !isHoliday(d)}catch(e){return true}}
+function gOffName(d){try{const h=holidayMap(parts(d).y).get(d);if(h&&h.length)return h[0].name}catch(e){}return "عطلة نهاية الأسبوع"}
 function gStreak(uid){const days=new Set((S.game||[]).filter(g=>g.uid===uid).map(g=>g.date));let d=gToday(),n=0;if(!days.has(d))d=addDays(d,-1);for(let i=0;i<400;i++){if(!gIsWork(d)){d=addDays(d,-1);continue}if(days.has(d)){n++;d=addDays(d,-1)}else break}return n}
 function gQuizSet(d){const order=gShuffle(GQ.map((q,i)=>i),"lmra-quiz-v2");const k=Math.floor(gDayN(d)/3);const out=[];for(let i=0;i<3;i++){const qi=order[(k*3+i)%order.length];const q=GQ[qi];out.push({q:q[0],ans:q[1][0],opts:gShuffle(q[1],d+"-"+qi)})}return out}
 function gScrambleSrc(d){const pool=[...new Set([...(S.tasks||[]).filter(t=>t.type==="news"||t.type==="أخبار"||t.type==="خبر").map(t=>t.title),...(S.monitor||[]).filter(x=>x.topic==="lmra").map(x=>x.headline),...GS_FALLBACK])].map(s=>String(s||"").replace(/\s+/g," ").trim()).filter(s=>{const n=s.split(" ").length;return n>=5&&n<=11&&/[؀-ۿ]/.test(s)&&!/[|«»"]/.test(s)}).sort();
@@ -4146,7 +4150,8 @@ function gSpotSrc(d){const order=gShuffle(GE.map((x,i)=>i),"lmra-spot-v1");const
 const G={};
 function gDlg(){let d=$("dlg-game");if(!d){d=document.createElement("dialog");d.id="dlg-game";d.className="gdlg";document.body.appendChild(d);d.addEventListener("cancel",e=>{if(G.live){e.preventDefault()}});d.addEventListener("close",()=>{gStop()})}return d}
 function gStop(){clearInterval(G.tick);G.tick=0;G.live=false}
-function gOpen(auto){if(!S.db||!S.me)return;const d=gDlg();const td=gToday();const mine=gPlayed(td);if(mine){gResult(mine);if(!d.open)d.showModal();return}
+function gOpen(auto){if(!S.db||!S.me)return;const d=gDlg();const td=gToday();
+  if(!gIsWork(td)){if(auto)return;d.innerHTML=`<div class="g-wrap"><div class="g-top"><span></span><button class="btn icon" type="button" data-act="g-close" aria-label="إغلاق">✕</button></div><div class="g-off"><span class="g-smile" aria-hidden="true">😊</span><h3>اليوم إجازة، ما في لعبة</h3><p class="muted">${esc(gOffName(td))} · نشوفك في أول يوم عمل.</p></div><div class="g-foot"><button class="btn" type="button" data-act="g-board">لوحة الصدارة</button><button class="btn primary" type="button" data-act="g-close">تمام</button></div></div>`;if(!d.open)d.showModal();return}const mine=gPlayed(td);if(mine){gResult(mine);if(!d.open)d.showModal();return}
   const ty=gTypeOf(td),T=GTYPES[ty],st=gStreak(S.me);
   d.innerHTML=`<div class="g-wrap"><div class="g-top"><span class="g-badge">${ic(T.ic)}<span>${T.n}</span></span><button class="btn icon" type="button" data-act="g-close" aria-label="إغلاق">✕</button></div>
     <div class="g-hero"><div class="g-eyebrow">تحدي الصباح · ${esc(longDate(td))}</div><h3>جاهز لتحدي اليوم؟</h3><p class="muted">${T.d}</p>
@@ -4211,9 +4216,9 @@ function gBoardOpen(range){const d=gDlg();G.dlg=d;range=range||G.range||"week";G
    ${gTable(rows,"الترتيب — "+names[range],true)}${admin}
    <div class="g-foot">${gPlayed(gToday())?'<span class="small muted">لعبت تحدي اليوم ✓</span>':'<button class="btn primary" type="button" data-act="g-open">العب تحدي اليوم</button>'}</div></div>`;
   if(!d.open)d.showModal()}
-function gHomeCard(){if(!S.db)return "";const td=gToday(),ty=gTypeOf(td),T=GTYPES[ty],mine=gPlayed(td),wk=gBoard("week").slice(0,5);
-  return `<section class="gcard"><div class="gc-main"><div class="g-eyebrow">تحدي الصباح</div><h3>${mine?"نتيجتك اليوم: "+mine.score+" نقطة":"تحدي اليوم: "+T.n}</h3><p class="muted small">${mine?"عُد غدًا لتحدٍّ جديد وحافظ على سلسلتك 🔥 "+gStreak(S.me):T.d}</p>
-   <div class="gc-act">${mine?"":`<button class="btn primary" type="button" data-act="g-open">${ic(T.ic)}ابدأ التحدي</button>`}<button class="btn" type="button" data-act="g-board">لوحة الصدارة</button></div></div>
+function gHomeCard(){if(!S.db)return "";const td=gToday(),ty=gTypeOf(td),T=GTYPES[ty],mine=gPlayed(td),wk=gBoard("week").slice(0,5),off=!gIsWork(td);
+  return `<section class="gcard"><div class="gc-main">${off?`<div class="g-eyebrow">تحدي الصباح</div><div class="g-offrow"><span class="g-smile sm" aria-hidden="true">😊</span><div><h3>اليوم إجازة، ما في لعبة</h3><p class="muted small">${esc(gOffName(td))} · التحدي يرجع في أول يوم عمل.</p></div></div><div class="gc-act"><button class="btn" type="button" data-act="g-board">لوحة الصدارة</button></div></div>`:`<div class="g-eyebrow">تحدي الصباح</div><h3>${mine?"نتيجتك اليوم: "+mine.score+" نقطة":"تحدي اليوم: "+T.n}</h3><p class="muted small">${mine?"عُد غدًا لتحدٍّ جديد وحافظ على سلسلتك 🔥 "+gStreak(S.me):T.d}</p>
+   <div class="gc-act">${mine?"":`<button class="btn primary" type="button" data-act="g-open">${ic(T.ic)}ابدأ التحدي</button>`}<button class="btn" type="button" data-act="g-board">لوحة الصدارة</button></div></div>`}
    <div class="gc-board"><div class="small muted">أبطال الأسبوع</div>${wk.length?`<ol>${wk.map(r=>`<li class="${r.uid===S.me?"me":""}"><span class="g-rk r${r.rank}">${r.rank}</span><span class="nm">${esc(shortName?shortName(r.name):r.name)}</span><b class="num">${r.pts}</b></li>`).join("")}</ol>`:'<div class="small muted">لا توجد نتائج بعد هذا الأسبوع</div>'}</div></section>`}
 function gAuto(){if(G.autoDone||!S.db||!S.me||!S.ready.game)return;G.autoDone=true;const td=gToday();if(gPlayed(td))return;try{if(localStorage.getItem("lmra-g-later")===td)return}catch(e){}
   const go=()=>{if(document.querySelector("dialog[open]"))return setTimeout(go,1500);gOpen(true)};setTimeout(go,document.querySelector(".intro")?4200:1200)}
