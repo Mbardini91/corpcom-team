@@ -1873,6 +1873,7 @@ const CHANNELS=["نشر داخلي","نشر خارجي","أرشفة"];
 const PUBCH=["الإنترانت","السوشيال ميديا","الصحافة","المركز الإعلامي","التلفزيون والإذاعة"];
 const LEAVE_TYPES=["سنوية","مرضية","أمومة / أبوة","عزاء","عمل عن بُعد","مهمة رسمية / تدريب","أخرى"];
 const NOT_LEAVE=new Set(["عمل عن بُعد"]);
+const NOT_IN_TOTAL=new Set(["عمل عن بُعد","مهمة رسمية / تدريب"]);
 const LT_COL={"سنوية":"#2f6fb0","مرضية":"#c2553f","أمومة / أبوة":"#b0508a","عزاء":"#6b6f7a","عمل عن بُعد":"#7a68c4","مهمة رسمية / تدريب":"#3d8fb5","أخرى":"#8a7a5c"};
 function ltcol(t){return LT_COL[t]||LT_COL["أخرى"]}
 function hrsLabel(h){h=+h;return h===1?"ساعة":h===2?"ساعتان":h+" ساعات"}
@@ -1883,7 +1884,7 @@ function lvValue(l,lo,hi){if(!validDate(l.from))return 0;const end=validDate(l.t
 function daysTxt(v){const {d,h}=fmtDays(v);if(!d&&!h)return "0 يوم عمل";return (d?`<span class="num">${d}</span> يوم عمل`:"")+(h?`${d?" و":""}<span class="num">${esc(hrsLabel(h))}</span>`:"")}
 function fmtDays(v){const d=Math.floor(v+1e-9),h=Math.round((v-d)*8);return {d,h}}
 const PCOL=["#17325a","#2b8577","#b7832a","#7d5aa0","#c0632b","#2f5d9a","#8a3b52","#4f6b2e","#5a6772","#a8211f"];
-const FALLBACK_MEMBERS=[{name:"حسين علي محمد رسول",title:"مدير إدارة الاتصال"},{name:"حسين أحمد خميس",title:"مستشار شؤون الإعلام"},{name:"صديقة جاسم كاظم",title:"رئيس علاقات عامة"},{name:"خولة نجيب بوخماس",title:"أخصائي علاقات عامة أول"},{name:"فاطمة جاسم الهاشلي",title:"أخصائي إعلام أول"},{name:"معاذ محمد البرديني",title:"أخصائي إعلام أول"},{name:"محمد رضي",title:"أخصائي علاقات عامة"},{name:"طاهرة عبدالمجيد حسين",title:"إداري محتوى إلكتروني"}];
+const FALLBACK_MEMBERS=[{name:"حسين علي محمد رسول",title:"مدير إدارة الاتصال"},{name:"حسين أحمد خميس",title:"مستشار شؤون الإعلام"},{name:"صديقة جاسم كاظم",title:"رئيس علاقات عامة"},{name:"خولة نجيب بوخماس",title:"أخصائي علاقات عامة أول"},{name:"فاطمة جاسم الهاشلي",title:"أخصائي إعلام أول"},{name:"معاذ محمد البرديني",title:"أخصائي إعلام أول"},{name:"محمد عبدالكريم رضي",title:"أخصائي علاقات عامة"},{name:"طاهرة عبدالمجيد حسين",title:"إداري محتوى إلكتروني"}];
 
 /* ---------- state ---------- */
 const now=new Date();
@@ -2062,10 +2063,10 @@ function leaveSummary(y){
   if(!cols.length)return head+`<div class="empty-note">لا توجد إجازات مسجلة حتى الآن هذه السنة.</div></div>`;
   const cell=v=>{if(!v)return `<td class="z">—</td>`;const {d,h}=fmtDays(v);return `<td title="${d} يوم${h?" و"+hrsLabel(h):""}">${d?`<b class="num">${d}</b>`:""}${h?`<small class="num">${d?"و":""}${h} س</small>`:""}</td>`};
   let r=`<div class="lsum-wrap"><table class="lsum-t"><thead><tr><th>الموظف</th>${cols.map(t=>`<th><i style="background:${LT_COL[t]||"#888"}"></i>${esc(t)}</th>`).join("")}<th class="tot">مجموع الإجازات</th></tr></thead><tbody>`;
-  for(const n of names){const o=tot[n]||{};const sum=cols.filter(t=>!NOT_LEAVE.has(t)).reduce((a,t)=>a+(o[t]||0),0);
+  for(const n of names){const o=tot[n]||{};const sum=cols.filter(t=>!NOT_IN_TOTAL.has(t)).reduce((a,t)=>a+(o[t]||0),0);
     r+=`<tr><th><span class="sw" style="background:${pcolor(n)}"></span>${gName(n)}</th>${cols.map(t=>cell(o[t])).join("")}${cell(sum).replace("<td","<td class=\"tot\"")}</tr>`}
   r+=`</tbody></table></div>`;
-  const note=cols.some(t=>NOT_LEAVE.has(t))?`<div class="small muted" style="margin-top:8px">«عمل عن بُعد» معروض للاطلاع ولا يُحتسب ضمن مجموع الإجازات.</div>`:"";
+  const ex=cols.filter(t=>NOT_IN_TOTAL.has(t));const note=ex.length?`<div class="small muted" style="margin-top:8px">${ex.map(t=>"«"+esc(t)+"»").join(" و")} للعرض فقط ولا ${ex.length>1?"يُحتسبان":"يُحتسب"} ضمن مجموع الإجازات.</div>`:"";
   return head+r+note+`</div>`;
 }
 
