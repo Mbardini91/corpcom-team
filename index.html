@@ -204,6 +204,13 @@ table.mx-t{min-width:0;width:max-content;max-width:none;border-collapse:separate
 .mx-leg{display:flex;flex-wrap:wrap;gap:10px 18px;padding:14px 4px 2px;font-size:12.5px;color:var(--mute)}
 .mx-leg span{display:inline-flex;align-items:center;gap:6px}.mx-leg i{display:inline-grid;place-items:center;min-width:24px;height:22px;padding:0 4px;border-radius:6px;color:#fff;font-style:normal;font-weight:700;font-size:11px}
 .mx-leg i.hr{background:color-mix(in srgb,var(--c) 22%,var(--surface));color:var(--c);box-shadow:inset 0 0 0 1.5px var(--c);font-size:10px}.mx-leg i .lti{width:13px;height:13px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}.mx-leg i.mx-wk{background:var(--wknd);border:1px solid var(--line-2)}.mx-leg i.mx-hl{background:var(--hol-bg);border:1px solid var(--hol-ink)}
+.mx.mxw table.mx-t{width:100%}.mx.mxw .mx-c{width:auto;min-width:118px;max-width:none;height:54px}.mx.mxw .mx-t tbody tr{height:54px}
+.mx.mxw .mx-dw{width:auto;min-width:118px;height:auto;padding:12px 6px 2px;vertical-align:bottom;font-size:13px}.mx.mxw .mx-dw .hz{font-weight:700;color:var(--ink)}.mx.mxw .mx-dw.tdy .hz{color:var(--today)}
+.mx.mxw .mx-dn{padding:2px 6px 10px;font-size:15px}.mx.mxw .mx-dn small{font-size:12px;font-weight:500;color:var(--mute)}.mx.mxw .mx-dn em{display:block;font-style:normal;font-size:11px;color:var(--hol-ink);font-weight:600;margin-top:2px}
+.mx.mxw .mx-c.on span{height:54px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:0 6px}.mx.mxw .mx-c.on span b{font-size:12px;font-weight:700;line-height:1.2}.mx.mxw .mx-c.on span small{font-size:11px;font-weight:600;opacity:.95}
+.mx.mxw .mx-c.on .lti{width:17px;height:17px}.mx.mxw .mx-c.on.hr span b,.mx.mxw .mx-c.on.hr span small{color:var(--c)}
+.mx.mxw .offl{font-size:11px;color:var(--mute)}
+.mx-t .pulse{animation:mxPulse 1.4s ease 2}@keyframes mxPulse{0%,100%{box-shadow:inset 0 0 0 0 transparent}40%{box-shadow:inset 0 0 0 2px var(--today)}}
 .mx-side{margin-top:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px}
 
 .tg-wrap{display:grid;gap:12px}.chs.tgc span{background:color-mix(in srgb,var(--t-tg) 12%,transparent);color:var(--t-tg);border-color:color-mix(in srgb,var(--t-tg) 30%,transparent)}
@@ -1684,7 +1691,7 @@ const I18N_DICT={"مشاركة":"Share","مشاركة المهمة":"Share task"
 /* calendar */
 "السنة":"Year","الشهر":"Month","اليوم":"Today","آخر 24 ساعة":"Last 24 hours","طريقة العرض":"View","تسجيل إجازة":"Log leave","+ تسجيل إجازة":"+ Log leave","نوع الإجازة":"Leave type","سنوية":"Annual","مرضية":"Sick","طارئة":"Emergency","مهمة رسمية / تدريب":"Official duty / Training","أخرى":"Other",
 "تفاصيل الإجازة":"Leave details","تعديل الإجازة":"Edit leave","تعديل الإجازة السابقة":"Edit previous leave","حذف الإجازة":"Delete leave","الإجازات":"Leaves","الإجازات القادمة":"Upcoming leaves","الإجازات في":"Leaves in","الإجازات الرسمية":"Public holidays","العطل الرسمية":"Public holidays","العطلة":"Holiday","إجازة رسمية":"Public holiday","إجازة":"Leave",
-"لا توجد إجازات مسجلة":"No leaves recorded","اضغط «تسجيل إجازة» لإضافة إجازتك":"Press “Log leave” to add your leave","في هذا الشهر":"this month","في إجازة":"on leave","لديه إجازة مسجلة مسبقًا في هذه الأيام":"already has a leave recorded on these days","تتقاطع مع إجازة":"overlaps with a leave",
+"لا توجد إجازات مسجلة":"No leaves recorded","اضغط «تسجيل إجازة» لإضافة إجازتك":"Press “Log leave” to add your leave","في هذا الشهر":"this month","في هذا الأسبوع":"this week","الإجازات هذا الأسبوع":"Leaves this week","الأسبوع":"Week","في إجازة":"on leave","لديه إجازة مسجلة مسبقًا في هذه الأيام":"already has a leave recorded on these days","تتقاطع مع إجازة":"overlaps with a leave",
 "اختر التاريخين لحساب أيام العمل":"Pick both dates to count working days","يوم عمل (بعد استبعاد الجمعة والسبت والإجازات الرسمية)":"working days (excluding Fri, Sat and public holidays)","يوم تقويمي، منها":"calendar days, of which",
 "تاريخ النهاية قبل تاريخ البداية":"End date is before start date","تحقق من التاريخين":"Check both dates","عطلة نهاية الأسبوع (الجمعة والسبت)":"Weekend (Friday and Saturday)","النقاط الملوّنة: موظفون في إجازة":"Coloured dots: staff on leave",
 "تعديل الإجازات الرسمية":"Edit public holidays","مثال: عيد الفطر":"e.g. Eid Al-Fitr","اكتب اسم المناسبة وتاريخ البداية":"Enter the occasion and start date","تاريخ تقديري (بانتظار التعميم)":"Estimated date (pending circular)","تاريخ تقريبي":"Approximate date","تقديري":"estimated","المناسبة":"Occasion",
@@ -2160,9 +2167,11 @@ function initChrome(){document.querySelectorAll(".tabs .tab").forEach(t=>{if(!t.
 function renderCalendar(){
   const el=$("view-calendar");const y=S.year;
   const hmap=holidayMap(y),lmap=leaveMap(y);
-  const isYear=S.calMode==="year";
-  const title=isYear?String(y):MONTHS[S.month-1]+" "+y;
-  const hjRange=!isYear?(hj(iso(y,S.month,1),true)+" – "+hj(iso(y,S.month,daysIn(y,S.month)),true)):"";
+  const isYear=S.calMode==="year",isWeek=S.calMode==="week";
+  if(isWeek&&!S.wk)S.wk=weekStart(TODAY);
+  const wEnd=isWeek?addDays(S.wk,6):"";
+  const title=isYear?String(y):isWeek?(S.wk.slice(0,7)===wEnd.slice(0,7)?`${+S.wk.slice(8)} – ${+wEnd.slice(8)} ${MONTHS[+wEnd.slice(5,7)-1]} ${wEnd.slice(0,4)}`:`${+S.wk.slice(8)} ${MONTHS[+S.wk.slice(5,7)-1]} – ${+wEnd.slice(8)} ${MONTHS[+wEnd.slice(5,7)-1]} ${wEnd.slice(0,4)}`):MONTHS[S.month-1]+" "+y;
+  const hjRange=isWeek?(hj(S.wk,true)+" – "+hj(wEnd,true)):!isYear?(hj(iso(y,S.month,1),true)+" – "+hj(iso(y,S.month,daysIn(y,S.month)),true)):"";
   let h=`<div class="toolbar">
     <div class="grp cal-title">
       <button class="btn icon" data-act="cal-prev" type="button" aria-label="السابق">→</button>
@@ -2174,7 +2183,8 @@ function renderCalendar(){
     <div class="grp">
       <div class="seg" role="group" aria-label="طريقة العرض">
         <button type="button" data-act="cal-mode" data-v="year" aria-pressed="${isYear}">السنة</button>
-        <button type="button" data-act="cal-mode" data-v="month" aria-pressed="${!isYear}">الشهر</button>
+        <button type="button" data-act="cal-mode" data-v="month" aria-pressed="${!isYear&&!isWeek}">الشهر</button>
+        <button type="button" data-act="cal-mode" data-v="week" aria-pressed="${isWeek}">الأسبوع</button>
       </div>
       ${xlBtn("calendar")}<button class="btn primary write-only" data-act="leave-new" type="button">+ تسجيل إجازة</button>
     </div>
@@ -2182,6 +2192,7 @@ function renderCalendar(){
   ${isYear?`<div class="legend"><span><i style="background:var(--hol-bg);border:1px solid var(--hol-ink)"></i>إجازة رسمية</span><span><i style="background:var(--wknd);border:1px solid var(--line-2)"></i>عطلة نهاية الأسبوع (الجمعة والسبت)</span><span><i style="border:2px solid var(--today)"></i>اليوم</span></div><div class="legend lt-leg">${LEAVE_TYPES.map(t=>`<span><i style="background:${ltcol(t)}"></i>${esc(t)}</span>`).join("")}</div>`:""}
 `;
   if(isYear){h+=`<div class="cal-layout"><div>`+yearGrid(y,hmap,lmap)+`</div><aside class="side">${sidePanel(y,hmap,lmap)}</aside></div>`}
+  else if(isWeek){const ds=[];for(let i=0;i<7;i++)ds.push(addDays(S.wk,i));h+=leaveMatrix(ds,title,true)+`<div class="mx-side">${sidePanel(y,hmap,lmap)}</div>`}
   else{h+=monthMatrix(y,S.month,hmap,lmap)+`<div class="mx-side">${sidePanel(y,hmap,lmap)}</div>`}
   h+=leaveSummary(y);
   el.innerHTML=h;
@@ -2235,26 +2246,32 @@ const LT_IC={"سنوية":'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20
  "أخرى":'<circle cx="6" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="18" cy="12" r="1.2"/>'};
 function ltIc(t,cls){return `<svg class="${cls||"lti"}" viewBox="0 0 24 24" aria-hidden="true">${LT_IC[t]||LT_IC["أخرى"]}</svg>`}
 const MX_CODE={"سنوية":["س","L"],"مرضية":["م","S"],"أمومة / أبوة":["أ","P"],"عزاء":["ع","C"],"عمل عن بُعد":["ب","W"],"مهمة رسمية / تدريب":["ت","T"],"أخرى":["خ","O"]};
-function monthMatrix(y,m,hmap,lmap){
-  const EN=typeof I18N_ON!=="undefined"&&I18N_ON,n=daysIn(y,m),lo=iso(y,m,1),hi=iso(y,m,n);
+function monthMatrix(y,m,hmap,lmap){const ds=[];for(let d=1;d<=daysIn(y,m);d++)ds.push(iso(y,m,d));return leaveMatrix(ds,MONTHS[m-1]+" "+y,false)}
+function weekStart(s){return addDays(s,-dow(s))}
+function leaveMatrix(dates,title,wide){
+  const EN=typeof I18N_ON!=="undefined"&&I18N_ON,lo=dates[0],hi=dates[dates.length-1];
+  const hm={};const holOf=s=>{const yy=+s.slice(0,4);if(!hm[yy])hm[yy]=holidayMap(yy);return hm[yy].get(s)||null};
   const inM=S.leaves.filter(l=>validDate(l.from)&&l.from<=hi&&((validDate(l.to)&&l.to>=l.from)?l.to:l.from)>=lo);
   const names=[...new Set([...memberNames(),...inM.map(l=>l.name)])];
   const DS=EN?["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]:["الأحد","الاثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"];
-  const days=[];for(let d=1;d<=n;d++){const s=iso(y,m,d);days.push({d,s,we:isWeekend(s),hol:hmap.get(s)||null,today:s===TODAY})}
+  const MS=EN?["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]:MONTHS;
+  const days=dates.map(s=>({d:+s.slice(8,10),s,we:isWeekend(s),hol:holOf(s),today:s===TODAY}));
   const dcls=x=>["mx-d",x.we?"we":"",x.hol?"hol":"",x.today?"tdy":""].join(" ");
-  let h=`<div class="card mx"><div class="mx-scroll"><table class="mx-t"><thead><tr><th class="mx-nm mx-corner" rowspan="2"><b>${esc(MONTHS[m-1])} ${y}</b><span>إدارة الاتصال</span></th>`;
-  days.forEach(x=>h+=`<th class="${dcls(x)} mx-dw" title="${esc(fmt(x.s)+(x.hol?" — "+x.hol.map(o=>o.name).join("، "):""))}"><span class="vt">${DS[dow(x.s)]}</span></th>`);
-  h+=`</tr><tr>`;days.forEach(x=>h+=`<th class="${dcls(x)} mx-dn num">${x.d}</th>`);h+=`</tr></thead><tbody>`;
+  const clk=`<svg class="lti clk" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>`;
+  let h=`<div class="card mx${wide?" mxw":""}"><div class="mx-scroll"><table class="mx-t"><thead><tr><th class="mx-nm mx-corner" rowspan="2"><b>${esc(title)}</b><span>إدارة الاتصال</span></th>`;
+  days.forEach(x=>h+=`<th class="${dcls(x)} mx-dw" data-day="${x.s}" title="${esc(fmt(x.s)+(x.hol?" — "+x.hol.map(o=>o.name).join("، "):""))}">${wide?`<span class="hz">${DS[dow(x.s)]}</span>`:`<span class="vt">${DS[dow(x.s)]}</span>`}</th>`);
+  h+=`</tr><tr>`;days.forEach(x=>h+=`<th class="${dcls(x)} mx-dn num">${x.d}${wide?` <small>${esc(MS[+x.s.slice(5,7)-1])}</small>${x.hol?`<em>${esc(x.hol[0].name)}</em>`:""}`:""}</th>`);h+=`</tr></thead><tbody>`;
   for(const nm of names){const mine=inM.filter(l=>l.name===nm);
     h+=`<tr><th class="mx-nm" scope="row">${gName(nm)}</th>`;
     for(const x of days){const lv=mine.filter(l=>{const e=(validDate(l.to)&&l.to>=l.from)?l.to:l.from;return l.from<=x.s&&e>=x.s&&(!isHrs(l)||l.from===x.s)});
       const off=x.we||x.hol;
-      if(lv.length&&!off){const l=lv[0],cd=(MX_CODE[l.type]||MX_CODE["أخرى"])[EN?1:0],hr=isHrs(l);
+      if(lv.length&&!off){const l=lv[0],hr=isHrs(l);
         const tip=nm+" — "+(l.type||"")+(hr?" · "+hrsLabel(l.hours):"")+"\n"+fmt(x.s)+(l.notes?"\n"+l.notes:"")+(lv.length>1?"\n+"+(lv.length-1):"");
-        h+=`<td class="${dcls(x)} mx-c on${hr?" hr":""}${off?" offd":""}" style="--c:${ltcol(l.type)}" data-act="leave-edit" data-v="${esc(l.id)}" title="${esc(tip)}"><span>${hr?`<svg class="lti clk" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><b class="num">${+l.hours}</b>`:ltIc(l.type)}</span></td>`}
-      else h+=`<td class="${dcls(x)} mx-c"${(!off&&S.canWrite)?` data-act="mx-new" data-v="${esc(x.s+"|"+nm)}" title="${esc("تسجيل إجازة لـ "+nm+" — "+fmt(x.s))}"`:x.hol?` title="${esc(x.hol.map(o=>o.name).join("، "))}"`:""}></td>`}
+        const inner=wide?`${hr?clk:ltIc(l.type)}<b>${esc(l.type||"")}</b>${hr?`<small class="num">${esc(hrsLabel(l.hours))}</small>`:""}`:(hr?`${clk}<b class="num">${+l.hours}</b>`:ltIc(l.type));
+        h+=`<td class="${dcls(x)} mx-c on${hr?" hr":""}" style="--c:${ltcol(l.type)}" data-act="leave-edit" data-v="${esc(l.id)}" title="${esc(tip)}"><span>${inner}</span></td>`}
+      else h+=`<td class="${dcls(x)} mx-c"${(!off&&S.canWrite)?` data-act="mx-new" data-v="${esc(x.s+"|"+nm)}" title="${esc("تسجيل إجازة لـ "+nm+" — "+fmt(x.s))}"`:x.hol?` title="${esc(x.hol.map(o=>o.name).join("، "))}"`:""}>${wide&&off?`<span class="offl">${x.hol?esc(x.hol[0].name):"عطلة"}</span>`:""}</td>`}
     h+=`</tr>`}
-  h+=`</tbody></table></div><div class="mx-leg">${LEAVE_TYPES.map(t=>`<span><i style="background:${ltcol(t)}">${ltIc(t)}</i>${esc(t)}</span>`).join("")}<span><i class="hr" style="--c:${ltcol("سنوية")}"><svg class="lti" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></i>إجازة بالساعات (بلون نوعها، والرقم = عدد الساعات)</span><span><i class="mx-wk"></i>عطلة نهاية الأسبوع</span><span><i class="mx-hl"></i>إجازة رسمية</span></div></div>`;
+  h+=`</tbody></table></div><div class="mx-leg">${LEAVE_TYPES.map(t=>`<span><i style="background:${ltcol(t)}">${ltIc(t)}</i>${esc(t)}</span>`).join("")}<span><i class="hr" style="--c:${ltcol("سنوية")}"><svg class="lti" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></i>إجازة بالساعات (بلون نوعها${wide?"":"، والرقم = عدد الساعات"})</span><span><i class="mx-wk"></i>عطلة نهاية الأسبوع</span><span><i class="mx-hl"></i>إجازة رسمية</span></div></div>`;
   return h}
 function monthGrid(y,m,hmap,lmap){
   const first=iso(y,m,1),off=dow(first),n=daysIn(y,m);
@@ -2278,13 +2295,14 @@ function sidePanel(y,hmap,lmap){
   const isYear=S.calMode==="year";
   let lo,hi,label;
   if(isYear){lo=TODAY>y+"-01-01"&&TODAY<=y+"-12-31"?TODAY:y+"-01-01";hi=y+"-12-31";label="الإجازات القادمة"}
+  else if(S.calMode==="week"&&S.wk){lo=S.wk;hi=addDays(S.wk,6);label="الإجازات هذا الأسبوع"}
   else{lo=iso(y,S.month,1);hi=iso(y,S.month,daysIn(y,S.month));label="الإجازات في "+MONTHS[S.month-1]}
   const ls=S.leaves.filter(l=>validDate(l.from)&&(l.to||l.from)>=lo&&l.from<=hi).sort((a,b)=>a.from.localeCompare(b.from));
   S.lvRange={lo,hi,label};
   const grp=new Map();for(const l of ls){if(!grp.has(l.name))grp.set(l.name,[]);grp.get(l.name).push(l)}
   let h=`<div class="card"><h3>${esc(label)}<span class="muted small num">${grp.size||""}</span></h3>`;
   if(!S.ready.leaves&&S.db)h+=`<div class="empty-note">جارٍ التحميل…</div>`;
-  else if(!ls.length)h+=`<div class="empty-note">لا توجد إجازات مسجلة${isYear?" قادمة":" في هذا الشهر"}.${S.canWrite?" اضغط «تسجيل إجازة» لإضافة إجازتك.":""}</div>`;
+  else if(!ls.length)h+=`<div class="empty-note">لا توجد إجازات مسجلة${isYear?" قادمة":S.calMode==="week"?" في هذا الأسبوع":" في هذا الشهر"}.${S.canWrite?" اضغط «تسجيل إجازة» لإضافة إجازتك.":""}</div>`;
   else{h+=`<ul class="list">`;for(const [n,arr] of grp){const tot=arr.reduce((a,l)=>a+lvValue(l,lo,hi),0);const types=[...new Set(arr.map(l=>l.type||"أخرى"))];
     const last=arr.reduce((m,l)=>{const e=validDate(l.to)&&l.to>=l.from?l.to:l.from;return e>m?e:m},arr[0].from);
     h+=`<li class="li lvp-row" data-act="lv-person" data-v="${esc(n)}" role="button" tabindex="0"><span class="sw" style="background:${ltcol(types[0])}"></span><div><div class="t">${gName(n,false)}</div><div class="s">${esc(fmtShort(arr[0].from))}${last!==arr[0].from?" – "+esc(fmtShort(last)):""} · ${esc(types.join("، "))} · ${daysTxt(tot)}${arr.length>1?` · <span class="num">${arr.length}</span> إجازات`:""}</div></div><span class="lvp-go" aria-hidden="true">‹</span></li>`}
@@ -4513,17 +4531,19 @@ document.addEventListener("click",async e=>{
   switch(act){
     case "dock":if(!$("rpt").hidden)closeReport();
     case "tab":{const m=document.querySelector(".mast.menu-open");if(m)m.classList.remove("menu-open")}if(v==="home"&&S.view!=="home")pickQuote();S.view=v;location.hash=v;render();window.scrollTo(0,0);break;
-    case "cal-mode":S.calMode=v;render();break;
-    case "cal-prev":if(S.calMode==="year")S.year--;else{S.month--;if(S.month<1){S.month=12;S.year--}}render();break;
-    case "cal-next":if(S.calMode==="year")S.year++;else{S.month++;if(S.month>12){S.month=1;S.year++}}render();break;
-    case "cal-today":S.year=now.getFullYear();S.month=now.getMonth()+1;render();break;
+    case "cal-mode":if(v==="week"){const ref=(S.calMode==="month"&&!TODAY.startsWith(S.year+"-"+pad(S.month)))?iso(S.year,S.month,1):TODAY;S.wk=weekStart(ref)}else if(v==="month"&&S.calMode==="week"&&S.wk){const p=parts(addDays(S.wk,3));S.year=p.y;S.month=p.m}S.calMode=v;render();break;
+    case "cal-prev":if(S.calMode==="week"){S.wk=addDays(S.wk,-7);const p=parts(addDays(S.wk,3));S.year=p.y;S.month=p.m}else if(S.calMode==="year")S.year--;else{S.month--;if(S.month<1){S.month=12;S.year--}}render();break;
+    case "cal-next":if(S.calMode==="week"){S.wk=addDays(S.wk,7);const p=parts(addDays(S.wk,3));S.year=p.y;S.month=p.m}else if(S.calMode==="year")S.year++;else{S.month++;if(S.month>12){S.month=1;S.year++}}render();break;
+    case "cal-today":{const p=parts(TODAY);S.year=p.y;S.month=p.m;if(S.calMode==="week")S.wk=weekStart(TODAY);else S.calMode="month";render();
+      requestAnimationFrame(()=>{const th=document.querySelector('.mx-dw[data-day="'+TODAY+'"]');if(!th)return;const sc=th.closest(".mx-scroll");if(sc){const r=th.getBoundingClientRect(),rs=sc.getBoundingClientRect();sc.scrollBy({left:(r.left+r.width/2)-(rs.left+rs.width/2),behavior:"smooth"})}
+        th.closest(".mx").scrollIntoView({behavior:"smooth",block:"nearest"});document.querySelectorAll('.mx-t .tdy').forEach(c=>{c.classList.remove("pulse");void c.offsetWidth;c.classList.add("pulse")})});break}
     case "open-month":S.month=+v;S.calMode="month";render();break;
     case "day":{
       if(e.target.closest(".lchip"))return;
       if(S.calMode==="year"){const p=parts(v);S.month=p.m;S.calMode="month";render();}
       else if(S.canWrite)openLeave(null,v);break}
     case "mx-new":{const [d,nm]=v.split("|");openLeave(null,d);const sel=$("l-name");if(sel&&[...sel.options].some(o=>o.value===nm)){sel.value=nm;sel.dispatchEvent(new Event("change"))}break}
-    case "leave-new":openLeave(null,S.calMode==="month"?(TODAY.startsWith(S.year+"-"+pad(S.month))?TODAY:iso(S.year,S.month,1)):TODAY);break;
+    case "leave-new":openLeave(null,S.calMode==="week"?(TODAY>=S.wk&&TODAY<=addDays(S.wk,6)?TODAY:S.wk):S.calMode==="month"?(TODAY.startsWith(S.year+"-"+pad(S.month))?TODAY:iso(S.year,S.month,1)):TODAY);break;
     case "bd-play":bdShow();break;
     case "bd-close":bdClose();break;
     case "lv-person":openLvPerson(v);break;
