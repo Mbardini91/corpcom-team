@@ -149,7 +149,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);outline-
 .bd.today .dn{background:var(--today);color:var(--accent-ink);border-radius:6px;padding:0 7px}
 .hj{font-size:11px;color:var(--mute)}
 .hpill{font-size:11.5px;line-height:1.35;background:var(--hol-bg);color:var(--hol-ink);border-radius:5px;padding:2px 6px;font-weight:700}
-.lsum{margin-top:20px}.lsum-h{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px;margin-bottom:12px}.lsum-h h3{margin:0}
+.lsum{margin-top:20px;padding:20px 22px}.lsum-h{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px;margin-bottom:12px}.lsum-h h3{margin:0}
 .lsum-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
 table.lsum-t{min-width:0;width:100%;border-collapse:separate;border-spacing:0;font-size:14px}
 .lsum-t th,.lsum-t td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:center;white-space:nowrap}
@@ -165,7 +165,8 @@ table.lsum-t{min-width:0;width:100%;border-collapse:separate;border-spacing:0;fo
 @media (max-width:640px){.bd{min-height:70px;padding:4px}.lchip{font-size:9px;padding:1px 3px}.hpill{font-size:10px}.hj{display:none}}
 
 .side{display:grid;gap:16px}
-.side .card{padding:16px}
+.side .card,.mx-side .card{padding:18px 20px}
+.mx-side h3{font-size:16px;font-weight:800;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:12px}
 .side h3{font-size:16px;font-weight:800;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
 .list{list-style:none;margin:0;padding:0;display:grid;gap:2px}
 .li{display:grid;grid-template-columns:10px minmax(0,1fr) auto;gap:10px;align-items:start;padding:8px 6px;border-radius:8px}
@@ -2241,14 +2242,10 @@ function monthMatrix(y,m,hmap,lmap){
   const DS=EN?["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]:["الأحد","الاثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"];
   const days=[];for(let d=1;d<=n;d++){const s=iso(y,m,d);days.push({d,s,we:isWeekend(s),hol:hmap.get(s)||null,today:s===TODAY})}
   const dcls=x=>["mx-d",x.we?"we":"",x.hol?"hol":"",x.today?"tdy":""].join(" ");
-  const COLS=[{k:"abs",n:"مجموع الغياب",c:"var(--accent)"},{k:"سنوية",n:"سنوية",c:ltcol("سنوية")},{k:"مرضية",n:"مرضية",c:ltcol("مرضية")},{k:"oth",n:"إجازات أخرى",c:ltcol("أمومة / أبوة")},{k:"مهمة رسمية / تدريب",n:"مهمة / تدريب",c:ltcol("مهمة رسمية / تدريب")},{k:"عمل عن بُعد",n:"عن بُعد",c:ltcol("عمل عن بُعد")}];
   let h=`<div class="card mx"><div class="mx-scroll"><table class="mx-t"><thead><tr><th class="mx-nm mx-corner" rowspan="2"><b>${esc(MONTHS[m-1])} ${y}</b><span>إدارة الاتصال</span></th>`;
   days.forEach(x=>h+=`<th class="${dcls(x)} mx-dw" title="${esc(fmt(x.s)+(x.hol?" — "+x.hol.map(o=>o.name).join("، "):""))}"><span class="vt">${DS[dow(x.s)]}</span></th>`);
-  COLS.forEach((c,i)=>h+=`<th class="mx-tot-h${i===0?" first":""}" rowspan="2" style="--c:${c.c}"><span>${esc(c.n)}</span></th>`);
   h+=`</tr><tr>`;days.forEach(x=>h+=`<th class="${dcls(x)} mx-dn num">${x.d}</th>`);h+=`</tr></thead><tbody>`;
   for(const nm of names){const mine=inM.filter(l=>l.name===nm);
-    const tot={abs:0,oth:0};for(const l of mine){const v=lvValue(l,lo,hi);if(!v)continue;const t=LEAVE_TYPES.includes(l.type)?l.type:"أخرى";
-      if(t==="سنوية"||t==="مرضية"||t==="مهمة رسمية / تدريب"||t==="عمل عن بُعد")tot[t]=(tot[t]||0)+v;else tot.oth+=v;if(!NOT_IN_TOTAL.has(t))tot.abs+=v}
     h+=`<tr><th class="mx-nm" scope="row">${gName(nm)}</th>`;
     for(const x of days){const lv=mine.filter(l=>{const e=(validDate(l.to)&&l.to>=l.from)?l.to:l.from;return l.from<=x.s&&e>=x.s&&(!isHrs(l)||l.from===x.s)});
       const off=x.we||x.hol;
@@ -2256,7 +2253,6 @@ function monthMatrix(y,m,hmap,lmap){
         const tip=nm+" — "+(l.type||"")+(hr?" · "+hrsLabel(l.hours):"")+"\n"+fmt(x.s)+(l.notes?"\n"+l.notes:"")+(lv.length>1?"\n+"+(lv.length-1):"");
         h+=`<td class="${dcls(x)} mx-c on${hr?" hr":""}${off?" offd":""}" style="--c:${ltcol(l.type)}" data-act="leave-edit" data-v="${esc(l.id)}" title="${esc(tip)}"><span>${hr?`<b class="num">${+l.hours}</b>`:ltIc(l.type)}</span></td>`}
       else h+=`<td class="${dcls(x)} mx-c"${(!off&&S.canWrite)?` data-act="mx-new" data-v="${esc(x.s+"|"+nm)}" title="${esc("تسجيل إجازة لـ "+nm+" — "+fmt(x.s))}"`:x.hol?` title="${esc(x.hol.map(o=>o.name).join("، "))}"`:""}></td>`}
-    COLS.forEach((c,i)=>{const v=tot[c.k]||0;const {d,h:hh}=fmtDays(v);h+=`<td class="mx-tot${i===0?" first":""}${v?"":" z"}" style="--c:${c.c}" title="${v?esc(d+" يوم"+(hh?" و"+hrsLabel(hh):"")):""}"><span class="num">${v?String(+v.toFixed(2)):"0"}</span></td>`});
     h+=`</tr>`}
   h+=`</tbody></table></div><div class="mx-leg">${LEAVE_TYPES.map(t=>`<span><i style="background:${ltcol(t)}">${ltIc(t)}</i>${esc(t)}</span>`).join("")}<span><i class="hr" style="--c:${ltcol("سنوية")}">4</i>إجازة بالساعات (عدد الساعات)</span><span><i class="mx-wk"></i>عطلة نهاية الأسبوع</span><span><i class="mx-hl"></i>إجازة رسمية</span></div></div>`;
   return h}
