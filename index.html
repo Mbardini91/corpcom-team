@@ -149,7 +149,15 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);outline-
 .bd.today .dn{background:var(--today);color:var(--accent-ink);border-radius:6px;padding:0 7px}
 .hj{font-size:11px;color:var(--mute)}
 .hpill{font-size:11.5px;line-height:1.35;background:var(--hol-bg);color:var(--hol-ink);border-radius:5px;padding:2px 6px;font-weight:700}
-.lsum{margin-top:20px;padding:20px 22px}.lsum-h{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px;margin-bottom:12px}.lsum-h h3{margin:0}
+.lsum{margin-top:20px;padding:0}.lsum.open{padding-bottom:20px}
+.lsum-tg{all:unset;box-sizing:border-box;display:flex!important;align-items:center;justify-content:space-between;gap:16px;width:100%;padding:18px 22px;cursor:pointer;border-radius:12px;margin:0!important}
+.lsum-tg:hover{background:color-mix(in srgb,var(--accent) 4%,transparent)}.lsum-tg:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.lsum-tt{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px}.lsum-tt h3{margin:0}
+.lsum-chev{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;border:1px solid var(--line);color:var(--mute);transition:transform .25s ease;flex:none}.lsum.open .lsum-chev{transform:rotate(180deg)}
+.lsum-pick{display:flex;flex-wrap:wrap;gap:8px;padding:2px 22px 16px}
+.ls-chip{font:inherit;font-size:13px;display:inline-flex;align-items:center;gap:2px;padding:7px 14px;border-radius:999px;border:1px solid var(--line-2);background:transparent;color:var(--ink);cursor:pointer;transition:background .15s,border-color .15s,color .15s}
+.ls-chip:hover{border-color:var(--accent)}.ls-chip.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.lsum .lsum-wrap,.lsum .empty-note,.lsum>.small{margin-inline:22px}.lsum-h{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px;margin-bottom:12px}.lsum-h h3{margin:0}
 .lsum-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
 table.lsum-t{min-width:0;width:100%;border-collapse:separate;border-spacing:0;font-size:14px}
 .lsum-t th,.lsum-t td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:center;white-space:nowrap}
@@ -2200,20 +2208,26 @@ function renderCalendar(){
 
 function leaveSummary(y){
   const lo=y+"-01-01",hi=TODAY<y+"-12-31"?TODAY:y+"-12-31";
-  const head=`<div class="card lsum"><div class="lsum-h"><h3>رصيد الإجازات المأخوذة ${y}</h3><span class="muted small">من 1 يناير حتى ${hi===TODAY?"اليوم":"نهاية السنة"} · بأيام العمل (اليوم = 8 ساعات)</span></div>`;
+  const open=!!S.lsOpen;
+  const head=`<div class="card lsum${open?" open":""}"><button type="button" class="lsum-h lsum-tg" data-act="ls-toggle" aria-expanded="${open}"><span class="lsum-tt"><h3>رصيد الإجازات المأخوذة ${y}</h3><span class="muted small">من 1 يناير حتى ${hi===TODAY?"اليوم":"نهاية السنة"} · بأيام العمل (اليوم = 8 ساعات)</span></span><span class="lsum-chev" aria-hidden="true">${ic("down")}</span></button>`;
+  if(!open)return head+`</div>`;
   if(lo>TODAY)return head+`<div class="empty-note">لم تبدأ هذه السنة بعد.</div></div>`;
-  const names=[...new Set([...memberNames(),...S.leaves.filter(l=>validDate(l.from)&&l.from<=hi&&(l.to||l.from)>=lo).map(l=>l.name)])];
+  const allNames=[...new Set([...memberNames(),...S.leaves.filter(l=>validDate(l.from)&&l.from<=hi&&(l.to||l.from)>=lo).map(l=>l.name)])];
+  if(!S.lsSel){const me=typeof bdMeKey==="function"?bdMeKey():"";S.lsSel=new Set(me&&allNames.includes(me)?[me]:[])}
+  const names=allNames.filter(n=>S.lsSel.has(n));const allOn=names.length===allNames.length;
+  const picker=`<div class="lsum-pick" role="group" aria-label="اختر الموظفين"><button type="button" class="ls-chip${allOn?" on":""}" data-act="ls-all" aria-pressed="${allOn}">الكل</button>${allNames.map(n=>`<button type="button" class="ls-chip${S.lsSel.has(n)?" on":""}" data-act="ls-pick" data-v="${esc(n)}" aria-pressed="${S.lsSel.has(n)}">${gName(n)}</button>`).join("")}</div>`;
+  if(!names.length)return head+picker+`<div class="empty-note">اختر اسمًا أو أكثر لعرض رصيد إجازاته.</div></div>`;
   const tot={},used=new Set();
-  for(const l of S.leaves){const v=lvValue(l,lo,hi);if(!v)continue;const t=LEAVE_TYPES.includes(l.type)?l.type:"أخرى";used.add(t);(tot[l.name]=tot[l.name]||{})[t]=((tot[l.name]||{})[t]||0)+v}
+  for(const l of S.leaves){if(!S.lsSel.has(l.name))continue;const v=lvValue(l,lo,hi);if(!v)continue;const t=LEAVE_TYPES.includes(l.type)?l.type:"أخرى";used.add(t);(tot[l.name]=tot[l.name]||{})[t]=((tot[l.name]||{})[t]||0)+v}
   const cols=LEAVE_TYPES.filter(t=>used.has(t));
-  if(!cols.length)return head+`<div class="empty-note">لا توجد إجازات مسجلة حتى الآن هذه السنة.</div></div>`;
+  if(!cols.length)return head+picker+`<div class="empty-note">لا توجد إجازات مسجلة حتى الآن هذه السنة.</div></div>`;
   const cell=v=>{if(!v)return `<td class="z">—</td>`;const {d,h}=fmtDays(v);return `<td title="${d} يوم${h?" و"+hrsLabel(h):""}">${d?`<b class="num">${d}</b>`:""}${h?`<small class="num">${d?"و":""}${h} س</small>`:""}</td>`};
   let r=`<div class="lsum-wrap"><table class="lsum-t"><thead><tr><th>الموظف</th>${cols.map(t=>`<th><i style="background:${LT_COL[t]||"#888"}"></i>${esc(t)}</th>`).join("")}<th class="tot">مجموع الإجازات</th></tr></thead><tbody>`;
   for(const n of names){const o=tot[n]||{};const sum=cols.filter(t=>!NOT_IN_TOTAL.has(t)).reduce((a,t)=>a+(o[t]||0),0);
     r+=`<tr><th><span class="sw" style="background:${pcolor(n)}"></span>${gName(n)}</th>${cols.map(t=>cell(o[t])).join("")}${cell(sum).replace("<td","<td class=\"tot\"")}</tr>`}
   r+=`</tbody></table></div>`;
   const ex=cols.filter(t=>NOT_IN_TOTAL.has(t));const note=ex.length?`<div class="small muted" style="margin-top:8px">${ex.map(t=>"«"+esc(t)+"»").join(" و")} للعرض فقط ولا ${ex.length>1?"يُحتسبان":"يُحتسب"} ضمن مجموع الإجازات.</div>`:"";
-  return head+r+note+`</div>`;
+  return head+picker+r+note+`</div>`;
 }
 
 function yearGrid(y,hmap,lmap){
@@ -4542,6 +4556,9 @@ document.addEventListener("click",async e=>{
       if(e.target.closest(".lchip"))return;
       if(S.calMode==="year"){const p=parts(v);S.month=p.m;S.calMode="month";render();}
       else if(S.canWrite)openLeave(null,v);break}
+    case "ls-toggle":S.lsOpen=!S.lsOpen;render();break;
+    case "ls-pick":{if(!S.lsSel)S.lsSel=new Set();S.lsSel.has(v)?S.lsSel.delete(v):S.lsSel.add(v);render();break}
+    case "ls-all":{const all=[...document.querySelectorAll('.lsum-pick [data-act="ls-pick"]')].map(b=>b.dataset.v);S.lsSel=(S.lsSel&&all.every(n=>S.lsSel.has(n)))?new Set():new Set(all);render();break}
     case "mx-new":{const [d,nm]=v.split("|");openLeave(null,d);const sel=$("l-name");if(sel&&[...sel.options].some(o=>o.value===nm)){sel.value=nm;sel.dispatchEvent(new Event("change"))}break}
     case "leave-new":openLeave(null,S.calMode==="week"?(TODAY>=S.wk&&TODAY<=addDays(S.wk,6)?TODAY:S.wk):S.calMode==="month"?(TODAY.startsWith(S.year+"-"+pad(S.month))?TODAY:iso(S.year,S.month,1)):TODAY);break;
     case "bd-play":bdShow();break;
