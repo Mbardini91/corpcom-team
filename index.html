@@ -33,7 +33,7 @@ try{var _g=JSON.parse(localStorage.getItem("lmra-glass")||"null");if(_g)gaApply(
   --bg:#f4f2ee; --surface:#ffffff; --surface-2:#f8f6f2; --line:#e3ded5; --line-2:#cfc8bb;
   --accent:#17325a; --accent-ink:#ffffff; --accent-soft:#e6ebf2;
   --hol-bg:#fbe9e8; --hol-ink:#a8211f; --wknd:#f1eee8; --today:#17325a;
-  --t-design:#2f5d9a; --t-video:#7d5aa0; --t-photo:#2b8577; --t-news:#b7832a; --t-form:#b4466a; --t-other:#7d8184;
+  --t-design:#2f5d9a; --t-video:#7d5aa0; --t-photo:#2b8577; --t-news:#b7832a; --t-form:#b4466a; --t-tg:#9a4a32; --t-other:#7d8184;
   --ok:#2e7d4f; --warn:#b7832a; --hold:#c0632b; --stop:#a8211f; --prog:#2f5d9a; --idle:#7d8184;
   --c1:#2f5d9a; --c2:#a8741c; --grid:#ebe7e0;
   --font-display:"LMRA Frutiger","Frutiger LT Arabic","Frutiger Arabic","Frutiger LT Std","Frutiger","Tajawal","Segoe UI","Noto Sans Arabic",Tahoma,sans-serif;
@@ -46,12 +46,12 @@ try{var _g=JSON.parse(localStorage.getItem("lmra-glass")||"null");if(_g)gaApply(
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#0e1828; --surface:#152237; --surface-2:#1a2a43; --ink:#ebe7df; --mute:#9aa4b3; --line:#243652; --line-2:#30476a;
   --accent:#9cb8e3; --accent-ink:#0e1828; --accent-soft:#1f3354; --hol-bg:#3a1d22; --hol-ink:#f0a19e; --wknd:#122036; --today:#9cb8e3;
-  --t-design:#7ea4dc; --t-video:#b497d6; --t-photo:#6cc2b3; --t-news:#e0b45f; --t-form:#e88aa8; --t-other:#a3a8ad;
+  --t-design:#7ea4dc; --t-video:#b497d6; --t-photo:#6cc2b3; --t-news:#e0b45f; --t-form:#e88aa8; --t-tg:#dc8f72; --t-other:#a3a8ad;
   --ok:#6cc28f; --warn:#e0b45f; --hold:#e8935c; --stop:#f0a19e; --prog:#7ea4dc; --idle:#a3a8ad; --c1:#5a86c8; --c2:#b8822a; --grid:#22324d; --mast-bg:#17325a; --mast-ink:#ffffff; --mast-mute:#c9d2df; --mast-eyebrow:var(--sand); --mast-line:rgba(255,255,255,.28); --mast-hover:rgba(255,255,255,.08); --mast-pat:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96' viewBox='0 0 96 96'%3E%3Cpath d='M0 0h96L48 48z' fill='%23fff' fill-opacity='.06'/%3E%3Cpath d='M0 0v96l48-48z' fill='%23fff' fill-opacity='.025'/%3E%3Cpath d='M96 0v96L48 48z' fill='%23fff' fill-opacity='.09'/%3E%3Cpath d='M0 96h96L48 48z' fill='%23fff' fill-opacity='.04'/%3E%3C/svg%3E"); --bnav-bg:rgba(21,34,55,.94); color-scheme:dark;}}
 :root[data-theme="dark"]{
   --bg:#0e1828; --surface:#152237; --surface-2:#1a2a43; --ink:#ebe7df; --mute:#9aa4b3; --line:#243652; --line-2:#30476a;
   --accent:#9cb8e3; --accent-ink:#0e1828; --accent-soft:#1f3354; --hol-bg:#3a1d22; --hol-ink:#f0a19e; --wknd:#122036; --today:#9cb8e3;
-  --t-design:#7ea4dc; --t-video:#b497d6; --t-photo:#6cc2b3; --t-news:#e0b45f; --t-form:#e88aa8; --t-other:#a3a8ad;
+  --t-design:#7ea4dc; --t-video:#b497d6; --t-photo:#6cc2b3; --t-news:#e0b45f; --t-form:#e88aa8; --t-tg:#dc8f72; --t-other:#a3a8ad;
   --ok:#6cc28f; --warn:#e0b45f; --hold:#e8935c; --stop:#f0a19e; --prog:#7ea4dc; --idle:#a3a8ad; --c1:#5a86c8; --c2:#b8822a; --grid:#22324d; --mast-bg:#17325a; --mast-ink:#ffffff; --mast-mute:#c9d2df; --mast-eyebrow:var(--sand); --mast-line:rgba(255,255,255,.28); --mast-hover:rgba(255,255,255,.08); --mast-pat:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96' viewBox='0 0 96 96'%3E%3Cpath d='M0 0h96L48 48z' fill='%23fff' fill-opacity='.06'/%3E%3Cpath d='M0 0v96l48-48z' fill='%23fff' fill-opacity='.025'/%3E%3Cpath d='M96 0v96L48 48z' fill='%23fff' fill-opacity='.09'/%3E%3Cpath d='M0 96h96L48 48z' fill='%23fff' fill-opacity='.04'/%3E%3C/svg%3E"); --bnav-bg:rgba(21,34,55,.94); color-scheme:dark;}
 
 *{box-sizing:border-box}
@@ -179,6 +179,7 @@ table.lsum-t{min-width:0;width:100%;border-collapse:separate;border-spacing:0;fo
 .lvp-i{display:grid;grid-template-columns:10px minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px 8px;border-bottom:1px solid var(--line)}.lvp-i:last-child{border-bottom:0}
 .lvp-i .sw{width:10px;height:10px;border-radius:3px}.lvp-i .t{font-weight:600}.lvp-i .s{font-size:13px;color:var(--mute)}.lvp-i .s.n{margin-top:2px}
 .lt-leg{margin-top:-8px}
+.tg-wrap{display:grid;gap:12px}.chs.tgc span{background:color-mix(in srgb,var(--t-tg) 12%,transparent);color:var(--t-tg);border-color:color-mix(in srgb,var(--t-tg) 30%,transparent)}
 .gic{display:inline-block;width:1.05em;height:1.05em;vertical-align:-.15em;margin-inline-end:5px;background:currentColor;opacity:.9;-webkit-mask:var(--gi) center/contain no-repeat;mask:var(--gi) center/contain no-repeat}
 .gic.gm{--gi:url(data:image/png;base64,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)}.gic.gf{--gi:url(data:image/png;base64,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)}
 .lchip .gic{margin-inline-end:3px;width:1em;height:1em;opacity:.95}.gic,.ppl span.gic,.pill .gic{background:currentColor!important;border:0!important;padding:0!important;border-radius:0!important;box-shadow:none!important;color:inherit}
@@ -1667,7 +1668,7 @@ const I18N_DICT={"مشاركة":"Share","مشاركة المهمة":"Share task"
 "الأحد":"Sunday","الاثنين":"Monday","الثلاثاء":"Tuesday","الأربعاء":"Wednesday","الخميس":"Thursday","الجمعة":"Friday","السبت":"Saturday",
 "يناير":"January","فبراير":"February","مارس":"March","أبريل":"April","مايو":"May","يونيو":"June","يوليو":"July","أغسطس":"August","سبتمبر":"September","أكتوبر":"October","نوفمبر":"November","ديسمبر":"December",
 /* tasks */
-"تصميم":"Design","إنتاج فيديو":"Video production","تصوير":"Photography","الأخبار":"News","استمارات":"Forms",
+"تصميم":"Design","إنتاج فيديو":"Video production","تصوير":"Photography","الأخبار":"News","استمارات":"Forms","برقيات":"Telegrams","البرقيات":"Telegrams","برقية":"telegram","اسم المرسل":"Sender","نوع البرقية":"Telegram type","المناسبة":"Occasion","داخلية (البريد الإلكتروني)":"Internal (email)","خارجية (TLG)":"External (TLG)","حسب المناسبة":"By occasion","داخلية وخارجية":"Internal & external","حسب المرسل":"By sender","أحدث البرقيات":"Latest telegrams","آخر البرقيات":"Recent telegrams","البرقيات الخارجية":"External telegrams","تدفّق البرقيات":"Telegram flow","أكثر مرسل":"Top sender","مناسبات مختلفة":"Distinct occasions","البرقيات حسب الشهر":"Telegrams by month",
 "لم يبدأ":"Not started","قيد التنفيذ":"In progress","بانتظار المراجعة":"Awaiting review","معلق":"On hold","مكتمل":"Completed","متوقف":"Stopped",
 "تم استلام الطلب، ولكن لم يتم العمل بعد":"Request received, work not started yet","جاري العمل على التصميم/ التطوير":"Design / development in progress","قيد المراجعة والاعتماد من قبل المسؤولين/ المعنيين":"Under review and approval by the responsible parties","متوقف أو تم تأجيله مؤقتًا بسبب عوامل":"Paused or temporarily postponed due to external factors","تم الانتهاء من الطلب والموافقة عليه وتسليمه":"Request completed, approved and delivered","متوقف نهائيًا أو تم إلغاءه بشكل غير محدد":"Permanently stopped or cancelled",
 "½ - 1 يوم عمل":"½ – 1 working day","2 - 4 أيام عمل":"2 – 4 working days","1 - 2 أسبوع عمل":"1 – 2 working weeks","3 - 4 أسابيع عمل":"3 – 4 working weeks","2 - 3 أشهر عمل":"2 – 3 working months",
@@ -1836,6 +1837,11 @@ function setLang(l){try{localStorage.setItem("lmra-lang",l)}catch(_){}location.r
       <div class="small muted" id="t-status-desc"></div>
       <div class="field" id="t-ch-wrap"><span>استخدام الصور</span><div class="pick" id="t-channels"></div></div>
       <div class="field" id="t-pub-wrap"><span>قنوات النشر</span><div class="pick" id="t-pub"></div></div>
+      <div id="t-tg-wrap" class="tg-wrap">
+        <label class="field"><span>اسم المرسل</span><input type="text" id="t-tgfrom" list="dl-tgfrom" placeholder="من يُرسل البرقية باسمه"></label><datalist id="dl-tgfrom"></datalist>
+        <div class="field"><span>نوع البرقية</span><div class="pick" id="t-tgkind"></div></div>
+        <label class="field"><span>المناسبة</span><select id="t-tgocc"></select></label>
+      </div>
       <label class="field"><span>رابط الملف</span><input type="text" id="t-link" dir="ltr" inputmode="url" placeholder="https://  (رابط SharePoint أو OneDrive أو أي رابط للملف)"></label>
       <label class="field"><span>ملاحظات عامة</span><textarea id="t-notes"></textarea></label>
       <div class="err-msg" id="t-err"></div>
@@ -1959,7 +1965,9 @@ function mAbbr(m,i){return MON_EN[i]}
 if(typeof I18N_ON!=="undefined"&&I18N_ON){DOW.splice(0,7,"Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday")}
 const TYPES=[
   {k:"design",n:"تصميم",c:"var(--t-design)"},{k:"video",n:"إنتاج فيديو",c:"var(--t-video)"},
-  {k:"photo",n:"تصوير",c:"var(--t-photo)"},{k:"news",n:"الأخبار",c:"var(--t-news)"},{k:"form",n:"استمارات",c:"var(--t-form)"},{k:"other",n:"أخرى",c:"var(--t-other)"}];
+  {k:"photo",n:"تصوير",c:"var(--t-photo)"},{k:"news",n:"الأخبار",c:"var(--t-news)"},{k:"form",n:"استمارات",c:"var(--t-form)"},{k:"tg",n:"برقيات",c:"var(--t-tg)"},{k:"other",n:"أخرى",c:"var(--t-other)"}];
+const TG_KINDS=["داخلية (البريد الإلكتروني)","خارجية (TLG)"];
+const TG_OCC=["رأس السنة الميلادية","رأس السنة الهجرية","شهر رمضان المبارك","عيد الفطر المبارك","عيد الأضحى المبارك","ذكرى ميثاق العمل الوطني","اليوم الوطني وعيد الجلوس","يوم المرأة","تأسيس المجلس الأعلى للمرأة","برقيات تهنئة تعيينات جديدة","برقيات التعزية (داخلية للموظفين - خارجية)","نجاح جائزة البحرين الكبرى لطيران الخليج للفورملا 1","إعادة تشكيل مجلس إدارة هيئة تنظيم سوق العمل","المناسبات الرياضية","العهد والولاء","أخرى"];
 const STATUS=[
   {k:"لم يبدأ",d:"تم استلام الطلب، ولكن لم يتم العمل بعد",c:"var(--idle)"},
   {k:"قيد التنفيذ",d:"جاري العمل على التصميم/ التطوير",c:"var(--prog)"},
@@ -2402,7 +2410,7 @@ function renderTaskList(el,h,scope,years,owners,hid){const f=S.f;
   else if(!rows.length)h+=`<tr><td colspan="${ncol}" class="muted">لا توجد مهام تطابق هذا الفلتر.</td></tr>`;
   for(const t of page){const ty=typeOf(t.type),st=statusOf(t.status),on=S.tsel.has(t.id);
     const cell={type:`<td class="ty"><span class="tbadge" style="--c:${ty.c}"><i></i>${ty.n}</span></td>`,
-      title:`<td class="title"><span class="ttx">${esc(t.title)}</span>${(t.channels&&t.channels.length)?`<div class="chs">${t.channels.map(c=>`<span>${esc(c)}</span>`).join("")}</div>`:""}${(t.type==="news"&&t.pub&&t.pub.length)?`<div class="chs pub">${t.pub.map(c=>`<span>${esc(c)}</span>`).join("")}</div>`:""}${t.type==="news"?`<div class="covw">${covBadge(t)}</div>`:""}${t.updatedBy&&t.updatedAt?`<div class="lastedit">آخر تعديل: ${esc(editStamp(t.updatedAt))} · ${esc(shortName(t.updatedBy))}</div>`:""}</td>`,
+      title:`<td class="title"><span class="ttx">${esc(t.title)}</span>${(t.channels&&t.channels.length)?`<div class="chs">${t.channels.map(c=>`<span>${esc(c)}</span>`).join("")}</div>`:""}${t.type==="tg"?`<div class="chs tgc">${t.tgFrom?`<span>من: ${esc(t.tgFrom)}</span>`:""}${(t.tgKind||[]).map(k=>`<span>${esc(k)}</span>`).join("")}${t.tgOcc?`<span>${esc(t.tgOcc)}</span>`:""}</div>`:""}${(t.type==="news"&&t.pub&&t.pub.length)?`<div class="chs pub">${t.pub.map(c=>`<span>${esc(c)}</span>`).join("")}</div>`:""}${t.type==="news"?`<div class="covw">${covBadge(t)}</div>`:""}${t.updatedBy&&t.updatedAt?`<div class="lastedit">آخر تعديل: ${esc(editStamp(t.updatedAt))} · ${esc(shortName(t.updatedBy))}</div>`:""}</td>`,
       dept:`<td>${esc(t.dept||"—")}</td>`,owners:`<td><div class="ppl">${(t.owners||[]).map(o=>`<span>${gName(o)}</span>`).join("")||"—"}</div></td>`,
       received:`<td class="dt">${esc(fmt(t.received))}</td>`,delivered:`<td class="dt">${esc(fmt(t.delivered))}</td>`,
       status:`<td><span class="st" style="--c:${st.c}" title="${esc(st.d)}">${esc(t.status||"لم يبدأ")}</span></td>`,
@@ -2833,7 +2841,7 @@ const SB_GP=[["d30","30 يوم"],["yr","السنة"]];
 function sbTaskCard(t){const ty=typeOf(t.type);return {t:t.title||"",tag:ty.n,meta:sbDM(t.received),sub:[t.status||"لم يبدأ",(t.owners||[]).map(shortName).join("، "),t.dept].filter(Boolean).join(" · "),c:ty.c,c2:"color-mix(in srgb,"+ty.c+" 55%,#ffffff)"}}
 function sbStatusC(s){const x=STATUS.find(z=>z.k===s);return x?x.c:"var(--mute)"}
 function sbTaskAct(list){return list.slice().sort((a,b)=>String(b.updatedAt||b.received||"").localeCompare(String(a.updatedAt||a.received||""))).slice(0,4).map(t=>{const ty=typeOf(t.type),st=t.status||"لم يبدأ";const when=t.updatedAt?String(t.updatedAt).slice(0,10):t.received;
-  return {ic:ty.k==="photo"?"img":ty.k==="news"?"news":ty.k==="video"?"chan":ty.k==="form"?"list":"edit",c:ty.c,t:t.title||"",d:[(t.updatedBy?shortName(t.updatedBy):(t.owners||[]).map(shortName)[0])||"",sbAgo(when)].filter(Boolean).join(" · "),r:ty.n,st,sc:sbStatusC(st),spin:st==="قيد التنفيذ"}})}
+  return {ic:ty.k==="photo"?"img":ty.k==="news"?"news":ty.k==="video"?"chan":ty.k==="form"?"list":ty.k==="tg"?"mail":"edit",c:ty.c,t:t.title||"",d:[(t.updatedBy?shortName(t.updatedBy):(t.owners||[]).map(shortName)[0])||"",sbAgo(when)].filter(Boolean).join(" · "),r:ty.n,st,sc:sbStatusC(st),spin:st==="قيد التنفيذ"}})}
 function sbCfgTasks(sec,X){
   const {tasks,sel,photos,news,posts,doneT,openT,avg,same,delP,ext,issued,high,ylabel,pct,cnt}=X;const td=bhNow().date;
   const key=sec+"|"+S.sy+"|"+(S.sbR||"y")+"|"+(S.sbG||"yr");const R=S.sbR||"y",G=S.sbG||"yr";
@@ -2875,6 +2883,22 @@ function sbCfgTasks(sec,X){
       leader:sbLeader("أكثر جهة طالبة للتصوير",cnt(sel,t=>[t.dept||""]),"تغطية"),
       stream:sbStream("تدفّق التغطيات","تغطية",B.d42,`<span class="num">${sbN(sel.filter(t=>!validDate(t.delivered)).length)}</span> بانتظار التسليم`),
       activity:{title:"آخر التغطيات",items:photos.slice().sort((a,b)=>String(b.delivered||b.received).localeCompare(String(a.delivered||a.received))).slice(0,4).map(t=>{const dv=validDate(t.delivered);return {ic:"img",c:"var(--t-photo)",t:t.title||"",d:[t.dept,sbAgo(dv?t.delivered:t.received)].filter(Boolean).join(" · "),r:(t.channels||[])[0]||"",st:dv?"سُلّمت":"بانتظار التسليم",sc:dv?"var(--ok)":"var(--warn)",spin:!dv}})}}}
+  if(sec==="tg"){
+    const allG=S.tasks.filter(t=>t.type==="tg"&&validDate(t.received)),g=allG.filter(t=>inYsb(t.received));const B=sbBase(allG.map(t=>t.received));
+    const ext=g.filter(t=>(t.tgKind||[]).includes(TG_KINDS[1])).length,intl=g.filter(t=>(t.tgKind||[]).includes(TG_KINDS[0])).length;
+    const months=new Set(g.map(t=>t.received.slice(0,7))).size;const occ=cnt(g,t=>[t.tgOcc||""]).filter(x=>x[0]);
+    return {key,
+      hero:{label:"البرقيات",value:g.length,unit:"برقية",sub:`برقيات التهنئة والتعزية الصادرة في ${esc(ylabel)}.`,days:B.days,prev30:B.prev30},
+      cards:{title:"أحدث البرقيات",items:allG.slice().sort((a,b)=>b.received.localeCompare(a.received)).slice(0,3).map((t,i)=>({t:t.title||"",tag:t.tgOcc||"برقية",meta:sbDM(t.received),sub:[t.tgFrom?"من: "+t.tgFrom:"",(t.tgKind||[]).join("، ")].filter(Boolean).join(" · "),c:["var(--t-tg)","var(--t-design)","var(--t-news)"][i],c2:"color-mix(in srgb,var(--t-tg) 40%,#ffffff)"}))},
+      gauge:{title:"البرقيات الخارجية",v:pct(ext,g.length),max:100,unit:"%",dec:0,sub:`${sbN(ext)} خارجية (TLG) · ${sbN(intl)} داخلية`,pills:SB_GP,sel:G},
+      chart:{title:"البرقيات",unit:"برقية",sel:R,series:B.series},
+      alloc:{title:"حسب المناسبة",unit:"برقية",rows:occ.slice(0,6).map((x,i)=>[x[0],x[1],SB_PAL[i%SB_PAL.length]])},
+      accent:{title:"مناسبات مختلفة",badge:esc(ylabel),v:occ.length,suf:"",sub:`برقيات في ${sbN(months)} ${months===1?"شهر":"أشهر"}`,
+        prog:{label:"خارجية (TLG)",val:pct(ext,g.length)+"%",pct:pct(ext,g.length)},rows:[["داخلية (بريد)",sbN(intl)],["خارجية (TLG)",sbN(ext)],["مرسلون",sbN(new Set(g.map(t=>t.tgFrom).filter(Boolean)).size)]],
+        mini:sbWeekly(B.m,10),miniCap:"البرقيات · آخر 10 أسابيع",cta:{act:"tab",v:"tasks",label:"عرض المهام"}},
+      leader:sbLeader("أكثر مرسل",cnt(g,t=>[t.tgFrom||""]),"برقية"),
+      stream:sbStream("تدفّق البرقيات","برقية",B.d42,`<span class="num">${sbN(g.length)}</span> في ${esc(ylabel)}`),
+      activity:{title:"آخر البرقيات",items:allG.slice().sort((a,b)=>b.received.localeCompare(a.received)).slice(0,4).map(t=>({ic:"mail",c:"var(--t-tg)",t:t.title||"",d:[t.tgFrom,sbAgo(t.received)].filter(Boolean).join(" · "),r:t.tgOcc||"",st:(t.tgKind||[]).includes(TG_KINDS[1])?"خارجية":"داخلية",sc:"var(--t-tg)",spin:false}))}}}
   if(sec==="news"){
     const allN=S.tasks.filter(t=>t.type==="news"&&validDate(t.received)),nw=allN.filter(t=>inYsb(t.received));const B=sbBase(allN.map(t=>t.received));
     const cov=nw.map(t=>({t,c:coverageOf(t)}));const covd=cov.filter(x=>x.c.news.length||x.c.social.length).length;
@@ -2929,8 +2953,8 @@ function renderStats(){
   const sel=photos.filter(t=>inY(t.received));
   const news=(S.monitor||[]).filter(x=>x.verified!==false&&inY(x.date)),posts=(S.social||[]).filter(x=>x.verified!==false&&inY(x.date));
   const pct=(x,d)=>d?Math.round(x/d*100):0;const ylabel=S.sy==="all"?"كل السنوات":S.sy;
-  const SECS=[{k:"all",n:"نظرة عامة"},{k:"tasks",n:"المهام"},{k:"photo",n:"التصوير"},{k:"news",n:"الأخبار"},{k:"monitor",n:"الرصد"},{k:"game",n:"رحلة القيم"},{k:"adwaa",n:"أضواء"}];inYsb=inY;
-  const SIC={all:"chart",tasks:"list",photo:"img",news:"news",monitor:"search",game:"compass",adwaa:"book"};const curSec=SECS.find(s=>s.k===sec)||SECS[0];
+  const SECS=[{k:"all",n:"نظرة عامة"},{k:"tasks",n:"المهام"},{k:"photo",n:"التصوير"},{k:"news",n:"الأخبار"},{k:"tg",n:"البرقيات"},{k:"monitor",n:"الرصد"},{k:"game",n:"رحلة القيم"},{k:"adwaa",n:"أضواء"}];inYsb=inY;
+  const SIC={all:"chart",tasks:"list",photo:"img",news:"news",tg:"mail",monitor:"search",game:"compass",adwaa:"book"};const curSec=SECS.find(s=>s.k===sec)||SECS[0];
   let h=`<div class="gwk"><nav class="gw-rail gw-glass" aria-label="أقسام الإحصائيات">${SECS.map(s=>`<button type="button" data-act="ss" data-v="${s.k}" aria-label="${s.n}" data-tip="${s.n}"${sec===s.k?' aria-current="page"':""}>${ic(SIC[s.k])}</button>`).join("")}</nav>
     <div class="gw-main gw-glass"><div class="gw-head"><div><p class="gw-greet">${sbGreet()} · الإحصائيات</p><h1>${curSec.n}</h1></div>
     <div class="gw-acts"><div class="seg" role="group" aria-label="السنة">${years.map(y=>`<button type="button" data-act="sy" data-v="${y}" aria-pressed="${S.sy===y}">${y}</button>`).join("")}<button type="button" data-act="sy" data-v="all" aria-pressed="${S.sy==="all"}">الكل</button></div>
@@ -2942,7 +2966,7 @@ function renderStats(){
     const m=Math.max(...r.map(x=>x[1]));const T=tot||rows.reduce((a,x)=>a+x[1],0);return `<div class="hbars">`+r.map(([k,v,c])=>`<div class="hb" data-tip="${esc(k+": "+v+" "+unit+" ("+pct(v,T)+"%)")}"><div class="nm"><span>${esc(k)}</span><span class="num muted">${v}</span></div><div class="tr"><div class="fl" style="width:${v/m*100}%;${c?"background:"+c:""}"></div></div></div>`).join("")+`</div>`};
   const cnt=(arr,fn)=>{const c=new Map();arr.forEach(t=>fn(t).forEach(k=>{if(k)c.set(k,(c.get(k)||0)+1)}));return [...c.entries()].sort((a,b)=>b[1]-a[1])};
   let kpiN=0;const awDays=[];if(sec==="adwaa"&&S.aw&&S.aw.d)(S.aw.d.days||[]).forEach(x=>{if(inY(x.d))for(let i=0;i<x.n;i++)awDays.push({d:x.d})});
-  const heroArr=sec==="adwaa"?awDays:sec==="game"?((S.vg&&S.vg.runs)||[]).filter(r=>inY(r.d)):sec==="photo"?sel:sec==="monitor"?[...news,...posts]:tasks,heroDate=(sec==="game"||sec==="adwaa")?(x=>x.d):sec==="monitor"?(x=>x.date):(x=>x.received);
+  const heroArr=sec==="adwaa"?awDays:sec==="game"?((S.vg&&S.vg.runs)||[]).filter(r=>inY(r.d)):sec==="photo"?sel:sec==="tg"?tasks.filter(t=>t.type==="tg"):sec==="monitor"?[...news,...posts]:tasks,heroDate=(sec==="game"||sec==="adwaa")?(x=>x.d):sec==="monitor"?(x=>x.date):(x=>x.received);
   const hmo=Array(12).fill(0);heroArr.forEach(x=>{const d=heroDate(x);if(validDate(d))hmo[+d.slice(5,7)-1]++});const hmm=Math.max(1,...hmo);
   const heroBg=`<div class="kpi-bg" aria-hidden="true"><div class="bg-spark">${hmo.map((v,i)=>`<i style="height:${Math.max(4,v/hmm*100)}%"${S.sy===String(now.getFullYear())&&i===now.getMonth()?' class="cur"':""}></i>`).join("")}</div><div class="sp-ml">${MONTHS.map((m,i)=>`<span>${mAbbr(m,i)}</span>`).join("")}</div></div>`;
   const kpi=(k,v,sub)=>{const hero=kpiN++===0;return `<div class="kpi${hero?" hero":""}">${hero?heroBg:""}<span class="k">${k}</span><span class="v num">${v}</span><span class="sub">${sub}</span></div>`};
@@ -2974,6 +2998,12 @@ function renderStats(){
     h+=monthly("التغطيات حسب الشهر","مقارنة آخر سنتين · بحسب تاريخ الفعالية",photos,t=>t.received,"تغطية");
     if(sec==="photo"){h+=`<div class="panel"><h3>حسب الجهة الطالبة</h3><div class="cap">أكثر الجهات طلبًا للتصوير</div>${hbars(cnt(sel,t=>[t.dept||"غير محددة"]),8,"تغطية",sel.length)}</div>`;
       h+=`<div class="panel"><h3>استخدام الصور</h3><div class="cap">قد تُستخدم التغطية الواحدة لأكثر من غرض</div>${hbars(CHANNELS.map(c=>[c,sel.filter(t=>(t.channels||[]).includes(c)).length]).concat([["غير محدد",sel.filter(t=>!(t.channels||[]).length).length]]),6,"تغطية",sel.length)}</div>`}}
+  if(sec==="tg"){const allG=S.tasks.filter(t=>t.type==="tg"&&validDate(t.received)),g=allG.filter(t=>inY(t.received));
+    h+=monthly("البرقيات حسب الشهر","بحسب تاريخ البرقية · مقارنة آخر سنتين",allG,t=>t.received,"برقية");
+    h+=`<div class="panel"><h3>حسب المناسبة</h3><div class="cap">${esc(ylabel)} · <span class="num">${g.length}</span> برقية</div>${hbars(cnt(g,t=>[t.tgOcc||"غير محددة"]),10,"برقية",g.length)}</div>`;
+    h+=`<div class="panel"><h3>داخلية وخارجية</h3><div class="cap">البريد الإلكتروني أو TLG</div>${hbars(TG_KINDS.map((k,i)=>[k,g.filter(t=>(t.tgKind||[]).includes(k)).length,i?"var(--t-tg)":"var(--t-design)"]).concat([["غير محدد",g.filter(t=>!(t.tgKind||[]).length).length,"var(--t-other)"]]),3,"برقية",g.length)}</div>`;
+    h+=`<div class="panel"><h3>حسب المرسل</h3><div class="cap">باسم من أُرسلت البرقية</div>${hbars(cnt(g,t=>[t.tgFrom||"غير محدد"]),8,"برقية",g.length)}</div>`;
+    h+=`<div class="panel"><h3>حسب المسؤول في الفريق</h3><div class="cap">من أعدّ البرقية</div>${hbars(cnt(g,t=>(t.owners||[]).map(shortName)),8,"برقية",g.length)}</div>`}
   if(sec==="news"){const allN=S.tasks.filter(t=>t.type==="news"&&validDate(t.received)),nw=allN.filter(t=>inY(t.received));
     h+=monthly("الأخبار المنشورة حسب الشهر","بحسب تاريخ النشر · مقارنة آخر سنتين",allN,t=>t.received,"خبر");
     h+=`<div class="panel"><h3>حسب قناة النشر</h3><div class="cap">قد يُنشر الخبر الواحد في أكثر من قناة · <span class="num">${nw.length}</span> خبر</div>${hbars(PUBCH.map(c=>[c,nw.filter(t=>(t.pub||[]).includes(c)).length]),5,"خبر",nw.length)}</div>`;
@@ -4198,13 +4228,16 @@ function openTask(t,defType){
   $("t-pub").innerHTML=PUBCH.map(c=>`<label><input type="checkbox" name="tpub" value="${c}" ${(t&&(t.pub||[]).includes(c))?"checked":""}>${c}</label>`).join("");
   $("t-channels").innerHTML=CHANNELS.map(c=>`<label><input type="checkbox" name="tch" value="${c}" ${(t&&(t.channels||[]).includes(c))?"checked":""}>${c}</label>`).join("");
   $("t-notes").value=t?t.notes||"":"";$("t-link").value=t?t.link||"":"";$("t-err").textContent="";
+  $("t-tgfrom").value=t?t.tgFrom||"":"";$("dl-tgfrom").innerHTML=[...new Set(S.tasks.map(x=>x.tgFrom).filter(Boolean))].map(d=>`<option value="${esc(d)}"></option>`).join("");
+  $("t-tgkind").innerHTML=TG_KINDS.map(k=>`<label><input type="checkbox" name="ttgk" value="${esc(k)}" ${(t&&(t.tgKind||[]).includes(k))?"checked":""}>${esc(k)}</label>`).join("");
+  {const oc=t?t.tgOcc||"":"";$("t-tgocc").innerHTML=`<option value="">— اختر المناسبة —</option>`+[...new Set([...TG_OCC,oc].filter(Boolean))].map(o=>`<option ${o===oc?"selected":""}>${esc(o)}</option>`).join("")}
   $("task-h").textContent=t?(S.canWrite?"تعديل المهمة":"تفاصيل المهمة"):"مهمة جديدة";
   $("t-del").style.visibility=t?"visible":"hidden";$("t-share").hidden=!t;
   taskDyn();$("dlg-task").showModal();setTimeout(()=>$("t-title").focus(),30);
 }
 function taskDyn(){
   const ty=(document.querySelector('input[name="ttype"]:checked')||{}).value;
-  $("t-ch-wrap").style.display=ty==="photo"?"":"none";$("t-pub-wrap").style.display=ty==="news"?"":"none";
+  $("t-ch-wrap").style.display=ty==="photo"?"":"none";$("t-pub-wrap").style.display=ty==="news"?"":"none";$("t-tg-wrap").style.display=ty==="tg"?"":"none";
   $("t-status-desc").textContent=statusOf($("t-status").value).d;
 }
 function openSettings(){
@@ -4577,6 +4610,7 @@ $("f-task").addEventListener("submit",async e=>{
     type,title,dept:isCCD($("t-dept").value)?"إدارة الاتصال":$("t-dept").value.trim(),owners,received:rec,delivered:del,status:$("t-status").value,
     duration:$("t-duration").value,channels:type==="photo"?[...document.querySelectorAll('input[name="tch"]:checked')].map(x=>x.value):[],pub:type==="news"?[...document.querySelectorAll('input[name="tpub"]:checked')].map(x=>x.value):[],
     notes:$("t-notes").value.trim(),link:$("t-link").value.trim(),updatedAt:new Date().toISOString()});
+  if(type==="tg"){data.tgFrom=$("t-tgfrom").value.trim();data.tgKind=[...document.querySelectorAll('input[name="ttgk"]:checked')].map(x=>x.value);data.tgOcc=$("t-tgocc").value}else{delete data.tgFrom;delete data.tgKind;delete data.tgOcc}
   if(!t){data.createdAt=new Date().toISOString();if(S.me)data.by=S.me}else if(S.meName){data.updatedBy=S.meName}
   try{await save("tasks",t?t.id:uid("t"),data);if(owners.length===1)remember(owners[0]);$("dlg-task").close()}catch(err){$("t-err").textContent=errText(err)}
 });
