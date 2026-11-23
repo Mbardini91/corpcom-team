@@ -179,30 +179,30 @@ table.lsum-t{min-width:0;width:100%;border-collapse:separate;border-spacing:0;fo
 .lvp-i{display:grid;grid-template-columns:10px minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px 8px;border-bottom:1px solid var(--line)}.lvp-i:last-child{border-bottom:0}
 .lvp-i .sw{width:10px;height:10px;border-radius:3px}.lvp-i .t{font-weight:600}.lvp-i .s{font-size:13px;color:var(--mute)}.lvp-i .s.n{margin-top:2px}
 .lt-leg{margin-top:-8px}
-.mx{padding:0;overflow:hidden}.mx-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.mx{padding:14px;overflow:hidden}.mx-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:12px}
 table.mx-t{min-width:0;width:100%;border-collapse:separate;border-spacing:0;font-size:13px;table-layout:auto}
 .mx-t th,.mx-t td{border-bottom:1px solid var(--line);border-inline-start:1px solid var(--line);padding:0;text-align:center;background:transparent}
 .mx-t thead th{font-weight:600;color:var(--mute);background:var(--surface)}
-.mx-t .mx-dw{font-size:11px;padding:8px 2px 2px;min-width:26px;border-bottom:0}.mx-t .mx-dn{font-size:13px;padding:2px 2px 8px;color:var(--ink)}
-.mx-t th.mx-nm{position:sticky;inset-inline-start:0;z-index:2;background:var(--surface);text-align:start;padding:0 14px;white-space:nowrap;font-weight:600;color:var(--ink);min-width:128px;box-shadow:-1px 0 0 var(--line) inset}
-.mx-t thead th.mx-corner{z-index:3;vertical-align:bottom;padding:12px 14px}.mx-corner b{display:block;font-size:17px;color:var(--ink)}.mx-corner span{display:block;font-size:12px;color:var(--mute);font-weight:400;margin-top:2px}
-.mx-t tbody tr{height:40px}
+.mx-t .mx-dw{font-size:11.5px;font-weight:500;padding:10px 0 6px;min-width:30px;height:84px;vertical-align:bottom;border-bottom:0}.mx-t .mx-dw .vt{display:inline-block;writing-mode:vertical-rl;transform:rotate(180deg);white-space:nowrap;line-height:1}:root[dir="ltr"] .mx-t .mx-dw .vt,.mx-t .mx-dn{font-size:13px;padding:2px 2px 8px;color:var(--ink)}
+.mx-t th.mx-nm{position:sticky;inset-inline-start:0;z-index:2;background:var(--surface);text-align:start;padding:0 18px 0 16px;white-space:nowrap;font-weight:600;color:var(--ink);min-width:128px;box-shadow:-1px 0 0 var(--line) inset}
+.mx-t thead th.mx-corner{z-index:3;vertical-align:bottom;padding:14px 18px 12px 16px}.mx-corner b{display:block;font-size:17px;color:var(--ink)}.mx-corner span{display:block;font-size:12px;color:var(--mute);font-weight:400;margin-top:2px}
+.mx-t tbody tr{height:42px}.mx-t tbody th,.mx-t tbody td{vertical-align:middle}.mx-t .mx-dw .vt{vertical-align:bottom}
 .mx-t .we{background:var(--wknd)}.mx-t thead th.we{background:color-mix(in srgb,var(--wknd) 80%,var(--surface))}
 .mx-t .hol{background:var(--hol-bg)}.mx-t thead th.hol{color:var(--hol-ink)}
 .mx-t thead th.tdy{color:#fff;background:var(--today)}
 .mx-t td.tdy:not(.on){box-shadow:inset 0 0 0 9999px color-mix(in srgb,var(--today) 6%,transparent)}
-.mx-c{min-width:26px;height:40px;position:relative}
+.mx-c{min-width:30px;height:42px;position:relative}
 .mx-c[data-act="mx-new"]{cursor:pointer}.mx-c[data-act="mx-new"]:hover{background:var(--accent-soft)}
-.mx-c.on{cursor:pointer;padding:3px}.mx-c.on span{display:grid;place-items:center;height:100%;min-height:32px;border-radius:6px;background:var(--c);color:#fff;font-weight:700;font-size:12.5px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.12);transition:transform .15s}
-.mx-c.on:hover span{transform:scale(1.08)}
+.mx-c.on{cursor:pointer;padding:3px}.mx-c.on span{display:grid;place-items:center;height:100%;min-height:34px;border-radius:6px;background:var(--c);color:#fff;font-weight:700;font-size:12.5px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.12);transition:transform .15s}
+.mx-c.on:hover span{transform:scale(1.08)}.mx-c .lti{width:15px;height:15px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}.mx-c.on.hr b{font-size:12px}
 .mx-c.on.hr span{background:color-mix(in srgb,var(--c) 22%,var(--surface));color:var(--c);box-shadow:inset 0 0 0 1.5px var(--c);font-size:11px}
-.mx-t th.mx-tot-h{min-width:52px;max-width:64px;padding:8px 4px;font-size:11px;line-height:1.3;color:#fff;background:var(--c);white-space:normal}
+.mx-t th.mx-tot-h{min-width:60px;max-width:72px;padding:10px 8px;font-size:11px;line-height:1.3;color:#fff;background:var(--c);white-space:normal}
 .mx-t .first{border-inline-start:2px solid var(--line-2)}
-.mx-tot{font-weight:700;font-size:14px;color:var(--ink);background:color-mix(in srgb,var(--c) 9%,transparent)}.mx-tot small{font-size:10.5px;font-weight:600;color:var(--mute);margin-inline-start:2px}.mx-tot.z{color:var(--line-2);font-weight:400}
+.mx-tot{padding:0 8px!important;font-weight:700;font-size:14px;color:var(--ink);background:color-mix(in srgb,var(--c) 9%,transparent)}.mx-tot small{font-size:10.5px;font-weight:600;color:var(--mute);margin-inline-start:2px}.mx-tot.z{color:var(--line-2);font-weight:400}
 .mx-t tbody tr:last-child>*{border-bottom:0}.mx-t tbody tr:hover th.mx-nm,.mx-t tbody tr:hover td.mx-c:not(.on):not(.we):not(.hol){background:color-mix(in srgb,var(--accent) 5%,var(--surface))}
-.mx-leg{display:flex;flex-wrap:wrap;gap:8px 16px;padding:14px 18px;border-top:1px solid var(--line);font-size:12.5px;color:var(--mute)}
-.mx-leg span{display:inline-flex;align-items:center;gap:6px}.mx-leg i{display:inline-grid;place-items:center;min-width:22px;height:20px;padding:0 4px;border-radius:5px;color:#fff;font-style:normal;font-weight:700;font-size:11px}
-.mx-leg i.hr{background:color-mix(in srgb,var(--c) 22%,var(--surface));color:var(--c);box-shadow:inset 0 0 0 1.5px var(--c);font-size:10px}.mx-leg i.mx-wk{background:var(--wknd);border:1px solid var(--line-2)}.mx-leg i.mx-hl{background:var(--hol-bg);border:1px solid var(--hol-ink)}
+.mx-leg{display:flex;flex-wrap:wrap;gap:10px 18px;padding:14px 4px 2px;font-size:12.5px;color:var(--mute)}
+.mx-leg span{display:inline-flex;align-items:center;gap:6px}.mx-leg i{display:inline-grid;place-items:center;min-width:24px;height:22px;padding:0 4px;border-radius:6px;color:#fff;font-style:normal;font-weight:700;font-size:11px}
+.mx-leg i.hr{background:color-mix(in srgb,var(--c) 22%,var(--surface));color:var(--c);box-shadow:inset 0 0 0 1.5px var(--c);font-size:10px}.mx-leg i .lti{width:13px;height:13px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}.mx-leg i.mx-wk{background:var(--wknd);border:1px solid var(--line-2)}.mx-leg i.mx-hl{background:var(--hol-bg);border:1px solid var(--hol-ink)}
 .mx-side{margin-top:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px}
 
 .tg-wrap{display:grid;gap:12px}.chs.tgc span{background:color-mix(in srgb,var(--t-tg) 12%,transparent);color:var(--t-tg);border-color:color-mix(in srgb,var(--t-tg) 30%,transparent)}
@@ -2225,17 +2225,25 @@ function yearGrid(y,hmap,lmap){
   return h+`</div>`;
 }
 
+const LT_IC={"سنوية":'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+ "مرضية":'<path d="M14 4v10.5a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0Z"/><path d="M12 14.5v-4"/>',
+ "أمومة / أبوة":'<path d="M9 12h.01M15 12h.01M10 16c.5.3 1.2.5 2 .5s1.5-.2 2-.5"/><path d="M19 6.3a9 9 0 0 1 1.8 3.9 2 2 0 0 1 0 3.6 9 9 0 0 1-17.6 0 2 2 0 0 1 0-3.6A9 9 0 0 1 12 3c2 0 3.5 1.1 3.5 2.5s-.9 2.5-2 2.5c-.8 0-1.5-.4-1.5-1"/>',
+ "عزاء":'<circle cx="12" cy="12" r="3"/><path d="M12 9V7.5a4.5 4.5 0 1 1 4.5 4.5H15M9 12H7.5A4.5 4.5 0 1 1 12 7.5M15 12h1.5a4.5 4.5 0 1 1-4.5 4.5V15M12 15v1.5A4.5 4.5 0 1 1 7.5 12H9"/>',
+ "عمل عن بُعد":'<path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
+ "مهمة رسمية / تدريب":'<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 13h18"/>',
+ "أخرى":'<circle cx="6" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="18" cy="12" r="1.2"/>'};
+function ltIc(t,cls){return `<svg class="${cls||"lti"}" viewBox="0 0 24 24" aria-hidden="true">${LT_IC[t]||LT_IC["أخرى"]}</svg>`}
 const MX_CODE={"سنوية":["س","L"],"مرضية":["م","S"],"أمومة / أبوة":["أ","P"],"عزاء":["ع","C"],"عمل عن بُعد":["ب","W"],"مهمة رسمية / تدريب":["ت","T"],"أخرى":["خ","O"]};
 function monthMatrix(y,m,hmap,lmap){
   const EN=typeof I18N_ON!=="undefined"&&I18N_ON,n=daysIn(y,m),lo=iso(y,m,1),hi=iso(y,m,n);
   const inM=S.leaves.filter(l=>validDate(l.from)&&l.from<=hi&&((validDate(l.to)&&l.to>=l.from)?l.to:l.from)>=lo);
   const names=[...new Set([...memberNames(),...inM.map(l=>l.name)])];
-  const DS=EN?["Su","Mo","Tu","We","Th","Fr","Sa"]:["ح","ن","ث","ر","خ","ج","س"];
+  const DS=EN?["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]:["الأحد","الاثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"];
   const days=[];for(let d=1;d<=n;d++){const s=iso(y,m,d);days.push({d,s,we:isWeekend(s),hol:hmap.get(s)||null,today:s===TODAY})}
   const dcls=x=>["mx-d",x.we?"we":"",x.hol?"hol":"",x.today?"tdy":""].join(" ");
   const COLS=[{k:"abs",n:"مجموع الغياب",c:"var(--accent)"},{k:"سنوية",n:"سنوية",c:ltcol("سنوية")},{k:"مرضية",n:"مرضية",c:ltcol("مرضية")},{k:"oth",n:"إجازات أخرى",c:ltcol("أمومة / أبوة")},{k:"مهمة رسمية / تدريب",n:"مهمة / تدريب",c:ltcol("مهمة رسمية / تدريب")},{k:"عمل عن بُعد",n:"عن بُعد",c:ltcol("عمل عن بُعد")}];
   let h=`<div class="card mx"><div class="mx-scroll"><table class="mx-t"><thead><tr><th class="mx-nm mx-corner" rowspan="2"><b>${esc(MONTHS[m-1])} ${y}</b><span>إدارة الاتصال</span></th>`;
-  days.forEach(x=>h+=`<th class="${dcls(x)} mx-dw" title="${esc(fmt(x.s)+(x.hol?" — "+x.hol.map(o=>o.name).join("، "):""))}">${DS[dow(x.s)]}</th>`);
+  days.forEach(x=>h+=`<th class="${dcls(x)} mx-dw" title="${esc(fmt(x.s)+(x.hol?" — "+x.hol.map(o=>o.name).join("، "):""))}"><span class="vt">${DS[dow(x.s)]}</span></th>`);
   COLS.forEach((c,i)=>h+=`<th class="mx-tot-h${i===0?" first":""}" rowspan="2" style="--c:${c.c}"><span>${esc(c.n)}</span></th>`);
   h+=`</tr><tr>`;days.forEach(x=>h+=`<th class="${dcls(x)} mx-dn num">${x.d}</th>`);h+=`</tr></thead><tbody>`;
   for(const nm of names){const mine=inM.filter(l=>l.name===nm);
@@ -2246,11 +2254,11 @@ function monthMatrix(y,m,hmap,lmap){
       const off=x.we||x.hol;
       if(lv.length&&!off){const l=lv[0],cd=(MX_CODE[l.type]||MX_CODE["أخرى"])[EN?1:0],hr=isHrs(l);
         const tip=nm+" — "+(l.type||"")+(hr?" · "+hrsLabel(l.hours):"")+"\n"+fmt(x.s)+(l.notes?"\n"+l.notes:"")+(lv.length>1?"\n+"+(lv.length-1):"");
-        h+=`<td class="${dcls(x)} mx-c on${hr?" hr":""}${off?" offd":""}" style="--c:${ltcol(l.type)}" data-act="leave-edit" data-v="${esc(l.id)}" title="${esc(tip)}"><span class="num">${hr?+l.hours:cd}</span></td>`}
+        h+=`<td class="${dcls(x)} mx-c on${hr?" hr":""}${off?" offd":""}" style="--c:${ltcol(l.type)}" data-act="leave-edit" data-v="${esc(l.id)}" title="${esc(tip)}"><span>${hr?`<b class="num">${+l.hours}</b>`:ltIc(l.type)}</span></td>`}
       else h+=`<td class="${dcls(x)} mx-c"${(!off&&S.canWrite)?` data-act="mx-new" data-v="${esc(x.s+"|"+nm)}" title="${esc("تسجيل إجازة لـ "+nm+" — "+fmt(x.s))}"`:x.hol?` title="${esc(x.hol.map(o=>o.name).join("، "))}"`:""}></td>`}
     COLS.forEach((c,i)=>{const v=tot[c.k]||0;const {d,h:hh}=fmtDays(v);h+=`<td class="mx-tot${i===0?" first":""}${v?"":" z"}" style="--c:${c.c}" title="${v?esc(d+" يوم"+(hh?" و"+hrsLabel(hh):"")):""}"><span class="num">${v?String(+v.toFixed(2)):"0"}</span></td>`});
     h+=`</tr>`}
-  h+=`</tbody></table></div><div class="mx-leg">${LEAVE_TYPES.map(t=>`<span><i style="background:${ltcol(t)}">${esc((MX_CODE[t]||MX_CODE["أخرى"])[EN?1:0])}</i>${esc(t)}</span>`).join("")}<span><i class="hr" style="--c:${ltcol("سنوية")}">4</i>إجازة بالساعات (عدد الساعات)</span><span><i class="mx-wk"></i>عطلة نهاية الأسبوع</span><span><i class="mx-hl"></i>إجازة رسمية</span></div></div>`;
+  h+=`</tbody></table></div><div class="mx-leg">${LEAVE_TYPES.map(t=>`<span><i style="background:${ltcol(t)}">${ltIc(t)}</i>${esc(t)}</span>`).join("")}<span><i class="hr" style="--c:${ltcol("سنوية")}">4</i>إجازة بالساعات (عدد الساعات)</span><span><i class="mx-wk"></i>عطلة نهاية الأسبوع</span><span><i class="mx-hl"></i>إجازة رسمية</span></div></div>`;
   return h}
 function monthGrid(y,m,hmap,lmap){
   const first=iso(y,m,1),off=dow(first),n=daysIn(y,m);
