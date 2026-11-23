@@ -196,7 +196,7 @@ table.mx-t{min-width:0;width:max-content;max-width:none;border-collapse:separate
 .mx-c[data-act="mx-new"]{cursor:pointer}.mx-c[data-act="mx-new"]:hover{background:var(--accent-soft)}
 .mx-t td.mx-c.on{cursor:pointer;padding:0;background:var(--c);border-inline-start-color:rgba(255,255,255,.4);border-bottom-color:rgba(255,255,255,.4)}.mx-c.on span{display:grid;place-items:center;width:100%;height:36px;color:#fff;font-weight:700;font-size:12.5px;transition:filter .15s}
 .mx-c.on:hover span{filter:brightness(1.12)}.mx-c .lti{width:15px;height:15px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}.mx-c.on.hr b{font-size:12px}
-.mx-t td.mx-c.on.hr{background:color-mix(in srgb,var(--c) 22%,var(--surface))}.mx-c.on.hr span{color:var(--c);box-shadow:inset 0 0 0 2px var(--c);font-size:11px}
+.mx-t td.mx-c.on.hr{background:color-mix(in srgb,var(--c) 22%,var(--surface))}.mx-c.on.hr span{color:var(--c);box-shadow:inset 0 0 0 2px var(--c);font-size:11px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px}.mx-c.on.hr .clk{stroke:var(--c);width:14px;height:14px}.mx-c.on.hr b{font-size:10px;line-height:1}.mx-leg i.hr .lti{stroke:var(--c)}
 .mx-t th.mx-tot-h{min-width:60px;max-width:72px;padding:10px 8px;font-size:11px;line-height:1.3;color:#fff;background:var(--c);white-space:normal}
 .mx-t .first{border-inline-start:2px solid var(--line-2)}
 .mx-tot{padding:0 8px!important;font-weight:700;font-size:14px;color:var(--ink);background:color-mix(in srgb,var(--c) 9%,transparent)}.mx-tot small{font-size:10.5px;font-weight:600;color:var(--mute);margin-inline-start:2px}.mx-tot.z{color:var(--line-2);font-weight:400}
@@ -2251,10 +2251,10 @@ function monthMatrix(y,m,hmap,lmap){
       const off=x.we||x.hol;
       if(lv.length&&!off){const l=lv[0],cd=(MX_CODE[l.type]||MX_CODE["أخرى"])[EN?1:0],hr=isHrs(l);
         const tip=nm+" — "+(l.type||"")+(hr?" · "+hrsLabel(l.hours):"")+"\n"+fmt(x.s)+(l.notes?"\n"+l.notes:"")+(lv.length>1?"\n+"+(lv.length-1):"");
-        h+=`<td class="${dcls(x)} mx-c on${hr?" hr":""}${off?" offd":""}" style="--c:${ltcol(l.type)}" data-act="leave-edit" data-v="${esc(l.id)}" title="${esc(tip)}"><span>${hr?`<b class="num">${+l.hours}</b>`:ltIc(l.type)}</span></td>`}
+        h+=`<td class="${dcls(x)} mx-c on${hr?" hr":""}${off?" offd":""}" style="--c:${ltcol(l.type)}" data-act="leave-edit" data-v="${esc(l.id)}" title="${esc(tip)}"><span>${hr?`<svg class="lti clk" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><b class="num">${+l.hours}</b>`:ltIc(l.type)}</span></td>`}
       else h+=`<td class="${dcls(x)} mx-c"${(!off&&S.canWrite)?` data-act="mx-new" data-v="${esc(x.s+"|"+nm)}" title="${esc("تسجيل إجازة لـ "+nm+" — "+fmt(x.s))}"`:x.hol?` title="${esc(x.hol.map(o=>o.name).join("، "))}"`:""}></td>`}
     h+=`</tr>`}
-  h+=`</tbody></table></div><div class="mx-leg">${LEAVE_TYPES.map(t=>`<span><i style="background:${ltcol(t)}">${ltIc(t)}</i>${esc(t)}</span>`).join("")}<span><i class="hr" style="--c:${ltcol("سنوية")}">4</i>إجازة بالساعات (عدد الساعات)</span><span><i class="mx-wk"></i>عطلة نهاية الأسبوع</span><span><i class="mx-hl"></i>إجازة رسمية</span></div></div>`;
+  h+=`</tbody></table></div><div class="mx-leg">${LEAVE_TYPES.map(t=>`<span><i style="background:${ltcol(t)}">${ltIc(t)}</i>${esc(t)}</span>`).join("")}<span><i class="hr" style="--c:${ltcol("سنوية")}"><svg class="lti" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></i>إجازة بالساعات (بلون نوعها، والرقم = عدد الساعات)</span><span><i class="mx-wk"></i>عطلة نهاية الأسبوع</span><span><i class="mx-hl"></i>إجازة رسمية</span></div></div>`;
   return h}
 function monthGrid(y,m,hmap,lmap){
   const first=iso(y,m,1),off=dow(first),n=daysIn(y,m);
