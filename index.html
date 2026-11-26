@@ -188,6 +188,7 @@ table.lsum-t{min-width:0;width:100%;border-collapse:separate;border-spacing:0;fo
 .lvp-i{display:grid;grid-template-columns:10px minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px 8px;border-bottom:1px solid var(--line)}.lvp-i:last-child{border-bottom:0}
 .lvp-i .sw{width:10px;height:10px;border-radius:3px}.lvp-i .t{font-weight:600}.lvp-i .s{font-size:13px;color:var(--mute)}.lvp-i .s.n{margin-top:2px}
 .lt-leg{margin-top:-8px}
+.seg.aw-ser{margin:0 0 16px;padding:4px}.seg.aw-ser button{min-width:120px;font-size:15px;font-weight:700;padding:9px 22px}
 .mx{padding:14px;overflow:hidden}.mx-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:12px}
 table.mx-t{min-width:0;width:max-content;max-width:none;border-collapse:separate;border-spacing:0;font-size:13px;table-layout:auto}
 .mx-t th,.mx-t td{border-bottom:1px solid var(--line);border-inline-start:1px solid var(--line);padding:0;text-align:center;background:transparent}
@@ -2742,7 +2743,7 @@ const AW_DEV={mobile:"الجوال",tablet:"التابلت",desktop:"الكمب�
 const awDur=s=>{s=Math.round(+s||0);if(s<60)return `${s}<small>ث</small>`;const m=Math.floor(s/60),r=String(s%60).padStart(2,"0");return m>=60?`<span dir="ltr">${Math.floor(m/60)}:${String(m%60).padStart(2,"0")}:${r}</span><small>س</small>`:`<span dir="ltr">${m}:${r}</span><small>د</small>`};
 const awDurT=s=>awDur(s).replace(/<[^>]+>/g,"");
 const isAWsec=k=>k==="adwaa"||k==="adwaaha";
-const awSer=()=>S.ss==="adwaaha"?"adwaaha":"adwaa";
+const awSer=()=>S.awS==="adwaaha"?"adwaaha":"adwaa";
 function awAI(){S.aiM=S.aiM||{};return S.aiM[awSer()]||"all"}
 const awIsHa=i=>String(i.id||"").startsWith("adwaaha-");
 function awIssueLabel(i){return awIsHa(i)?"أضواؤها "+(i.number||String(i.id).replace("adwaaha-","")):(i.number?"العدد "+i.number:i.label||i.id)}
@@ -2760,18 +2761,19 @@ function loadAW(){
 function awStats({kpi,hbars,monthly,inY,ylabel,pct}){
   const yr=S.sy&&S.sy!=="all"?S.sy:null,key=awSer()+"|"+awAI()+"|"+(yr||"all");
   const links=`<div class="g-links" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:0 0 16px"><a class="btn" href="${AW_URL}" target="_blank" rel="noopener">${ic("ext")}فتح المجلة</a><button class="btn" type="button" data-act="aw-qr" title="رابط فيه ?via=qr — استخدمه في رمز QR للنسخة المطبوعة عشان تنحسب زياراته">${ic("dup")}نسخ رابط QR</button>${S.awAt?`<span class="muted" style="font-size:13px">تحديث مباشر · آخر تحميل ${esc(S.awAt.toLocaleTimeString("ar-BH",{hour:"2-digit",minute:"2-digit"}))}</span>`:""}</div>`;
-  if(!S.aw||(S.aw.key!==key&&!S.aw.err)){loadAW();if(!S.aw||!S.aw.d)return links+`<div class="empty-note">جارٍ تحميل إحصائيات المجلة…</div>`}
-  if(S.aw.err){return links+`<div class="empty-note">تعذّر تحميل إحصائيات المجلة. أعد فتح الصفحة لاحقًا.</div>`}
+  const haS=awSer()==="adwaaha",serSw=`<div class="seg aw-ser" role="group" aria-label="المجلة"><button type="button" data-act="aw-ser" data-v="adwaa" aria-pressed="${!haS}">أضواء</button><button type="button" data-act="aw-ser" data-v="adwaaha" aria-pressed="${haS}">أضواؤها</button></div>`;
+  if(!S.aw||(S.aw.key!==key&&!S.aw.err)){loadAW();if(!S.aw||!S.aw.d)return serSw+links+`<div class="empty-note">جارٍ تحميل إحصائيات المجلة…</div>`}
+  if(S.aw.err){return serSw+links+`<div class="empty-note">تعذّر تحميل إحصائيات المجلة. أعد فتح الصفحة لاحقًا.</div>`}
   const d=S.aw.d,T=d.totals||{},ha=awSer()==="adwaaha",AI=awAI();
   const issues=(d.issues||[]).filter(i=>awIsHa(i)===ha).sort((a,b)=>(b.number||0)-(a.number||0)||String(b.id).localeCompare(String(a.id)));
   const isel=issues.length?`<div class="seg aw-iss" role="group" aria-label="العدد" style="margin:0 0 16px"><button type="button" data-act="aw-issue" data-v="all" aria-pressed="${AI==="all"}">كل الأعداد</button>${issues.map(i=>`<button type="button" data-act="aw-issue" data-v="${esc(i.id)}" aria-pressed="${AI===i.id}">${esc(awIssueLabel(i))}</button>`).join("")}</div>`:"";
-  const head=links+isel;
+  const head=serSw+links+isel;
   if(!T.sessions&&!T.likes)return head+`<div class="empty-note">لا توجد زيارات ${S.sy==="all"?"بعد":"في "+esc(ylabel)}. أول ما يفتح أحد المجلة تظهر الأرقام هنا مباشرة.</div>`;
   const ses=T.sessions||0;
   const aDays=(d.days||[]).map(x=>{const r=[];for(let i=0;i<x.n;i++)r.push(x.d);return r}).flat();const aB=sbBase(aDays);
   const atp=(d.topics||[]).filter(t=>t.reads||t.views).sort((a,b)=>(b.reads||0)-(a.reads||0)).slice(0,3),ACOL=[["#17325a","#9cb8e3"],["#2b8577","#a6e0d4"],["#b7832a","#f0cf8a"]];
   const cfg={key:awSer()+"|"+S.sy+"|"+AI+"|"+(S.sbR||"y"),
-    hero:{label:"الزيارات",value:ses,unit:"زيارة",sub:`قرّاء مجلة أضواء في ${esc(ylabel)} · تحديث مباشر.`,days:aB.days,prev30:aB.prev30},
+    hero:{label:"الزيارات",value:ses,unit:"زيارة",sub:`قرّاء ${awSer()==="adwaaha"?"أضواؤها":"مجلة أضواء"} في ${esc(ylabel)} · تحديث مباشر.`,days:aB.days,prev30:aB.prev30},
     cards:{title:"الأكثر قراءة",items:atp.map((t,i)=>({t:t.t||"",tag:"#"+(i+1),meta:sbN(t.reads||t.views)+" قراءة",sub:`${sbN(t.views||0)} مشاهدة · ${sbN(t.likes||0)} إعجاب · ${sbN(t.shares||0)} مشاركة`,c:ACOL[i][0],c2:ACOL[i][1]}))},
     gauge:{title:"متوسط وقت القراءة",v:(T.avg_secs||0)/60,max:10,unit:"دقيقة",dec:1,sub:`الوسيط ${awDurT(T.median_secs||0)} · المجموع ${sbN(T.total_mins||0)} دقيقة`},
     chart:{title:"الزيارات",unit:"زيارة",sel:S.sbR||"y",series:aB.series},
@@ -3047,7 +3049,7 @@ function renderStats(){
   const sel=photos.filter(t=>inY(t.received));
   const news=(S.monitor||[]).filter(x=>x.verified!==false&&inY(x.date)),posts=(S.social||[]).filter(x=>x.verified!==false&&inY(x.date));
   const pct=(x,d)=>d?Math.round(x/d*100):0;const ylabel=S.sy==="all"?"كل السنوات":S.sy;
-  const SECS=[{k:"all",n:"نظرة عامة"},{k:"tasks",n:"المهام"},{k:"photo",n:"التصوير"},{k:"news",n:"الأخبار"},{k:"tg",n:"البرقيات"},{k:"monitor",n:"الرصد"},{k:"game",n:"رحلة القيم"},{k:"adwaa",n:"أضواء"},{k:"adwaaha",n:"أضواؤها"}];inYsb=inY;
+  const SECS=[{k:"all",n:"نظرة عامة"},{k:"tasks",n:"المهام"},{k:"photo",n:"التصوير"},{k:"news",n:"الأخبار"},{k:"tg",n:"البرقيات"},{k:"monitor",n:"الرصد"},{k:"game",n:"رحلة القيم"},{k:"adwaa",n:"المجلة"}];inYsb=inY;
   const SIC={all:"chart",tasks:"list",photo:"img",news:"news",tg:"mail",monitor:"search",game:"compass",adwaa:"book",adwaaha:"book"};const curSec=SECS.find(s=>s.k===sec)||SECS[0];
   let h=`<div class="gwk"><nav class="gw-rail gw-glass" aria-label="أقسام الإحصائيات">${SECS.map(s=>`<button type="button" data-act="ss" data-v="${s.k}" aria-label="${s.n}" data-tip="${s.n}"${sec===s.k?' aria-current="page"':""}>${ic(SIC[s.k])}</button>`).join("")}</nav>
     <div class="gw-main gw-glass"><div class="gw-head"><div><p class="gw-greet">${sbGreet()} · الإحصائيات</p><h1>${curSec.n}</h1></div>
@@ -4578,6 +4580,7 @@ document.addEventListener("click",async e=>{
     case "sb-rng":S.sbR=v;render();break;
     case "sb-g":S.sbG=v;render();break;
     case "sb-card":{const b=a.closest(".sb");if(b&&a.dataset.front!=="1")sbStackLayout(b,+a.dataset.i);break}
+    case "aw-ser":S.awS=v;S.aw=null;render();break;
     case "aw-issue":S.aiM=S.aiM||{};S.aiM[awSer()]=v;S.aw=null;render();break;
     case "aw-qr":{const u=AW_URL+"?via=qr";const done=ok=>{a.innerHTML=ic(ok?"check":"close")+(ok?"تم النسخ":"تعذّر النسخ");setTimeout(()=>{a.innerHTML=ic("dup")+"نسخ رابط QR"},1800);if(!ok)prompt("انسخ الرابط:",u)};try{navigator.clipboard.writeText(u).then(()=>done(true),()=>done(false))}catch(err){done(false)}break}
     case "glass":gaToggle();break;
