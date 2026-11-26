@@ -272,8 +272,10 @@
     };
     /* مجلة أضواء: الإحصائيات مجمّعة في قاعدة البيانات (adwaa_stats) */
     window.lmraAdwaa = {
-      async stats(issue, year) {
-        const { data, error } = await sb.rpc("adwaa_stats", { p_issue: issue || null, p_year: year ? +year : null });
+      async stats(issue, year, series) {
+        const args = { p_issue: issue || null, p_year: year ? +year : null };
+        if (series) args.p_series = series;
+        const { data, error } = await sb.rpc("adwaa_stats", args);
         if (error) throw mapErr(error); return data;
       },
       async responses(issue) {   // guess-the-colleague answers + ratings (team members only)
